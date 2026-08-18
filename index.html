@@ -414,44 +414,47 @@
                 <button class="btn-back" onclick="showInvitation()">← 초대장</button>
             </div>
 
-            <div class="day-card">
-                <div class="day-title-tag">1일차 ✨</div>
-                <ul class="schedule-list">
-                    <li class="schedule-item">
-                        <span class="time-badge">점심</span>
-                        <span class="item-text">스시히어로 🍣</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="time-badge">카페</span>
-                        <span class="item-text">트리블링 카페 ☕️</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="time-badge">휴식</span>
-                        <span class="item-text">집 도착! (쉬기) 🏠</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="time-badge" style="background-color: #ffb3d9;">저녁/야식</span>
-                        <span class="item-text">북경탕수육 & 야식 🥢🍺</span>
-                    </li>
-                </ul>
-            </div>
+            <div id="schedule-content">
+                <!-- 구글 스프레드시트 링크가 없을 때 보여줄 기본 화면 -->
+                <div class="day-card">
+                    <div class="day-title-tag">1일차 ✨</div>
+                    <ul class="schedule-list">
+                        <li class="schedule-item">
+                            <span class="time-badge">점심</span>
+                            <span class="item-text">스시히어로 🍣</span>
+                        </li>
+                        <li class="schedule-item">
+                            <span class="time-badge">카페</span>
+                            <span class="item-text">트리블링 카페 ☕️</span>
+                        </li>
+                        <li class="schedule-item">
+                            <span class="time-badge">휴식</span>
+                            <span class="item-text">집 도착! (쉬기) 🏠</span>
+                        </li>
+                        <li class="schedule-item">
+                            <span class="time-badge" style="background-color: #ffb3d9;">저녁/야식</span>
+                            <span class="item-text">북경탕수육 & 야식 🥢🍺</span>
+                        </li>
+                    </ul>
+                </div>
 
-            <div class="day-card">
-                <div class="day-title-tag day2">2일차 🌿</div>
-                <ul class="schedule-list">
-                    <li class="schedule-item">
-                        <span class="time-badge" style="background-color: #ff922b; color: white;">아침</span>
-                        <span class="item-text">아침 메뉴 선택 🥣</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="time-badge" style="background-color: #ff922b; color: white;">점심</span>
-                        <span class="item-text">시켜먹기 OR 나가서 먹기 🍕</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="time-badge">귀가</span>
-                        <span class="item-text">집으로 귀가 🚗💨</span>
-                    </li>
-                </ul>
+                <div class="day-card">
+                    <div class="day-title-tag day2">2일차 🌿</div>
+                    <ul class="schedule-list">
+                        <li class="schedule-item">
+                            <span class="time-badge" style="background-color: #ff922b; color: white;">아침</span>
+                            <span class="item-text">아침 메뉴 선택 🥣</span>
+                        </li>
+                        <li class="schedule-item">
+                            <span class="time-badge" style="background-color: #ff922b; color: white;">점심</span>
+                            <span class="item-text">시켜먹기 OR 나가서 먹기 🍕</span>
+                        </li>
+                        <li class="schedule-item">
+                            <span class="time-badge">귀가</span>
+                            <span class="item-text">집으로 귀가 🚗💨</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="footer-doodle">
@@ -461,16 +464,82 @@
     </div>
 
     <script>
+        // ★ 구글 스프레드시트 웹 게시(CSV) 링크를 따옴표 안에 넣으세요 ★
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvYmFBWKkUpDBKkt4FE7g76HQl_D5X43n7aIhJKzJ70_Y_adi5u33U-seev5m_f0awh9MuBcUpBHgn/pub?gid=0&single=true&output=csv'; 
+
         function showSchedule() {
             document.getElementById('invitation-screen').style.display = 'none';
             document.getElementById('schedule-screen').classList.add('active');
             window.scrollTo(0, 0);
+            loadScheduleFromSheet();
         }
 
         function showInvitation() {
             document.getElementById('schedule-screen').classList.remove('active');
             document.getElementById('invitation-screen').style.display = 'flex';
             window.scrollTo(0, 0);
+        }
+
+        async function loadScheduleFromSheet() {
+            if (!SHEET_CSV_URL) return; // 링크가 없으면 기본 작성된 내용 유지
+
+            try {
+                const res = await fetch(SHEET_CSV_URL);
+                const csvText = await res.text();
+                parseAndRenderCSV(csvText);
+            } catch (err) {
+                console.error("스프레드시트 로드 실패:", err);
+            }
+        }
+
+        function parseAndRenderCSV(csvText) {
+            const lines = csvText.split('\n');
+            let day1Html = '';
+            let day2Html = '';
+
+            // 시트 구조: 구분(1일차/2일차), 시간, 내용
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                const cols = line.split(',');
+
+                const dayCategory = cols[0] ? cols[0].trim() : '1일차';
+                const time = cols[1] ? cols[1].trim() : '';
+                const text = cols[2] ? cols[2].trim() : '';
+
+                const itemHtml = `
+                    <li class="schedule-item">
+                        <span class="time-badge">${time}</span>
+                        <span class="item-text">${text}</span>
+                    </li>
+                `;
+
+                if (dayCategory.includes('2')) {
+                    day2Html += itemHtml;
+                } else {
+                    day1Html += itemHtml;
+                }
+            }
+
+            let fullHtml = '';
+            if (day1Html) {
+                fullHtml += `
+                    <div class="day-card">
+                        <div class="day-title-tag">1일차 ✨</div>
+                        <ul class="schedule-list">${day1Html}</ul>
+                    </div>`;
+            }
+            if (day2Html) {
+                fullHtml += `
+                    <div class="day-card">
+                        <div class="day-title-tag day2">2일차 🌿</div>
+                        <ul class="schedule-list">${day2Html}</ul>
+                    </div>`;
+            }
+
+            if (fullHtml) {
+                document.getElementById('schedule-content').innerHTML = fullHtml;
+            }
         }
     </script>
 </body>
