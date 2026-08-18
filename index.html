@@ -417,44 +417,8 @@
             </div>
 
             <div id="schedule-content">
-                <div class="day-card">
-                    <div class="day-title-tag">1일차 ✨</div>
-                    <ul class="schedule-list">
-                        <li class="schedule-item">
-                            <span class="time-badge">점심</span>
-                            <span class="item-text">스시히어로 🍣</span>
-                        </li>
-                        <li class="schedule-item">
-                            <span class="time-badge">카페</span>
-                            <span class="item-text">트리블링 카페 ☕️</span>
-                        </li>
-                        <li class="schedule-item">
-                            <span class="time-badge">휴식</span>
-                            <span class="item-text">집 도착! (쉬기) 🏠</span>
-                        </li>
-                        <li class="schedule-item">
-                            <span class="time-badge" style="background-color: #ffb3d9;">저녁/야식</span>
-                            <span class="item-text">북경탕수육 & 야식 🥢🍺</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="day-card">
-                    <div class="day-title-tag day2">2일차 🌿</div>
-                    <ul class="schedule-list">
-                        <li class="schedule-item">
-                            <span class="time-badge" style="background-color: #ff922b; color: white;">아침</span>
-                            <span class="item-text">아침 메뉴 선택 🥣</span>
-                        </li>
-                        <li class="schedule-item">
-                            <span class="time-badge" style="background-color: #ff922b; color: white;">점심</span>
-                            <span class="item-text">시켜먹기 OR 나가서 먹기 🍕</span>
-                        </li>
-                        <li class="schedule-item">
-                            <span class="time-badge">귀가</span>
-                            <span class="item-text">집으로 귀가 🚗💨</span>
-                        </li>
-                    </ul>
+                <div style="text-align: center; padding: 50px 10px; font-size: 22px; font-weight: 700; color: #000;">
+                    ⏳ 최신 일정을 불러오는 중...
                 </div>
             </div>
 
@@ -467,11 +431,15 @@
     <script>
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvYmFBWKkUpDBKkt4FE7g76HQl_D5X43n7aIhJKzJ70_Y_adi5u33U-seev5m_f0awh9MuBcUpBHgn/pub?gid=0&single=true&output=csv';
 
+        // 페이지가 로드되자마자 백그라운드에서 미리 시트 데이터 가져오기
+        document.addEventListener('DOMContentLoaded', () => {
+            loadScheduleFromSheet();
+        });
+
         function showSchedule() {
             document.getElementById('invitation-screen').style.display = 'none';
             document.getElementById('schedule-screen').classList.add('active');
             window.scrollTo(0, 0);
-            loadScheduleFromSheet();
         }
 
         function showInvitation() {
@@ -490,6 +458,11 @@
                 parseAndRenderCSV(csvText);
             } catch (err) {
                 console.error("스프레드시트 로드 실패:", err);
+                document.getElementById('schedule-content').innerHTML = `
+                    <div style="text-align: center; padding: 40px 10px; font-size: 20px; font-weight: 700; color: #ff0055;">
+                        ⚠️ 일정을 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.
+                    </div>
+                `;
             }
         }
 
