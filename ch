@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>⚡️청주 여행 초특급 초대장⚡️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Single+Day&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-yellow: #ffe600;
+            --pink-accent: #ff0055;
+            --blue-accent: #0022ff;
+            --green-accent: #00e676;
+            --black: #000000;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Gaegu', cursive, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background-color: #1a1a2e;
+            background-image: radial-gradient(#ff007f 10%, transparent 11%), radial-gradient(#00d2ff 10%, transparent 11%);
+            background-size: 24px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            background-color: var(--bg-yellow);
+            border: 4px solid var(--black);
+            border-radius: 20px;
+            box-shadow: 6px 8px 0px var(--black);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin: auto;
+        }
+
+        .sticker {
+            position: absolute;
+            z-index: 10;
+            font-size: clamp(24px, 7vw, 32px);
+            filter: drop-shadow(2px 2px 0px #000);
+            user-select: none;
+            pointer-events: none;
+            animation: bounce 2.5s infinite ease-in-out;
+        }
+
+        .sticker-1 { top: 12px; right: 12px; transform: rotate(15deg); }
+        .sticker-2 { top: 38%; left: -4px; transform: rotate(-20deg); }
+        .sticker-3 { bottom: 90px; right: -2px; transform: rotate(25deg); }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(10deg); }
+            50% { transform: translateY(-6px) rotate(-5deg); }
+        }
+
+        #invitation-screen {
+            padding: 20px 16px 0 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .header-section {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 10px 0 14px 0;
+        }
+
+        .red-badge {
+            background-color: var(--pink-accent);
+            color: var(--white);
+            padding: 10px 14px;
+            border-radius: 50% 40% 60% 45% / 40% 60% 40% 55%;
+            border: 3.5px solid var(--black);
+            font-size: clamp(20px, 5.5vw, 26px);
+            font-weight: 700;
+            line-height: 1.1;
+            text-align: center;
+            transform: rotate(-10deg);
+            box-shadow: 3px 3px 0px var(--black);
+            flex-shrink: 0;
+        }
+
+        .main-title {
+            font-size: clamp(48px, 13vw, 64px);
+            font-weight: 700;
+            color: var(--blue-accent);
+            text-shadow: 2px 2px 0px var(--white), 4px 4px 0px var(--black);
+            letter-spacing: 2px;
+            line-height: 1;
+            transform: rotate(1deg);
+            font-family: 'Single Day', cursive;
+        }
+
+        .sub-tag-box {
+            background-color: var(--green-accent);
+            border: 3.5px solid var(--black);
+            padding: 6px 16px;
+            border-radius: 24px;
+            box-shadow: 3.5px 3.5px 0px var(--black);
+            margin: 4px 0 16px 0;
+            transform: rotate(-1deg);
+            text-align: center;
+            max-width: 95%;
+        }
+
+        .sub-tag {
+            font-size: clamp(20px, 5.5vw, 25px);
+            font-weight: 700;
+            color: var(--black);
+            white-space: nowrap;
+        }
+
+        .paper-box {
+            width: 100%;
+            background-color: var(--white);
+            border: 3.5px solid var(--black);
+            border-radius: 14px;
+            padding: 18px 14px;
+            box-shadow: 5px 5px 0px var(--black);
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .tape-top {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 110px;
+            height: 24px;
+            background-color: rgba(255, 0, 128, 0.75);
+            border: 2px solid var(--black);
+        }
+
+        .info-line {
+            font-size: clamp(22px, 6vw, 27px);
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 12px;
+            line-height: 1.35;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .info-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-line span.highlight {
+            background-color: #a6f4ff;
+            padding: 2px 8px;
+            border-radius: 8px;
+            border: 2px solid var(--black);
+        }
+
+        .info-line span.highlight-pink {
+            background-color: #ffb3d9;
+            padding: 2px 8px;
+            border-radius: 8px;
+            border: 2px solid var(--black);
+        }
+
+        .recruitment-banner {
+            width: 100%;
+            text-align: center;
+            font-size: clamp(22px, 6vw, 27px);
+            font-weight: 700;
+            color: var(--pink-accent);
+            background-color: var(--white);
+            border: 3.5px solid var(--black);
+            border-radius: 12px;
+            padding: 6px;
+            margin-bottom: 16px;
+            box-shadow: 4px 4px 0px var(--black);
+            letter-spacing: 1px;
+        }
+
+        .bottom-action-bar {
+            width: calc(100% + 32px);
+            margin-left: -16px;
+            margin-right: -16px;
+            background-color: var(--blue-accent);
+            border-top: 4px solid var(--black);
+            padding: 16px 18px;
+            text-align: center;
+        }
+
+        .bottom-bar-text {
+            font-size: clamp(17px, 4.8vw, 21px);
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--white);
+            text-shadow: 1.5px 1.5px 0px var(--black);
+        }
+
+        .btn-enter {
+            width: 100%;
+            padding: 14px 18px;
+            background-color: var(--pink-accent);
+            color: var(--white);
+            border: 3.5px solid var(--black);
+            border-radius: 35px;
+            font-size: clamp(24px, 6.5vw, 30px);
+            font-weight: 700;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            box-shadow: 0px 6px 0px var(--black);
+            transition: all 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #schedule-screen {
+            display: none;
+            padding: 18px 16px;
+            background-color: var(--bg-yellow);
+            flex-direction: column;
+            width: 100%;
+        }
+
+        #schedule-screen.active {
+            display: flex;
+        }
+
+        .schedule-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 10px;
+        }
+
+        .schedule-header-title {
+            font-size: clamp(26px, 7.5vw, 34px);
+            font-weight: 700;
+            color: var(--blue-accent);
+            background-color: var(--white);
+            padding: 6px 14px;
+            border: 3.5px solid var(--black);
+            border-radius: 12px;
+            box-shadow: 4px 4px 0px var(--black);
+            font-family: 'Single Day', cursive;
+        }
+
+        .btn-back {
+            background-color: var(--pink-accent);
+            color: var(--white);
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-size: clamp(18px, 5vw, 22px);
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--black);
+            white-space: nowrap;
+        }
+
+        .day-card {
+            background-color: var(--white);
+            border: 3.5px solid var(--black);
+            border-radius: 14px;
+            padding: 16px 14px;
+            margin-bottom: 18px;
+            box-shadow: 5px 5px 0px var(--black);
+            position: relative;
+        }
+
+        .day-card::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 16px;
+            width: 75px;
+            height: 22px;
+            background-color: rgba(0, 230, 118, 0.85);
+            border: 2px solid var(--black);
+            transform: rotate(-4deg);
+        }
+
+        .day-title-tag {
+            display: inline-block;
+            background-color: var(--pink-accent);
+            color: var(--white);
+            font-size: clamp(22px, 6vw, 27px);
+            font-weight: 700;
+            padding: 3px 14px;
+            border: 3px solid var(--black);
+            border-radius: 24px;
+            margin-bottom: 12px;
+            box-shadow: 3px 3px 0px var(--black);
+        }
+
+        .day-title-tag.day2 {
+            background-color: var(--blue-accent);
+        }
+
+        .schedule-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            background-color: #f0f4ff;
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: clamp(21px, 5.8vw, 25px);
+            font-weight: 700;
+            gap: 10px;
+            box-shadow: 3px 3px 0px var(--black);
+        }
+
+        .time-badge {
+            background-color: var(--bg-yellow);
+            color: var(--black);
+            padding: 2px 8px;
+            border: 2px solid var(--black);
+            border-radius: 8px;
+            font-size: clamp(17px, 4.5vw, 20px);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .item-text {
+            color: var(--black);
+            flex: 1;
+            word-break: keep-all;
+        }
+
+        .footer-doodle {
+            text-align: center;
+            font-size: clamp(20px, 5.5vw, 24px);
+            font-weight: 700;
+            color: var(--black);
+            background-color: var(--green-accent);
+            border: 3.5px solid var(--black);
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 4px 4px 0px var(--black);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div id="invitation-screen">
+            <div class="sticker sticker-1">💖</div>
+            <div class="sticker sticker-2">⭐</div>
+            <div class="sticker sticker-3">💥</div>
+
+            <div class="header-section">
+                <div class="red-badge">청주<br>여행</div>
+                <div class="main-title">초댓장</div>
+            </div>
+
+            <div class="sub-tag-box">
+                <span class="sub-tag">♣ 주인공: 청주 놀러갈 사람 ♣</span>
+            </div>
+
+            <div class="paper-box">
+                <div class="tape-top"></div>
+                <div class="info-line">📍 <span class="highlight">목적지:</span> 충북 청주 일대 🗺️</div>
+                <div class="info-line">🗓️ <span class="highlight">일시:</span> 1박 2일 힐링 투어 🚗</div>
+                <div class="info-line">⚡️ <span class="highlight-pink">특징:</span> 맛집 폭격 & 꿀휴식 🍣</div>
+                <div class="info-line">💯 <span class="highlight-pink">재미:</span> 999.99% 장담! 🔥</div>
+            </div>
+
+            <div class="recruitment-banner">
+                ★ 상 ♡ 시 ♠ 모 ♥ 집 ☆
+            </div>
+
+            <div class="bottom-action-bar">
+                <div class="bottom-bar-text">※ 아래 버튼을 누르면 일정 공개! ※</div>
+                <button class="btn-enter" onclick="showSchedule()">
+                    👉 일정 확인하기 👈
+                </button>
+            </div>
+        </div>
+
+        <div id="schedule-screen">
+            <div class="schedule-nav">
+                <div class="schedule-header-title">🗺️ 청주 여행 일정표</div>
+                <button class="btn-back" onclick="showInvitation()">← 초대장</button>
+            </div>
+
+            <div class="day-card">
+                <div class="day-title-tag">1일차 ✨</div>
+                <ul class="schedule-list">
+                    <li class="schedule-item">
+                        <span class="time-badge">점심</span>
+                        <span class="item-text">스시히어로 🍣</span>
+                    </li>
+                    <li class="schedule-item">
+                        <span class="time-badge">카페</span>
+                        <span class="item-text">트리블링 카페 ☕️</span>
+                    </li>
+                    <li class="schedule-item">
+                        <span class="time-badge">휴식</span>
+                        <span class="item-text">집 도착! (쉬기) 🏠</span>
+                    </li>
+                    <li class="schedule-item">
+                        <span class="time-badge" style="background-color: #ffb3d9;">저녁/야식</span>
+                        <span class="item-text">북경탕수육 & 야식 🥢🍺</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="day-card">
+                <div class="day-title-tag day2">2일차 🌿</div>
+                <ul class="schedule-list">
+                    <li class="schedule-item">
+                        <span class="time-badge" style="background-color: #ff922b; color: white;">아침</span>
+                        <span class="item-text">아침 메뉴 선택 🥣</span>
+                    </li>
+                    <li class="schedule-item">
+                        <span class="time-badge" style="background-color: #ff922b; color: white;">점심</span>
+                        <span class="item-text">시켜먹기 OR 나가서 먹기 🍕</span>
+                    </li>
+                    <li class="schedule-item">
+                        <span class="time-badge">귀가</span>
+                        <span class="item-text">집으로 귀가 🚗💨</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-doodle">
+                🎉 재미 1000% 보장! 준비완료! 🎉
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSchedule() {
+            document.getElementById('invitation-screen').style.display = 'none';
+            document.getElementById('schedule-screen').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showInvitation() {
+            document.getElementById('schedule-screen').classList.remove('active');
+            document.getElementById('invitation-screen').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
