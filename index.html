@@ -25,7 +25,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html, body {
+       html, body {
             width: 100%;
             min-height: 100vh;
             background-color: #1a1a2e;
@@ -34,7 +34,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 12px;
+            padding: 6px; /* 수정 */
         }
 
         .app-container {
@@ -71,7 +71,7 @@
         }
 
         #invitation-screen {
-            padding: 20px 16px 0 16px;
+            padding: 20px 10px 0 10px; /* 수정 */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -200,13 +200,15 @@
         }
 
         .bottom-action-bar {
-            width: calc(100% + 32px);
-            margin-left: -16px;
-            margin-right: -16px;
+            width: calc(100% + 20px); /* 수정 */
+            margin-left: -10px;       /* 수정 */
+            margin-right: -10px;      /* 수정 */
             background-color: var(--blue-accent);
             border-top: 4px solid var(--black);
-            padding: 16px 18px;
+            padding: 16px 14px;
             text-align: center;
+            position: relative;
+            z-index: 20;
         }
 
         .bottom-bar-text {
@@ -238,7 +240,7 @@
 
         #schedule-screen {
             display: none;
-            padding: 18px 16px;
+            padding: 18px 10px; /* 수정 */
             background-color: var(--bg-yellow);
             flex-direction: column;
             width: 100%;
