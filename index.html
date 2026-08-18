@@ -464,83 +464,93 @@
     </div>
 
     <script>
-        // ★ 구글 스프레드시트 웹 게시(CSV) 링크를 따옴표 안에 넣으세요 ★
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvYmFBWKkUpDBKkt4FE7g76HQl_D5X43n7aIhJKzJ70_Y_adi5u33U-seev5m_f0awh9MuBcUpBHgn/pub?gid=0&single=true&output=csv'; 
-
-        function showSchedule() {
-            document.getElementById('invitation-screen').style.display = 'none';
-            document.getElementById('schedule-screen').classList.add('active');
-            window.scrollTo(0, 0);
-            loadScheduleFromSheet();
-        }
-
-        function showInvitation() {
-            document.getElementById('schedule-screen').classList.remove('active');
-            document.getElementById('invitation-screen').style.display = 'flex';
-            window.scrollTo(0, 0);
-        }
-
         async function loadScheduleFromSheet() {
-            if (!SHEET_CSV_URL) return; // 링크가 없으면 기본 작성된 내용 유지
+    if (!SHEET_CSV_URL) return;
 
-            try {
-                const res = await fetch(SHEET_CSV_URL);
-                const csvText = await res.text();
-                parseAndRenderCSV(csvText);
-            } catch (err) {
-                console.error("스프레드시트 로드 실패:", err);
+    try {
+        // URL 뒤에 실시간 타임스탬프를 붙여 브라우저 캐시 방지
+        const cacheBuster = SHEET_CSV_URL.includes('?') ? `&_t=${Date.now()}` : `?_t=${Date.now()}`;
+        const res = await fetch(SHEET_CSV_URL + cacheBuster, { cache: 'no-store' });
+        const csvText = await res.text();
+        parseAndRenderCSV(csvText);
+    } catch (err) {
+        console.error("스프레드시트 로드 실패:", err);
+    }
+}
+
+function parseAndRenderCSV(csvText) {
+    const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
+    if (lines.length === 0) return;
+
+    let day1Html = '';
+    let day2Html = '';
+
+    // CSV 따옴표 및 쉼표 안전 파싱 함수
+    const parseCSVLine = (line) => {
+        const result = [];
+        let insideQuote = false;
+        let entry = '';
+        for (let c of line) {
+            if (c === '"') {
+                insideQuote = !insideQuote;
+            } else if (c === ',' && !insideQuote) {
+                result.push(entry.trim().replace(/^"|"$/g, ''));
+                entry = '';
+            } else {
+                entry += c;
             }
         }
+        result.push(entry.trim().replace(/^"|"$/g, ''));
+        return result;
+    };
 
-        function parseAndRenderCSV(csvText) {
-            const lines = csvText.split('\n');
-            let day1Html = '';
-            let day2Html = '';
+    // 1행이 실제 데이터인지, 제목(구분, 시간 등)인지 판별 후 시작 위치 결정
+    const firstRow = parseCSVLine(lines[0]);
+    const hasHeader = firstRow[0] && (firstRow[0].includes('구분') || firstRow[0].includes('일자')) && !firstRow[0].includes('1일차') && !firstRow[0].includes('2일차');
+    const startIndex = hasHeader ? 1 : 0;
 
-            // 시트 구조: 구분(1일차/2일차), 시간, 내용
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-                const cols = line.split(',');
+    for (let i = startIndex; i < lines.length; i++) {
+        const cols = parseCSVLine(lines[i]);
+        if (cols.length < 2) continue;
 
-                const dayCategory = cols[0] ? cols[0].trim() : '1일차';
-                const time = cols[1] ? cols[1].trim() : '';
-                const text = cols[2] ? cols[2].trim() : '';
+        const dayCategory = cols[0] || '1일차';
+        const time = cols[1] || '';
+        const text = cols[2] || '';
 
-                const itemHtml = `
-                    <li class="schedule-item">
-                        <span class="time-badge">${time}</span>
-                        <span class="item-text">${text}</span>
-                    </li>
-                `;
+        const itemHtml = `
+            <li class="schedule-item">
+                <span class="time-badge">${time}</span>
+                <span class="item-text">${text}</span>
+            </li>
+        `;
 
-                if (dayCategory.includes('2')) {
-                    day2Html += itemHtml;
-                } else {
-                    day1Html += itemHtml;
-                }
-            }
-
-            let fullHtml = '';
-            if (day1Html) {
-                fullHtml += `
-                    <div class="day-card">
-                        <div class="day-title-tag">1일차 ✨</div>
-                        <ul class="schedule-list">${day1Html}</ul>
-                    </div>`;
-            }
-            if (day2Html) {
-                fullHtml += `
-                    <div class="day-card">
-                        <div class="day-title-tag day2">2일차 🌿</div>
-                        <ul class="schedule-list">${day2Html}</ul>
-                    </div>`;
-            }
-
-            if (fullHtml) {
-                document.getElementById('schedule-content').innerHTML = fullHtml;
-            }
+        if (dayCategory.includes('2')) {
+            day2Html += itemHtml;
+        } else {
+            day1Html += itemHtml;
         }
+    }
+
+    let fullHtml = '';
+    if (day1Html) {
+        fullHtml += `
+            <div class="day-card">
+                <div class="day-title-tag">1일차 ✨</div>
+                <ul class="schedule-list">${day1Html}</ul>
+            </div>`;
+    }
+    if (day2Html) {
+        fullHtml += `
+            <div class="day-card">
+                <div class="day-title-tag day2">2일차 🌿</div>
+                <ul class="schedule-list">${day2Html}</ul>
+            </div>`;
+    }
+
+    if (fullHtml) {
+        document.getElementById('schedule-content').innerHTML = fullHtml;
+    }
+}
     </script>
 </body>
 </html>
