@@ -534,9 +534,10 @@
                 const cols = parseCSVLine(lines[i]);
                 if (cols.length < 2) continue;
 
-                const dayCategory = cols[0] || '1일차';
-                const time = cols[1] || '';
-                const text = cols[2] || '';
+                const dayCategory = cols[0] || '1일차'; // A열 (1일차/2일차 구분)
+                const time = cols[1] || '';           // B열 (시간/태그)
+                const text = cols[2] || '';           // C열 (일정 내용)
+                const text2 = cols[3] || '';           // C열 (일정 내용)
 
                 const itemHtml = `
                     <li class="schedule-item">
