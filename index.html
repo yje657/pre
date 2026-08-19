@@ -672,69 +672,69 @@
     </div>
 
     <script>
-        // ⚠️ 구글 앱스 스크립트 웹앱 URL을 입력해 주세요.
-        const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxsmQA43doKenhtEnQ_9n7R3mVCB9-OUgckdzN8-0Nps7ec9lModpindRPbSdZZHlxe/exec';
+    // ⚠️ 구글 앱스 스크립트 웹앱 URL을 입력해 주세요.
+    const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxsmQA43doKenhtEnQ_9n7R3mVCB9-OUgckdzN8-0Nps7ec9lModpindRPbSdZZHlxe/exec';
 
-        let currentSchedules = [];
-        let isEditMode = false;
-        let modalMode = 'add'; // 'add' 또는 'edit'
+    let currentSchedules = [];
+    let isEditMode = false;
+    let modalMode = 'add'; // 'add' 또는 'edit'
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadScheduleFromSheet();
-        });
+    document.addEventListener('DOMContentLoaded', () => {
+        loadScheduleFromSheet();
+    });
 
-        function showSchedule() {
-            document.getElementById('invitation-screen').style.display = 'none';
-            document.getElementById('schedule-screen').classList.add('active');
-            window.scrollTo(0, 0);
+    function showSchedule() {
+        document.getElementById('invitation-screen').style.display = 'none';
+        document.getElementById('schedule-screen').classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    function showInvitation() {
+        document.getElementById('schedule-screen').classList.remove('active');
+        document.getElementById('invitation-screen').style.display = 'flex';
+        window.scrollTo(0, 0);
+    }
+
+    // 편집 모드 토글
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        const btn = document.getElementById('btn-toggle-edit');
+        const screen = document.getElementById('schedule-screen');
+
+        if (isEditMode) {
+            btn.innerText = '✅ 완료';
+            btn.classList.add('edit-active');
+            screen.classList.add('is-edit-mode');
+        } else {
+            btn.innerText = '✏️ 편집';
+            btn.classList.remove('edit-active');
+            screen.classList.remove('is-edit-mode');
+        }
+    }
+
+    // 데이터 로드 (캐시 방지 적용)
+    async function loadScheduleFromSheet() {
+        const scheduleContent = document.getElementById('schedule-content');
+
+        if (!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('여기에_구글_웹앱_URL')) {
+            scheduleContent.innerHTML = `
+                <div class="loading-box" style="background:#fff3bf;">
+                    ⚠️ Apps Script URL이 설정되지 않았습니다.<br>
+                    <small style="font-size:15px; font-weight:normal;">코드 상단의 GAS_WEBAPP_URL을 설정해 주세요.</small>
+                </div>`;
+            return;
         }
 
-        function showInvitation() {
-            document.getElementById('schedule-screen').classList.remove('active');
-            document.getElementById('invitation-screen').style.display = 'flex';
-            window.scrollTo(0, 0);
-        }
+        try {
+            // URL 뒤 타임스탬프(?t=)를 붙여 브라우저 캐시 재사용 차단
+            const res = await fetch(`${GAS_WEBAPP_URL}?t=${Date.now()}`, { cache: 'no-store' });
+            if (!res.ok) throw new Error('네트워크 응답 오류');
 
-        // 편집 모드 토글
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const btn = document.getElementById('btn-toggle-edit');
-            const screen = document.getElementById('schedule-screen');
-
-            if (isEditMode) {
-                btn.innerText = '✅ 완료';
-                btn.classList.add('edit-active');
-                screen.classList.add('is-edit-mode');
-            } else {
-                btn.innerText = '✏️ 편집';
-                btn.classList.remove('edit-active');
-                screen.classList.remove('is-edit-mode');
-            }
-        }
-
-        // 데이터 로드
-        async function loadScheduleFromSheet() {
-            const scheduleContent = document.getElementById('schedule-content');
-
-            if (!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('여기에_구글_웹앱_URL')) {
-                scheduleContent.innerHTML = `
-                    <div class="loading-box" style="background:#fff3bf;">
-                        ⚠️ Apps Script URL이 설정되지 않았습니다.<br>
-                        <small style="font-size:15px; font-weight:normal;">코드 상단의 GAS_WEBAPP_URL을 설정해 주세요.</small>
-                    </div>`;
-                return;
-            }
-
-            scheduleContent.innerHTML = '<div class="loading-box">⏳ 일정을 불러오는 중입니다...</div>';
-
-            try {
-                const res = await fetch(GAS_WEBAPP_URL);
-                if (!res.ok) throw new Error('네트워크 응답 오류');
-
-                currentSchedules = await res.json();
-                renderSchedule(currentSchedules);
-            } catch (err) {
-                console.error("로드 실패:", err);
+            currentSchedules = await res.json();
+            renderSchedule(currentSchedules);
+        } catch (err) {
+            console.error("로드 실패:", err);
+            if (currentSchedules.length === 0) {
                 scheduleContent.innerHTML = `
                     <div class="loading-box" style="background:#ffe3e3;">
                         ❌ 일정을 불러오지 못했습니다.<br>
@@ -742,172 +742,186 @@
                     </div>`;
             }
         }
+    }
 
-        // 일정 목록 렌더링
-        function renderSchedule(items) {
-            let day1Html = '';
-            let day2Html = '';
+    // 일정 목록 렌더링
+    function renderSchedule(items) {
+        let day1Html = '';
+        let day2Html = '';
 
-            items.forEach(item => {
-                const itemHtml = `
-                    <li class="schedule-item" onclick="handleItemClick(${item.id})">
-                        <div class="item-left">
-                            <span class="time-badge">${item.time}</span>
-                            <span class="item-text">${item.text}</span>
-                        </div>
-                        <span class="manage-badge">수정/삭제 ✏️</span>
-                    </li>`;
+        items.forEach(item => {
+            const itemHtml = `
+                <li class="schedule-item" onclick="handleItemClick(${item.id})">
+                    <div class="item-left">
+                        <span class="time-badge">${item.time}</span>
+                        <span class="item-text">${item.text}</span>
+                    </div>
+                    <span class="manage-badge">수정/삭제 ✏️</span>
+                </li>`;
 
-                if (String(item.day).includes('2')) {
-                    day2Html += itemHtml;
-                } else {
-                    day1Html += itemHtml;
-                }
-            });
-
-            let fullHtml = '';
-            if (day1Html) {
-                fullHtml += `
-                    <div class="day-card">
-                        <div class="day-title-tag">1일차 ✨</div>
-                        <ul class="schedule-list">${day1Html}</ul>
-                    </div>`;
+            if (String(item.day).includes('2')) {
+                day2Html += itemHtml;
+            } else {
+                day1Html += itemHtml;
             }
-            if (day2Html) {
-                fullHtml += `
-                    <div class="day-card">
-                        <div class="day-title-tag day2">2일차 🌿</div>
-                        <ul class="schedule-list">${day2Html}</ul>
-                    </div>`;
+        });
+
+        let fullHtml = '';
+        if (day1Html) {
+            fullHtml += `
+                <div class="day-card">
+                    <div class="day-title-tag">1일차 ✨</div>
+                    <ul class="schedule-list">${day1Html}</ul>
+                </div>`;
+        }
+        if (day2Html) {
+            fullHtml += `
+                <div class="day-card">
+                    <div class="day-title-tag day2">2일차 🌿</div>
+                    <ul class="schedule-list">${day2Html}</ul>
+                </div>`;
+        }
+
+        if (!fullHtml) {
+            fullHtml = `
+                <div class="loading-box">
+                    🎈 등록된 일정이 없습니다.<br>
+                    <small style="font-size:16px; font-weight:normal;">하단 버튼을 눌러 새 일정을 추가해 보세요!</small>
+                </div>`;
+        }
+
+        document.getElementById('schedule-content').innerHTML = fullHtml;
+    }
+
+    // 아이템 클릭 시 처리
+    function handleItemClick(id) {
+        if (!isEditMode) return;
+        openEditModal(id);
+    }
+
+    // 추가 모달
+    function openAddModal() {
+        modalMode = 'add';
+        document.getElementById('modal-title').innerText = '➕ 새 일정 추가';
+        document.getElementById('modal-item-id').value = '';
+        document.getElementById('modal-day').value = '1일차';
+        document.getElementById('modal-time').value = '';
+        document.getElementById('modal-text').value = '';
+        document.getElementById('btn-modal-delete').style.display = 'none';
+        document.getElementById('schedule-modal').classList.add('active');
+    }
+
+    // 수정/삭제 모달
+    function openEditModal(id) {
+        const item = currentSchedules.find(s => s.id === id);
+        if (!item) return;
+
+        modalMode = 'edit';
+        document.getElementById('modal-title').innerText = '⚙️ 일정 수정 및 삭제';
+        document.getElementById('modal-item-id').value = item.id;
+        document.getElementById('modal-day').value = item.day;
+        document.getElementById('modal-time').value = item.time;
+        document.getElementById('modal-text').value = item.text;
+        document.getElementById('btn-modal-delete').style.display = 'inline-block';
+        document.getElementById('schedule-modal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('schedule-modal').classList.remove('active');
+    }
+
+    // 저장 (추가/수정) 처리
+    async function handleSubmit() {
+        const id = document.getElementById('modal-item-id').value;
+        const day = document.getElementById('modal-day').value;
+        const time = document.getElementById('modal-time').value.trim();
+        const text = document.getElementById('modal-text').value.trim();
+
+        if (!time || !text) {
+            alert('시간과 일정 내용을 입력해주세요!');
+            return;
+        }
+
+        closeModal();
+
+        if (modalMode === 'edit') {
+            // 화면 즉시 반영 (낙관적 업데이트)
+            const idx = currentSchedules.findIndex(s => s.id === Number(id));
+            if (idx !== -1) {
+                currentSchedules[idx] = { id: Number(id), day, time, text };
+                renderSchedule(currentSchedules);
             }
 
-            if (!fullHtml) {
-                fullHtml = `
-                    <div class="loading-box">
-                        🎈 등록된 일정이 없습니다.<br>
-                        <small style="font-size:16px; font-weight:normal;">하단 버튼을 눌러 새 일정을 추가해 보세요!</small>
-                    </div>`;
-            }
-
-            document.getElementById('schedule-content').innerHTML = fullHtml;
-        }
-
-        // 아이템 클릭 시 처리 (편집 모드일 때 팝업 오픈)
-        function handleItemClick(id) {
-            if (!isEditMode) return; // 편집 모드가 아닐 때는 반응 없음
-            openEditModal(id);
-        }
-
-        // 추가 모달
-        function openAddModal() {
-            modalMode = 'add';
-            document.getElementById('modal-title').innerText = '➕ 새 일정 추가';
-            document.getElementById('modal-item-id').value = '';
-            document.getElementById('modal-day').value = '1일차';
-            document.getElementById('modal-time').value = '';
-            document.getElementById('modal-text').value = '';
-            document.getElementById('btn-modal-delete').style.display = 'none'; // 추가 시 삭제버튼 숨김
-            document.getElementById('schedule-modal').classList.add('active');
-        }
-
-        // 수정/삭제 모달
-        function openEditModal(id) {
-            const item = currentSchedules.find(s => s.id === id);
-            if (!item) return;
-
-            modalMode = 'edit';
-            document.getElementById('modal-title').innerText = '⚙️ 일정 수정 및 삭제';
-            document.getElementById('modal-item-id').value = item.id;
-            document.getElementById('modal-day').value = item.day;
-            document.getElementById('modal-time').value = item.time;
-            document.getElementById('modal-text').value = item.text;
-            document.getElementById('btn-modal-delete').style.display = 'inline-block'; // 삭제버튼 표시
-            document.getElementById('schedule-modal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('schedule-modal').classList.remove('active');
-        }
-
-        // 저장 (추가/수정) 처리 - 낙관적 UI
-        function handleSubmit() {
-            const id = document.getElementById('modal-item-id').value;
-            const day = document.getElementById('modal-day').value;
-            const time = document.getElementById('modal-time').value.trim();
-            const text = document.getElementById('modal-text').value.trim();
-
-            if (!time || !text) {
-                alert('시간과 일정 내용을 입력해주세요!');
-                return;
-            }
-
-            closeModal();
-
-            if (modalMode === 'edit') {
-                // 1. 화면에 즉시 반영 (0ms)
-                const idx = currentSchedules.findIndex(s => s.id === Number(id));
-                if (idx !== -1) {
-                    currentSchedules[idx] = { id: Number(id), day, time, text };
-                    renderSchedule(currentSchedules);
-                }
-
-                // 2. 백그라운드 구글 시트 업데이트
-                fetch(GAS_WEBAPP_URL, {
+            try {
+                await fetch(GAS_WEBAPP_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'edit', id: id, day, time, text }),
                     redirect: 'follow'
-                }).catch(err => {
-                    console.error("수정 실패:", err);
-                    alert("구글 시트 저장 중 오류가 발생했습니다.");
-                    loadScheduleFromSheet();
                 });
+            } catch (err) {
+                console.error("수정 실패:", err);
+                alert("구글 시트 저장 중 오류가 발생했습니다.");
+                loadScheduleFromSheet();
+            }
 
-            } else {
-                // 추가 처리
-                const tempId = Date.now(); // 임시 ID
-                currentSchedules.push({ id: tempId, day, time, text });
-                renderSchedule(currentSchedules);
+        } else {
+            // 추가 처리: 화면 즉시 추가 후 백그라운드 전송
+            const tempId = Date.now();
+            currentSchedules.push({ id: tempId, day, time, text });
+            renderSchedule(currentSchedules);
 
-                fetch(GAS_WEBAPP_URL, {
+            try {
+                await fetch(GAS_WEBAPP_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'add', day, time, text }),
                     redirect: 'follow'
-                }).then(() => loadScheduleFromSheet()) // 정식 ID 동기화
-                .catch(err => {
-                    console.error("추가 실패:", err);
-                    alert("구글 시트 저장 중 오류가 발생했습니다.");
-                    loadScheduleFromSheet();
                 });
+
+                // 시트 저장 완료 후 0.5초 뒤 캐시 없이 목록 다시 동기화
+                setTimeout(() => {
+                    loadScheduleFromSheet();
+                }, 500);
+            } catch (err) {
+                console.error("추가 실패:", err);
+                alert("구글 시트 저장 중 오류가 발생했습니다.");
+                loadScheduleFromSheet();
             }
         }
+    }
 
-        // 삭제 처리 - 낙관적 UI
-        function handleDelete() {
-            const id = document.getElementById('modal-item-id').value;
-            if (!id) return;
+    // 삭제 처리
+    async function handleDelete() {
+        const id = document.getElementById('modal-item-id').value;
+        if (!id) return;
 
-            if (!confirm('이 일정을 삭제하시겠습니까?')) return;
+        if (!confirm('이 일정을 삭제하시겠습니까?')) return;
 
-            closeModal();
+        closeModal();
 
-            // 1. 화면에서 즉시 삭제 (0ms)
-            currentSchedules = currentSchedules.filter(s => s.id !== Number(id));
-            renderSchedule(currentSchedules);
+        // 화면에서 즉시 삭제
+        currentSchedules = currentSchedules.filter(s => s.id !== Number(id));
+        renderSchedule(currentSchedules);
 
-            // 2. 백그라운드 구글 시트 삭제
-            fetch(GAS_WEBAPP_URL, {
+        try {
+            await fetch(GAS_WEBAPP_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'delete', id: id }),
                 redirect: 'follow'
-            }).catch(err => {
-                console.error("삭제 실패:", err);
-                alert("구글 시트 삭제 반영에 실패했습니다.");
-                loadScheduleFromSheet();
             });
+
+            // 삭제 후 0.5초 뒤 행 번호 동기화
+            setTimeout(() => {
+                loadScheduleFromSheet();
+            }, 500);
+        } catch (err) {
+            console.error("삭제 실패:", err);
+            alert("구글 시트 삭제 반영에 실패했습니다.");
+            loadScheduleFromSheet();
         }
-    </script>
+    }
+</script>
 </body>
 </html>
