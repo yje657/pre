@@ -296,6 +296,11 @@
             color: var(--black);
         }
 
+        /* 편집 모드 시 초대장 버튼 숨김 */
+        .is-edit-mode #btn-back-invitation {
+            display: none;
+        }
+
         #schedule-content {
             flex: 1;
             display: flex;
@@ -376,12 +381,45 @@
             font-weight: 700;
             gap: 8px;
             box-shadow: 3px 3px 0px var(--black);
-            transition: all 0.2s ease;
+            transition: transform 0.15s ease, background-color 0.15s ease;
+            position: relative;
         }
 
         .is-edit-mode .schedule-item {
             border-color: var(--pink-accent);
             background-color: #fff0f5;
+        }
+
+        /* 드래그 중 및 드래그 위치 표시 스타일 */
+        .schedule-item.dragging {
+            opacity: 0.4;
+            background-color: #ffe0b2;
+            border-style: dashed;
+        }
+
+        .schedule-item.drag-over {
+            border-color: var(--blue-accent);
+            background-color: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        /* 드래그 핸들 버턴 */
+        .drag-handle {
+            display: none;
+            font-size: 20px;
+            color: var(--black);
+            cursor: grab;
+            padding: 0 4px;
+            user-select: none;
+            touch-action: none;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        .is-edit-mode .drag-handle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .item-left {
@@ -423,10 +461,11 @@
             background-color: #ffffff;
             border: 2px solid var(--black);
             border-radius: 6px;
-            padding: 2px 6px;
-            font-size: 16px;
+            padding: 3px 8px;
+            font-size: 15px;
             cursor: pointer;
             box-shadow: 2px 2px 0px var(--black);
+            white-space: nowrap;
         }
 
         .btn-control:active {
@@ -635,7 +674,7 @@
                 <div class="schedule-header-title">🗺️ 청주 여행 일정표</div>
                 <div class="nav-btns">
                     <button id="btn-toggle-edit" class="btn-nav-action" onclick="toggleEditMode()">✏️ 편집</button>
-                    <button class="btn-nav-action" onclick="showInvitation()">← 초대장</button>
+                    <button id="btn-back-invitation" class="btn-nav-action" onclick="showInvitation()">← 초대장</button>
                 </div>
             </div>
 
@@ -687,12 +726,16 @@
     </div>
 
     <script>
-        // ⚠️ 구글 앱스 스크립트 웹앱 URL을 입력해 주세요.
+        // ⚠️ 본인의 구글 앱스 스크립트 웹앱 URL을 입력해 주세요.
         const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwS799Ew-6Y2qmtQaLGiZCqIsVP7agZ41dpngIDiXNAwKoWmPL8GKFHxTNvfz5z065c/exec';
 
         let currentSchedules = [];
         let isEditMode = false;
         let modalMode = 'add';
+
+        // 드래그 상태 관련 변수
+        let activeDragIndex = null;
+        let currentTouchItem = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             loadScheduleFromSheet();
@@ -763,14 +806,13 @@
 
             items.forEach((item, index) => {
                 const itemHtml = `
-                    <li class="schedule-item">
+                    <li class="schedule-item" data-index="${index}" draggable="true">
+                        <div class="drag-handle">☰</div>
                         <div class="item-left">
                             <span class="time-badge">${item.time}</span>
                             <span class="item-text">${item.text}</span>
                         </div>
                         <div class="item-controls">
-                            <button class="btn-control" onclick="moveItem(${index}, 'up')">⬆️</button>
-                            <button class="btn-control" onclick="moveItem(${index}, 'down')">⬇️</button>
                             <button class="btn-control edit-btn" onclick="openEditModal(${item.id})">⚙️ 수정/삭제</button>
                         </div>
                     </li>`;
@@ -807,29 +849,114 @@
             }
 
             document.getElementById('schedule-content').innerHTML = fullHtml;
+
+            // 이벤트 바인딩 (드래그앤드롭 및 터치)
+            bindDragAndDropEvents();
         }
 
-        // 위/아래 순서 이동 처리
-        async function moveItem(index, direction) {
-            const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        /* PC 마우스 & 모바일 터치 드래그앤드롭 바인딩 */
+        function bindDragAndDropEvents() {
+            const items = document.querySelectorAll('.schedule-item');
 
-            if (targetIndex < 0 || targetIndex >= currentSchedules.length) return;
+            items.forEach(item => {
+                const index = parseInt(item.dataset.index);
 
-            // 같은 일차 내에서만 이동할 수 있도록 제한
-            if (currentSchedules[index].day !== currentSchedules[targetIndex].day) {
+                // --- PC 마우스 드래그 ---
+                item.addEventListener('dragstart', (e) => {
+                    if (!isEditMode) return;
+                    activeDragIndex = index;
+                    currentTouchItem = item;
+                    item.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                item.addEventListener('dragover', (e) => {
+                    if (!isEditMode) return;
+                    e.preventDefault();
+                    item.classList.add('drag-over');
+                });
+
+                item.addEventListener('dragleave', () => {
+                    item.classList.remove('drag-over');
+                });
+
+                item.addEventListener('drop', (e) => {
+                    if (!isEditMode) return;
+                    e.preventDefault();
+                    item.classList.remove('drag-over');
+                    const targetIndex = parseInt(item.dataset.index);
+                    
+                    if (activeDragIndex !== null && activeDragIndex !== targetIndex) {
+                        executeReorder(activeDragIndex, targetIndex);
+                    }
+                });
+
+                item.addEventListener('dragend', () => {
+                    item.classList.remove('dragging');
+                    document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('drag-over'));
+                });
+
+                // --- 모바일 터치 핸들 드래그 ---
+                const handle = item.querySelector('.drag-handle');
+                if (handle) {
+                    handle.addEventListener('touchstart', (e) => {
+                        if (!isEditMode) return;
+                        activeDragIndex = index;
+                        currentTouchItem = item;
+                        item.classList.add('dragging');
+                    }, { passive: true });
+
+                    handle.addEventListener('touchmove', (e) => {
+                        if (!isEditMode || activeDragIndex === null) return;
+                        e.preventDefault(); // 스크롤 방지
+                        const touch = e.touches[0];
+                        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+                        const targetItem = targetEl ? targetEl.closest('.schedule-item') : null;
+
+                        document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('drag-over'));
+                        if (targetItem && targetItem !== currentTouchItem) {
+                            targetItem.classList.add('drag-over');
+                        }
+                    }, { passive: false });
+
+                    handle.addEventListener('touchend', (e) => {
+                        if (!isEditMode || activeDragIndex === null) return;
+                        const touch = e.changedTouches[0];
+                        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+                        const targetItem = targetEl ? targetEl.closest('.schedule-item') : null;
+
+                        if (currentTouchItem) currentTouchItem.classList.remove('dragging');
+                        document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('drag-over'));
+
+                        if (targetItem) {
+                            const targetIndex = parseInt(targetItem.dataset.index);
+                            if (activeDragIndex !== targetIndex) {
+                                executeReorder(activeDragIndex, targetIndex);
+                            }
+                        }
+
+                        activeDragIndex = null;
+                        currentTouchItem = null;
+                    }, { passive: false });
+                }
+            });
+        }
+
+        /* 순서 교체 및 구글 시트 저장 */
+        async function executeReorder(fromIdx, toIdx) {
+            if (currentSchedules[fromIdx].day !== currentSchedules[toIdx].day) {
                 alert('같은 일차(1일차/2일차) 내에서만 순서를 변경할 수 있습니다.');
                 return;
             }
 
-            // 위치 변경
-            const temp = currentSchedules[index];
-            currentSchedules[index] = currentSchedules[targetIndex];
-            currentSchedules[targetIndex] = temp;
+            // 배열 요소 이동
+            const [movedItem] = currentSchedules.splice(fromIdx, 1);
+            currentSchedules.splice(toIdx, 0, movedItem);
 
-            // 화면 즉시 업데이트
+            // 화면 반영
             renderSchedule(currentSchedules);
 
-            // 시트에 변경된 전체 순서 반영
+            // 구글 시트 저장
             try {
                 await fetch(GAS_WEBAPP_URL, {
                     method: 'POST',
@@ -837,12 +964,8 @@
                     body: JSON.stringify({ action: 'reorder', schedules: currentSchedules }),
                     redirect: 'follow'
                 });
-                
-                setTimeout(() => {
-                    loadScheduleFromSheet();
-                }, 500);
             } catch (err) {
-                console.error("순서 변경 저장 실패:", err);
+                console.error("순서 저장 실패:", err);
             }
         }
 
