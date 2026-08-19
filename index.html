@@ -241,7 +241,7 @@
         /* 일정 화면 스타일 */
         #schedule-screen {
             display: none;
-            padding: 18px 8px;
+            padding: 18px 8px 24px 8px;
             background-color: var(--bg-yellow);
             flex-direction: column;
             width: 100%;
@@ -255,7 +255,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             gap: 10px;
         }
 
@@ -282,74 +282,6 @@
             cursor: pointer;
             box-shadow: 3px 3px 0px var(--black);
             white-space: nowrap;
-        }
-
-        /* 일정 추가 입력폼 */
-        .add-form-card {
-            background-color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 14px;
-            padding: 14px 12px;
-            margin-bottom: 18px;
-            box-shadow: 5px 5px 0px var(--black);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-title {
-            font-size: clamp(20px, 5.5vw, 24px);
-            font-weight: 700;
-            color: var(--black);
-            margin-bottom: 2px;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .form-control {
-            border: 2.5px solid var(--black);
-            border-radius: 8px;
-            padding: 8px;
-            font-size: clamp(18px, 5vw, 22px);
-            font-weight: 700;
-            outline: none;
-            background-color: #fff;
-        }
-
-        .form-control:focus {
-            background-color: #f0f8ff;
-        }
-
-        select.form-control {
-            width: 95px;
-            flex-shrink: 0;
-            cursor: pointer;
-        }
-
-        input.form-control {
-            width: 100%;
-        }
-
-        .btn-add {
-            background-color: var(--green-accent);
-            color: var(--black);
-            border: 3px solid var(--black);
-            border-radius: 10px;
-            padding: 10px;
-            font-size: clamp(20px, 5.5vw, 24px);
-            font-weight: 700;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--black);
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-
-        .btn-add:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px var(--black);
         }
 
         .loading-box {
@@ -415,14 +347,23 @@
         .schedule-item {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             background-color: #f0f4ff;
             border: 3px solid var(--black);
             border-radius: 10px;
-            padding: 10px 10px;
-            font-size: clamp(21px, 5.8vw, 25px);
+            padding: 10px;
+            font-size: clamp(20px, 5.5vw, 24px);
             font-weight: 700;
             gap: 8px;
             box-shadow: 3px 3px 0px var(--black);
+        }
+
+        .item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
         }
 
         .time-badge {
@@ -431,15 +372,58 @@
             padding: 2px 8px;
             border: 2px solid var(--black);
             border-radius: 8px;
-            font-size: clamp(17px, 4.5vw, 20px);
+            font-size: clamp(16px, 4.2vw, 19px);
             white-space: nowrap;
             flex-shrink: 0;
         }
 
         .item-text {
             color: var(--black);
-            flex: 1;
             word-break: keep-all;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .btn-action {
+            background: none;
+            border: 2px solid var(--black);
+            border-radius: 6px;
+            padding: 3px 6px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: var(--white);
+            box-shadow: 2px 2px 0px var(--black);
+            transition: transform 0.05s;
+        }
+
+        .btn-action:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px var(--black);
+        }
+
+        .btn-add-schedule {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--green-accent);
+            color: var(--black);
+            border: 3.5px solid var(--black);
+            border-radius: 16px;
+            font-size: clamp(22px, 6vw, 26px);
+            font-weight: 700;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--black);
+            margin-bottom: 18px;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn-add-schedule:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--black);
         }
 
         .footer-doodle {
@@ -452,7 +436,123 @@
             padding: 10px;
             border-radius: 12px;
             box-shadow: 4px 4px 0px var(--black);
-            margin-top: 4px;
+        }
+
+        /* 팝업 모달 스타일 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 380px;
+            background-color: var(--white);
+            border: 4px solid var(--black);
+            border-radius: 18px;
+            padding: 18px 16px;
+            box-shadow: 6px 8px 0px var(--black);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            animation: popIn 0.2s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--black);
+            padding-bottom: 8px;
+        }
+
+        .modal-title {
+            font-size: clamp(22px, 6vw, 26px);
+            font-weight: 700;
+            color: var(--blue-accent);
+            font-family: 'Jua', sans-serif;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--black);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group label {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        .form-control {
+            border: 2.5px solid var(--black);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: clamp(18px, 5vw, 21px);
+            font-weight: 700;
+            outline: none;
+            background-color: #fff;
+        }
+
+        .modal-btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-modal-submit {
+            flex: 1;
+            padding: 10px;
+            background-color: var(--pink-accent);
+            color: var(--white);
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            font-size: clamp(20px, 5.5vw, 24px);
+            font-weight: 700;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--black);
+        }
+
+        .btn-modal-cancel {
+            padding: 10px 16px;
+            background-color: #ddd;
+            color: var(--black);
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            font-size: clamp(18px, 5vw, 22px);
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--black);
         }
     </style>
 </head>
@@ -501,24 +601,13 @@
                 <button class="btn-back" onclick="showInvitation()">← 초대장</button>
             </div>
 
-            <!-- 일정 직접 추가 Form -->
-            <div class="add-form-card">
-                <div class="form-title">✏️ 새 일정 추가하기</div>
-                <div class="form-row">
-                    <select id="input-day" class="form-control">
-                        <option value="1일차">1일차</option>
-                        <option value="2일차">2일차</option>
-                    </select>
-                    <input type="text" id="input-time" class="form-control" placeholder="시간 (예: 점심, 14:00)">
-                </div>
-                <input type="text" id="input-text" class="form-control" placeholder="일정 내용을 입력하세요">
-                <button onclick="addSchedule()" id="btn-add" class="btn-add">➕ 일정 등록하기</button>
-            </div>
-
             <!-- 일정 목록이 뿌려지는 곳 -->
             <div id="schedule-content">
                 <div class="loading-box">⏳ 일정을 불러오는 중입니다...</div>
             </div>
+
+            <!-- 하단 일정 추가 버튼 -->
+            <button class="btn-add-schedule" onclick="openAddModal()">➕ 새 일정 추가하기</button>
 
             <div class="footer-doodle">
                 🎉 재미 1000% 보장! 준비완료! 🎉
@@ -526,9 +615,47 @@
         </div>
     </div>
 
+    <!-- 팝업 모달 -->
+    <div id="schedule-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="modal-title" class="modal-title">✏️ 일정 추가하기</div>
+                <button class="btn-close" onclick="closeModal()">✖</button>
+            </div>
+            
+            <input type="hidden" id="modal-item-id">
+
+            <div class="form-group">
+                <label>일자</label>
+                <select id="modal-day" class="form-control">
+                    <option value="1일차">1일차</option>
+                    <option value="2일차">2일차</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>시간</label>
+                <input type="text" id="modal-time" class="form-control" placeholder="예: 점심, 14:00">
+            </div>
+
+            <div class="form-group">
+                <label>일정 내용</label>
+                <input type="text" id="modal-text" class="form-control" placeholder="일정 내용을 입력하세요">
+            </div>
+
+            <div class="modal-btn-group">
+                <button class="btn-modal-cancel" onclick="closeModal()">취소</button>
+                <button id="btn-modal-submit" class="btn-modal-submit" onclick="submitScheduleModal()">저장하기</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ⚠️ 구글 앱스 스크립트 웹앱 URL을 아래에 입력하세요.
+        // ⚠️ 구글 앱스 스크립트 웹앱 URL을 입력해 주세요.
         const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxsmQA43doKenhtEnQ_9n7R3mVCB9-OUgckdzN8-0Nps7ec9lModpindRPbSdZZHlxe/exec';
+
+        let currentSchedules = [];
+        let modalMode = 'add'; // 'add' 또는 'edit'
 
         document.addEventListener('DOMContentLoaded', () => {
             loadScheduleFromSheet();
@@ -546,7 +673,7 @@
             window.scrollTo(0, 0);
         }
 
-        // 구글 시트에서 일정 불러오기 (Read)
+        // 구글 시트 데이터 로드
         async function loadScheduleFromSheet() {
             const scheduleContent = document.getElementById('schedule-content');
 
@@ -565,18 +692,18 @@
                 const res = await fetch(GAS_WEBAPP_URL);
                 if (!res.ok) throw new Error('네트워크 응답 오류');
 
-                const data = await res.json(); // [[일자, 시간, 내용], ...]
+                currentSchedules = await res.json(); // [{id, day, time, text}, ...]
 
-                if (!data || data.length === 0) {
+                if (!currentSchedules || currentSchedules.length === 0) {
                     scheduleContent.innerHTML = `
                         <div class="loading-box">
                             🎈 아직 등록된 일정이 없습니다.<br>
-                            <small style="font-size:16px; font-weight:normal;">위 입력창에서 일정을 직접 등록해 보세요!</small>
+                            <small style="font-size:16px; font-weight:normal;">하단 버튼을 눌러 일정을 직접 추가해 보세요!</small>
                         </div>`;
                     return;
                 }
 
-                renderSchedule(data);
+                renderSchedule(currentSchedules);
             } catch (err) {
                 console.error("로드 실패:", err);
                 scheduleContent.innerHTML = `
@@ -587,61 +714,25 @@
             }
         }
 
-        // 화면에서 구글 시트로 일정 추가하기 (Write)
-        async function addSchedule() {
-            const day = document.getElementById('input-day').value;
-            const time = document.getElementById('input-time').value.trim();
-            const text = document.getElementById('input-text').value.trim();
-
-            if (!time || !text) {
-                alert('시간과 일정 내용을 모두 입력해주세요!');
-                return;
-            }
-
-            const btn = document.getElementById('btn-add');
-            btn.disabled = true;
-            btn.innerText = '⏳ 저장 중...';
-
-            try {
-                await fetch(GAS_WEBAPP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ day, time, text }),
-                    redirect: 'follow'
-                });
-
-                // 입력 폼 초기화
-                document.getElementById('input-time').value = '';
-                document.getElementById('input-text').value = '';
-
-                // 데이터 재로드
-                await loadScheduleFromSheet();
-            } catch (err) {
-                console.error("저장 오류:", err);
-                alert('일정 저장에 실패했습니다.');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = '➕ 일정 등록하기';
-            }
-        }
-
-        // 불러온 데이터 배열을 HTML 카드 형태로 렌더링
-        function renderSchedule(rows) {
+        // 목록 렌더링
+        function renderSchedule(items) {
             let day1Html = '';
             let day2Html = '';
 
-            rows.forEach(row => {
-                const dayCategory = row[0] || '1일차';
-                const time = row[1] || '';
-                const text = row[2] || '';
-
+            items.forEach(item => {
                 const itemHtml = `
                     <li class="schedule-item">
-                        <span class="time-badge">${time}</span>
-                        <span class="item-text">${text}</span>
+                        <div class="item-left">
+                            <span class="time-badge">${item.time}</span>
+                            <span class="item-text">${item.text}</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn-action" onclick="openEditModal(${item.id})" title="수정">✏️</button>
+                            <button class="btn-action" onclick="deleteSchedule(${item.id})" title="삭제">🗑️</button>
+                        </div>
                     </li>`;
 
-                if (String(dayCategory).includes('2')) {
+                if (String(item.day).includes('2')) {
                     day2Html += itemHtml;
                 } else {
                     day1Html += itemHtml;
@@ -668,11 +759,104 @@
                 fullHtml = `
                     <div class="loading-box">
                         🎈 아직 등록된 일정이 없습니다.<br>
-                        <small style="font-size:16px; font-weight:normal;">위 입력창에서 일정을 직접 등록해 보세요!</small>
+                        <small style="font-size:16px; font-weight:normal;">하단 버튼을 눌러 일정을 직접 추가해 보세요!</small>
                     </div>`;
             }
 
             document.getElementById('schedule-content').innerHTML = fullHtml;
+        }
+
+        // 추가 모달 열기
+        function openAddModal() {
+            modalMode = 'add';
+            document.getElementById('modal-title').innerText = '➕ 새 일정 추가';
+            document.getElementById('modal-item-id').value = '';
+            document.getElementById('modal-day').value = '1일차';
+            document.getElementById('modal-time').value = '';
+            document.getElementById('modal-text').value = '';
+            document.getElementById('schedule-modal').classList.add('active');
+        }
+
+        // 수정 모달 열기
+        function openEditModal(id) {
+            const item = currentSchedules.find(s => s.id === id);
+            if (!item) return;
+
+            modalMode = 'edit';
+            document.getElementById('modal-title').innerText = '✏️ 일정 수정하기';
+            document.getElementById('modal-item-id').value = item.id;
+            document.getElementById('modal-day').value = item.day;
+            document.getElementById('modal-time').value = item.time;
+            document.getElementById('modal-text').value = item.text;
+            document.getElementById('schedule-modal').classList.add('active');
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('schedule-modal').classList.remove('active');
+        }
+
+        // 추가 및 수정 저장 핸들러
+        async function submitScheduleModal() {
+            const id = document.getElementById('modal-item-id').value;
+            const day = document.getElementById('modal-day').value;
+            const time = document.getElementById('modal-time').value.trim();
+            const text = document.getElementById('modal-text').value.trim();
+
+            if (!time || !text) {
+                alert('시간과 일정 내용을 모두 입력해주세요!');
+                return;
+            }
+
+            const btn = document.getElementById('btn-modal-submit');
+            btn.disabled = true;
+            btn.innerText = '저장 중...';
+
+            try {
+                await fetch(GAS_WEBAPP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: modalMode,
+                        id: id,
+                        day: day,
+                        time: time,
+                        text: text
+                    }),
+                    redirect: 'follow'
+                });
+
+                closeModal();
+                await loadScheduleFromSheet();
+            } catch (err) {
+                console.error("저장 오류:", err);
+                alert('일정 저장에 실패했습니다.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '저장하기';
+            }
+        }
+
+        // 삭제 처리
+        async function deleteSchedule(id) {
+            if (!confirm('이 일정을 삭제하시겠습니까?')) return;
+
+            try {
+                await fetch(GAS_WEBAPP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        id: id
+                    }),
+                    redirect: 'follow'
+                });
+
+                await loadScheduleFromSheet();
+            } catch (err) {
+                console.error("삭제 오류:", err);
+                alert('일정 삭제에 실패했습니다.');
+            }
         }
     </script>
 </body>
