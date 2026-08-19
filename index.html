@@ -8,581 +8,588 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Single+Day&display=swap" rel="stylesheet">
     <style>
-    :root {
-        --bg-yellow: #ffe600;
-        --pink-accent: #ff0055;
-        --blue-accent: #0022ff;
-        --green-accent: #00e676;
-        --black: #000000;
-        --white: #ffffff;
-    }
+        :root {
+            --bg-yellow: #ffe600;
+            --pink-accent: #ff0055;
+            --blue-accent: #0022ff;
+            --green-accent: #00e676;
+            --black: #000000;
+            --white: #ffffff;
+        }
 
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-        font-family: 'Gaegu', cursive, sans-serif;
-        -webkit-tap-highlight-color: transparent;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Gaegu', cursive, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    html, body {
-        width: 100%;
-        min-height: 100vh;
-        background-color: #1a1a2e;
-        background-image: radial-gradient(#ff007f 10%, transparent 11%), radial-gradient(#00d2ff 10%, transparent 11%);
-        background-size: 24px 24px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 4px;
-    }
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background-color: #1a1a2e;
+            background-image: radial-gradient(#ff007f 10%, transparent 11%), radial-gradient(#00d2ff 10%, transparent 11%);
+            background-size: 24px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px;
+        }
 
-    .app-container {
-        width: 100%;
-        max-width: 440px;
-        background-color: var(--bg-yellow);
-        border: 4px solid var(--black);
-        border-radius: 20px;
-        box-shadow: 6px 8px 0px var(--black);
-        overflow: hidden;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        margin: auto;
-    }
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            background-color: var(--bg-yellow);
+            border: 4px solid var(--black);
+            border-radius: 20px;
+            box-shadow: 6px 8px 0px var(--black);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            margin: auto;
+        }
 
-    .sticker {
-        position: absolute;
-        z-index: 10;
-        font-size: clamp(24px, 7vw, 32px);
-        filter: drop-shadow(2px 2px 0px #000);
-        user-select: none;
-        pointer-events: none;
-        animation: bounce 2.5s infinite ease-in-out;
-    }
+        .sticker {
+            position: absolute;
+            z-index: 10;
+            font-size: clamp(24px, 7vw, 32px);
+            filter: drop-shadow(2px 2px 0px #000);
+            user-select: none;
+            pointer-events: none;
+            animation: bounce 2.5s infinite ease-in-out;
+        }
 
-    .sticker-1 { top: 12px; right: 12px; transform: rotate(15deg); }
-    .sticker-2 { top: 38%; left: -4px; transform: rotate(-20deg); }
-    .sticker-3 { bottom: 90px; right: -2px; transform: rotate(25deg); }
+        .sticker-1 { top: 12px; right: 12px; transform: rotate(15deg); }
+        .sticker-2 { top: 38%; left: -4px; transform: rotate(-20deg); }
+        .sticker-3 { bottom: 90px; right: -2px; transform: rotate(25deg); }
 
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0) rotate(10deg); }
-        50% { transform: translateY(-6px) rotate(-5deg); }
-    }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(10deg); }
+            50% { transform: translateY(-6px) rotate(-5deg); }
+        }
 
-    /* 초대장 화면 스타일 */
-    #invitation-screen {
-        padding: 20px 8px 0 8px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-    }
+        /* 초대장 화면 */
+        #invitation-screen {
+            padding: 20px 8px 0 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
 
-    .header-section {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin: 10px 0 14px 0;
-    }
+        .header-section {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 10px 0 14px 0;
+        }
 
-    .red-badge {
-        background-color: var(--pink-accent);
-        color: var(--white);
-        padding: 10px 14px;
-        border-radius: 50% 40% 60% 45% / 40% 60% 40% 55%;
-        border: 3.5px solid var(--black);
-        font-size: clamp(20px, 5.5vw, 26px);
-        font-weight: 700;
-        line-height: 1.1;
-        text-align: center;
-        transform: rotate(-10deg);
-        box-shadow: 3px 3px 0px var(--black);
-        flex-shrink: 0;
-    }
+        .red-badge {
+            background-color: var(--pink-accent);
+            color: var(--white);
+            padding: 10px 14px;
+            border-radius: 50% 40% 60% 45% / 40% 60% 40% 55%;
+            border: 3.5px solid var(--black);
+            font-size: clamp(20px, 5.5vw, 26px);
+            font-weight: 700;
+            line-height: 1.1;
+            text-align: center;
+            transform: rotate(-10deg);
+            box-shadow: 3px 3px 0px var(--black);
+            flex-shrink: 0;
+        }
 
-    .main-title {
-        font-size: clamp(48px, 13vw, 64px);
-        font-weight: 700;
-        color: var(--blue-accent);
-        text-shadow: 2px 2px 0px var(--white), 4px 4px 0px var(--black);
-        letter-spacing: 2px;
-        line-height: 1;
-        transform: rotate(1deg);
-        font-family: 'Single Day', cursive;
-    }
+        .main-title {
+            font-size: clamp(48px, 13vw, 64px);
+            font-weight: 700;
+            color: var(--blue-accent);
+            text-shadow: 2px 2px 0px var(--white), 4px 4px 0px var(--black);
+            letter-spacing: 2px;
+            line-height: 1;
+            transform: rotate(1deg);
+            font-family: 'Single Day', cursive;
+        }
 
-    .sub-tag-box {
-        background-color: var(--green-accent);
-        border: 3.5px solid var(--black);
-        padding: 6px 16px;
-        border-radius: 24px;
-        box-shadow: 3.5px 3.5px 0px var(--black);
-        margin: 4px 0 16px 0;
-        transform: rotate(-1deg);
-        text-align: center;
-        max-width: 98%;
-    }
+        .sub-tag-box {
+            background-color: var(--green-accent);
+            border: 3.5px solid var(--black);
+            padding: 6px 16px;
+            border-radius: 24px;
+            box-shadow: 3.5px 3.5px 0px var(--black);
+            margin: 4px 0 16px 0;
+            transform: rotate(-1deg);
+            text-align: center;
+            max-width: 98%;
+        }
 
-    .sub-tag {
-        font-size: clamp(20px, 5.5vw, 25px);
-        font-weight: 700;
-        color: var(--black);
-        white-space: nowrap;
-    }
+        .sub-tag {
+            font-size: clamp(20px, 5.5vw, 25px);
+            font-weight: 700;
+            color: var(--black);
+            white-space: nowrap;
+        }
 
-    .paper-box {
-        width: 100%;
-        background-color: var(--white);
-        border: 3.5px solid var(--black);
-        border-radius: 14px;
-        padding: 18px 12px;
-        box-shadow: 5px 5px 0px var(--black);
-        margin-bottom: 16px;
-        position: relative;
-    }
+        .paper-box {
+            width: 100%;
+            background-color: var(--white);
+            border: 3.5px solid var(--black);
+            border-radius: 14px;
+            padding: 18px 12px;
+            box-shadow: 5px 5px 0px var(--black);
+            margin-bottom: 16px;
+            position: relative;
+        }
 
-    .tape-top {
-        position: absolute;
-        top: -12px;
-        left: 50%;
-        transform: translateX(-50%) rotate(-2deg);
-        width: 110px;
-        height: 24px;
-        background-color: rgba(255, 0, 128, 0.75);
-        border: 2px solid var(--black);
-    }
+        .tape-top {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 110px;
+            height: 24px;
+            background-color: rgba(255, 0, 128, 0.75);
+            border: 2px solid var(--black);
+        }
 
-    .info-line {
-        font-size: clamp(22px, 6vw, 27px);
-        font-weight: 700;
-        color: var(--black);
-        margin-bottom: 12px;
-        line-height: 1.35;
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
+        .info-line {
+            font-size: clamp(22px, 6vw, 27px);
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 12px;
+            line-height: 1.35;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
 
-    .info-line:last-child {
-        margin-bottom: 0;
-    }
+        .info-line:last-child {
+            margin-bottom: 0;
+        }
 
-    .info-line span.highlight {
-        background-color: #a6f4ff;
-        padding: 2px 8px;
-        border-radius: 8px;
-        border: 2px solid var(--black);
-    }
+        .info-line span.highlight {
+            background-color: #a6f4ff;
+            padding: 2px 8px;
+            border-radius: 8px;
+            border: 2px solid var(--black);
+        }
 
-    .info-line span.highlight-pink {
-        background-color: #ffb3d9;
-        padding: 2px 8px;
-        border-radius: 8px;
-        border: 2px solid var(--black);
-    }
+        .info-line span.highlight-pink {
+            background-color: #ffb3d9;
+            padding: 2px 8px;
+            border-radius: 8px;
+            border: 2px solid var(--black);
+        }
 
-    .recruitment-banner {
-        width: 100%;
-        text-align: center;
-        font-size: clamp(22px, 6vw, 27px);
-        font-weight: 700;
-        color: var(--pink-accent);
-        background-color: var(--white);
-        border: 3.5px solid var(--black);
-        border-radius: 12px;
-        padding: 6px;
-        margin-bottom: 16px;
-        box-shadow: 4px 4px 0px var(--black);
-        letter-spacing: 1px;
-    }
+        .recruitment-banner {
+            width: 100%;
+            text-align: center;
+            font-size: clamp(22px, 6vw, 27px);
+            font-weight: 700;
+            color: var(--pink-accent);
+            background-color: var(--white);
+            border: 3.5px solid var(--black);
+            border-radius: 12px;
+            padding: 6px;
+            margin-bottom: 16px;
+            box-shadow: 4px 4px 0px var(--black);
+            letter-spacing: 1px;
+        }
 
-    .bottom-action-bar {
-        width: calc(100% + 16px);
-        margin-left: -8px;
-        margin-right: -8px;
-        background-color: var(--blue-accent);
-        border-top: 4px solid var(--black);
-        padding: 16px 12px;
-        text-align: center;
-        position: relative;
-        z-index: 20;
-    }
+        .bottom-action-bar {
+            width: calc(100% + 16px);
+            margin-left: -8px;
+            margin-right: -8px;
+            background-color: var(--blue-accent);
+            border-top: 4px solid var(--black);
+            padding: 16px 12px;
+            text-align: center;
+            position: relative;
+            z-index: 20;
+        }
 
-    .bottom-bar-text {
-        font-size: clamp(17px, 4.8vw, 21px);
-        font-weight: 700;
-        margin-bottom: 10px;
-        color: var(--white);
-        text-shadow: 1.5px 1.5px 0px var(--black);
-    }
+        .bottom-bar-text {
+            font-size: clamp(17px, 4.8vw, 21px);
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--white);
+            text-shadow: 1.5px 1.5px 0px var(--black);
+        }
 
-    .btn-enter {
-        width: 100%;
-        padding: 14px 18px;
-        background-color: var(--pink-accent);
-        color: var(--white);
-        border: 3.5px solid var(--black);
-        border-radius: 35px;
-        font-size: clamp(24px, 6.5vw, 30px);
-        font-weight: 700;
-        font-family: 'Jua', sans-serif;
-        cursor: pointer;
-        box-shadow: 0px 6px 0px var(--black);
-        transition: all 0.1s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
+        .btn-enter {
+            width: 100%;
+            padding: 14px 18px;
+            background-color: var(--pink-accent);
+            color: var(--white);
+            border: 3.5px solid var(--black);
+            border-radius: 35px;
+            font-size: clamp(24px, 6.5vw, 30px);
+            font-weight: 700;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            box-shadow: 0px 6px 0px var(--black);
+            transition: all 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
 
-    /* 일정 화면 스타일 (초대장 페이지와 최소 높이 동기화) */
-    #schedule-screen {
-        display: none;
-        padding: 18px 8px 24px 8px;
-        background-color: var(--bg-yellow);
-        flex-direction: column;
-        width: 100%;
-        min-height: 530px; /* 일정이 없을 때도 최소 높이 유지 */
-    }
+        /* 일정 화면 */
+        #schedule-screen {
+            display: none;
+            padding: 18px 8px 24px 8px;
+            background-color: var(--bg-yellow);
+            flex-direction: column;
+            width: 100%;
+            min-height: 530px;
+        }
 
-    #schedule-screen.active {
-        display: flex;
-    }
+        #schedule-screen.active {
+            display: flex;
+        }
 
-    .schedule-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 14px;
-        gap: 6px;
-    }
+        .schedule-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 6px;
+        }
 
-    .schedule-header-title {
-        font-size: clamp(22px, 6vw, 28px);
-        font-weight: 700;
-        color: var(--blue-accent);
-        background-color: var(--white);
-        padding: 6px 10px;
-        border: 3.5px solid var(--black);
-        border-radius: 12px;
-        box-shadow: 3px 3px 0px var(--black);
-        font-family: 'Single Day', cursive;
-    }
+        .schedule-header-title {
+            font-size: clamp(22px, 6vw, 28px);
+            font-weight: 700;
+            color: var(--blue-accent);
+            background-color: var(--white);
+            padding: 6px 10px;
+            border: 3.5px solid var(--black);
+            border-radius: 12px;
+            box-shadow: 3px 3px 0px var(--black);
+            font-family: 'Single Day', cursive;
+        }
 
-    .nav-btns {
-        display: flex;
-        gap: 6px;
-    }
+        .nav-btns {
+            display: flex;
+            gap: 6px;
+        }
 
-    .btn-nav-action {
-        background-color: var(--pink-accent);
-        color: var(--white);
-        border: 3px solid var(--black);
-        border-radius: 10px;
-        padding: 6px 10px;
-        font-size: clamp(17px, 4.5vw, 20px);
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 3px 3px 0px var(--black);
-        white-space: nowrap;
-    }
+        .btn-nav-action {
+            background-color: var(--pink-accent);
+            color: var(--white);
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            padding: 6px 10px;
+            font-size: clamp(17px, 4.5vw, 20px);
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--black);
+            white-space: nowrap;
+        }
 
-    .btn-nav-action.edit-active {
-        background-color: #00bcd4;
-        color: var(--black);
-    }
+        .btn-nav-action.edit-active {
+            background-color: #00bcd4;
+            color: var(--black);
+        }
 
-    /* 일정 컨텐츠 영역 (남은 높이를 채우도록 flex: 1 적용) */
-    #schedule-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center; /* 일정이 없을 때 안내 박스가 화면 중앙에 위치 */
-        margin-bottom: 12px;
-    }
+        #schedule-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
 
-    .loading-box {
-        text-align: center;
-        padding: 30px 16px;
-        font-size: clamp(20px, 5.5vw, 26px);
-        font-weight: 700;
-        color: var(--black);
-        background-color: var(--white);
-        border: 3.5px solid var(--black);
-        border-radius: 14px;
-        box-shadow: 5px 5px 0px var(--black);
-        margin-bottom: 18px;
-        line-height: 1.4;
-    }
+        .loading-box {
+            text-align: center;
+            padding: 30px 16px;
+            font-size: clamp(20px, 5.5vw, 26px);
+            font-weight: 700;
+            color: var(--black);
+            background-color: var(--white);
+            border: 3.5px solid var(--black);
+            border-radius: 14px;
+            box-shadow: 5px 5px 0px var(--black);
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
 
-    .day-card {
-        background-color: var(--white);
-        border: 3.5px solid var(--black);
-        border-radius: 14px;
-        padding: 16px 10px;
-        margin-bottom: 18px;
-        box-shadow: 5px 5px 0px var(--black);
-        position: relative;
-    }
+        .day-card {
+            background-color: var(--white);
+            border: 3.5px solid var(--black);
+            border-radius: 14px;
+            padding: 16px 10px;
+            margin-bottom: 18px;
+            box-shadow: 5px 5px 0px var(--black);
+            position: relative;
+        }
 
-    .day-card::before {
-        content: '';
-        position: absolute;
-        top: -12px;
-        left: 16px;
-        width: 75px;
-        height: 22px;
-        background-color: rgba(0, 230, 118, 0.85);
-        border: 2px solid var(--black);
-        transform: rotate(-4deg);
-    }
+        .day-card::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 16px;
+            width: 75px;
+            height: 22px;
+            background-color: rgba(0, 230, 118, 0.85);
+            border: 2px solid var(--black);
+            transform: rotate(-4deg);
+        }
 
-    .day-title-tag {
-        display: inline-block;
-        background-color: var(--pink-accent);
-        color: var(--white);
-        font-size: clamp(22px, 6vw, 27px);
-        font-weight: 700;
-        padding: 3px 14px;
-        border: 3px solid var(--black);
-        border-radius: 24px;
-        margin-bottom: 12px;
-        box-shadow: 3px 3px 0px var(--black);
-    }
+        .day-title-tag {
+            display: inline-block;
+            background-color: var(--pink-accent);
+            color: var(--white);
+            font-size: clamp(22px, 6vw, 27px);
+            font-weight: 700;
+            padding: 3px 14px;
+            border: 3px solid var(--black);
+            border-radius: 24px;
+            margin-bottom: 12px;
+            box-shadow: 3px 3px 0px var(--black);
+        }
 
-    .day-title-tag.day2 {
-        background-color: var(--blue-accent);
-    }
+        .day-title-tag.day2 {
+            background-color: var(--blue-accent);
+        }
 
-    .schedule-list {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+        .schedule-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-    .schedule-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background-color: #f0f4ff;
-        border: 3px solid var(--black);
-        border-radius: 10px;
-        padding: 10px;
-        font-size: clamp(20px, 5.5vw, 24px);
-        font-weight: 700;
-        gap: 8px;
-        box-shadow: 3px 3px 0px var(--black);
-        transition: all 0.2s ease;
-    }
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f0f4ff;
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: clamp(20px, 5.5vw, 24px);
+            font-weight: 700;
+            gap: 8px;
+            box-shadow: 3px 3px 0px var(--black);
+            transition: all 0.2s ease;
+        }
 
-    .is-edit-mode .schedule-item {
-        border-color: var(--pink-accent);
-        background-color: #fff0f5;
-        cursor: pointer;
-        animation: pulse 1.5s infinite alternate;
-    }
+        .is-edit-mode .schedule-item {
+            border-color: var(--pink-accent);
+            background-color: #fff0f5;
+        }
 
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        100% { transform: scale(1.01); }
-    }
+        .item-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
 
-    .item-left {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex: 1;
-        min-width: 0;
-    }
+        .time-badge {
+            background-color: var(--bg-yellow);
+            color: var(--black);
+            padding: 2px 8px;
+            border: 2px solid var(--black);
+            border-radius: 8px;
+            font-size: clamp(16px, 4.2vw, 19px);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
 
-    .time-badge {
-        background-color: var(--bg-yellow);
-        color: var(--black);
-        padding: 2px 8px;
-        border: 2px solid var(--black);
-        border-radius: 8px;
-        font-size: clamp(16px, 4.2vw, 19px);
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
+        .item-text {
+            color: var(--black);
+            word-break: keep-all;
+        }
 
-    .item-text {
-        color: var(--black);
-        word-break: keep-all;
-    }
+        /* 편집용 버튼 액션 박스 */
+        .item-controls {
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
 
-    .manage-badge {
-        display: none;
-        background-color: var(--pink-accent);
-        color: var(--white);
-        font-size: 15px;
-        padding: 2px 6px;
-        border: 2px solid var(--black);
-        border-radius: 6px;
-        white-space: nowrap;
-    }
+        .is-edit-mode .item-controls {
+            display: flex;
+        }
 
-    .is-edit-mode .manage-badge {
-        display: inline-block;
-    }
+        .btn-control {
+            background-color: #ffffff;
+            border: 2px solid var(--black);
+            border-radius: 6px;
+            padding: 2px 6px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px var(--black);
+        }
 
-    .btn-add-schedule {
-        width: 100%;
-        padding: 14px;
-        background-color: var(--green-accent);
-        color: var(--black);
-        border: 3.5px solid var(--black);
-        border-radius: 16px;
-        font-size: clamp(22px, 6vw, 26px);
-        font-weight: 700;
-        font-family: 'Jua', sans-serif;
-        cursor: pointer;
-        box-shadow: 4px 4px 0px var(--black);
-        margin-bottom: 18px;
-        transition: transform 0.1s, box-shadow 0.1s;
-    }
+        .btn-control:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px var(--black);
+        }
 
-    .btn-add-schedule:active {
-        transform: translate(2px, 2px);
-        box-shadow: 2px 2px 0px var(--black);
-    }
+        .btn-control.edit-btn {
+            background-color: #a6f4ff;
+        }
 
-    .footer-doodle {
-        text-align: center;
-        font-size: clamp(20px, 5.5vw, 24px);
-        font-weight: 700;
-        color: var(--black);
-        background-color: var(--green-accent);
-        border: 3.5px solid var(--black);
-        padding: 10px;
-        border-radius: 12px;
-        box-shadow: 4px 4px 0px var(--black);
-    }
+        .btn-add-schedule {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--green-accent);
+            color: var(--black);
+            border: 3.5px solid var(--black);
+            border-radius: 16px;
+            font-size: clamp(22px, 6vw, 26px);
+            font-weight: 700;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--black);
+            margin-bottom: 18px;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
 
-    /* 팝업 모달 스타일 */
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.65);
-        z-index: 100;
-        justify-content: center;
-        align-items: center;
-        padding: 16px;
-    }
+        .btn-add-schedule:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--black);
+        }
 
-    .modal-overlay.active {
-        display: flex;
-    }
+        .footer-doodle {
+            text-align: center;
+            font-size: clamp(20px, 5.5vw, 24px);
+            font-weight: 700;
+            color: var(--black);
+            background-color: var(--green-accent);
+            border: 3.5px solid var(--black);
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 4px 4px 0px var(--black);
+        }
 
-    .modal-content {
-        width: 100%;
-        max-width: 380px;
-        background-color: var(--white);
-        border: 4px solid var(--black);
-        border-radius: 18px;
-        padding: 18px 16px;
-        box-shadow: 6px 8px 0px var(--black);
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        position: relative;
-        animation: popIn 0.2s ease-out;
-    }
+        /* 모달 스타일 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.65);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
 
-    @keyframes popIn {
-        from { transform: scale(0.9); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
+        .modal-overlay.active {
+            display: flex;
+        }
 
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 3px solid var(--black);
-        padding-bottom: 8px;
-    }
+        .modal-content {
+            width: 100%;
+            max-width: 380px;
+            background-color: var(--white);
+            border: 4px solid var(--black);
+            border-radius: 18px;
+            padding: 18px 16px;
+            box-shadow: 6px 8px 0px var(--black);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            animation: popIn 0.2s ease-out;
+        }
 
-    .modal-title {
-        font-size: clamp(22px, 6vw, 26px);
-        font-weight: 700;
-        color: var(--blue-accent);
-        font-family: 'Jua', sans-serif;
-    }
+        @keyframes popIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
 
-    .btn-close {
-        background: none;
-        border: none;
-        font-size: 24px;
-        font-weight: 700;
-        cursor: pointer;
-        color: var(--black);
-    }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--black);
+            padding-bottom: 8px;
+        }
 
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
+        .modal-title {
+            font-size: clamp(22px, 6vw, 26px);
+            font-weight: 700;
+            color: var(--blue-accent);
+            font-family: 'Jua', sans-serif;
+        }
 
-    .form-group label {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--black);
-    }
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--black);
+        }
 
-    .form-control {
-        border: 2.5px solid var(--black);
-        border-radius: 8px;
-        padding: 8px;
-        font-size: clamp(18px, 5vw, 21px);
-        font-weight: 700;
-        outline: none;
-        background-color: #fff;
-    }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
 
-    .modal-btn-group {
-        display: flex;
-        gap: 8px;
-        margin-top: 6px;
-    }
+        .form-group label {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--black);
+        }
 
-    .btn-modal-delete {
-        padding: 10px 14px;
-        background-color: var(--pink-accent);
-        color: var(--white);
-        border: 3px solid var(--black);
-        border-radius: 10px;
-        font-size: clamp(18px, 5vw, 21px);
-        font-weight: 700;
-        font-family: 'Jua', sans-serif;
-        cursor: pointer;
-        box-shadow: 3px 3px 0px var(--black);
-        display: none;
-    }
+        .form-control {
+            border: 2.5px solid var(--black);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: clamp(18px, 5vw, 21px);
+            font-weight: 700;
+            outline: none;
+            background-color: #fff;
+        }
 
-    .btn-modal-submit {
-        flex: 1;
-        padding: 10px;
-        background-color: var(--green-accent);
-        color: var(--black);
-        border: 3px solid var(--black);
-        border-radius: 10px;
-        font-size: clamp(20px, 5.5vw, 24px);
-        font-weight: 700;
-        font-family: 'Jua', sans-serif;
-        cursor: pointer;
-        box-shadow: 3px 3px 0px var(--black);
-    }
-</style>
+        .modal-btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-modal-delete {
+            padding: 10px 14px;
+            background-color: var(--pink-accent);
+            color: var(--white);
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            font-size: clamp(18px, 5vw, 21px);
+            font-weight: 700;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--black);
+            display: none;
+        }
+
+        .btn-modal-submit {
+            flex: 1;
+            padding: 10px;
+            background-color: var(--green-accent);
+            color: var(--black);
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            font-size: clamp(20px, 5.5vw, 24px);
+            font-weight: 700;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px var(--black);
+        }
+    </style>
 </head>
 <body>
 
@@ -632,12 +639,10 @@
                 </div>
             </div>
 
-            <!-- 일정 목록 -->
             <div id="schedule-content">
                 <div class="loading-box">⏳ 일정을 불러오는 중입니다...</div>
             </div>
 
-            <!-- 일정 추가 버튼 -->
             <button class="btn-add-schedule" onclick="openAddModal()">➕ 새 일정 추가하기</button>
 
             <div class="footer-doodle">
@@ -646,7 +651,7 @@
         </div>
     </div>
 
-    <!-- 수정 / 삭제 / 추가 공통 팝업 모달 -->
+    <!-- 모달 -->
     <div id="schedule-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -682,256 +687,276 @@
     </div>
 
     <script>
-    // ⚠️ 구글 앱스 스크립트 웹앱 URL을 입력해 주세요.
-    const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxsmQA43doKenhtEnQ_9n7R3mVCB9-OUgckdzN8-0Nps7ec9lModpindRPbSdZZHlxe/exec';
+        // ⚠️ 구글 앱스 스크립트 웹앱 URL을 입력해 주세요.
+        const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwS799Ew-6Y2qmtQaLGiZCqIsVP7agZ41dpngIDiXNAwKoWmPL8GKFHxTNvfz5z065c/exec';
 
-    let currentSchedules = [];
-    let isEditMode = false;
-    let modalMode = 'add'; // 'add' 또는 'edit'
+        let currentSchedules = [];
+        let isEditMode = false;
+        let modalMode = 'add';
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadScheduleFromSheet();
-    });
-
-    function showSchedule() {
-        document.getElementById('invitation-screen').style.display = 'none';
-        document.getElementById('schedule-screen').classList.add('active');
-        window.scrollTo(0, 0);
-    }
-
-    function showInvitation() {
-        document.getElementById('schedule-screen').classList.remove('active');
-        document.getElementById('invitation-screen').style.display = 'flex';
-        window.scrollTo(0, 0);
-    }
-
-    // 편집 모드 토글
-    function toggleEditMode() {
-        isEditMode = !isEditMode;
-        const btn = document.getElementById('btn-toggle-edit');
-        const screen = document.getElementById('schedule-screen');
-
-        if (isEditMode) {
-            btn.innerText = '✅ 완료';
-            btn.classList.add('edit-active');
-            screen.classList.add('is-edit-mode');
-        } else {
-            btn.innerText = '✏️ 편집';
-            btn.classList.remove('edit-active');
-            screen.classList.remove('is-edit-mode');
-        }
-    }
-
-    // 데이터 로드 (캐시 방지 적용)
-    async function loadScheduleFromSheet() {
-        const scheduleContent = document.getElementById('schedule-content');
-
-        if (!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('여기에_구글_웹앱_URL')) {
-            scheduleContent.innerHTML = `
-                <div class="loading-box" style="background:#fff3bf;">
-                    ⚠️ Apps Script URL이 설정되지 않았습니다.<br>
-                    <small style="font-size:15px; font-weight:normal;">코드 상단의 GAS_WEBAPP_URL을 설정해 주세요.</small>
-                </div>`;
-            return;
-        }
-
-        try {
-            // URL 뒤 타임스탬프(?t=)를 붙여 브라우저 캐시 재사용 차단
-            const res = await fetch(`${GAS_WEBAPP_URL}?t=${Date.now()}`, { cache: 'no-store' });
-            if (!res.ok) throw new Error('네트워크 응답 오류');
-
-            currentSchedules = await res.json();
-            renderSchedule(currentSchedules);
-        } catch (err) {
-            console.error("로드 실패:", err);
-            if (currentSchedules.length === 0) {
-                scheduleContent.innerHTML = `
-                    <div class="loading-box" style="background:#ffe3e3;">
-                        ❌ 일정을 불러오지 못했습니다.<br>
-                        <small style="font-size:15px; font-weight:normal;">구글 시트 배포 설정을 확인하세요.</small>
-                    </div>`;
-            }
-        }
-    }
-
-    // 일정 목록 렌더링
-    function renderSchedule(items) {
-        let day1Html = '';
-        let day2Html = '';
-
-        items.forEach(item => {
-            const itemHtml = `
-                <li class="schedule-item" onclick="handleItemClick(${item.id})">
-                    <div class="item-left">
-                        <span class="time-badge">${item.time}</span>
-                        <span class="item-text">${item.text}</span>
-                    </div>
-                    <span class="manage-badge">수정/삭제 ✏️</span>
-                </li>`;
-
-            if (String(item.day).includes('2')) {
-                day2Html += itemHtml;
-            } else {
-                day1Html += itemHtml;
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            loadScheduleFromSheet();
         });
 
-        let fullHtml = '';
-        if (day1Html) {
-            fullHtml += `
-                <div class="day-card">
-                    <div class="day-title-tag">1일차 ✨</div>
-                    <ul class="schedule-list">${day1Html}</ul>
-                </div>`;
-        }
-        if (day2Html) {
-            fullHtml += `
-                <div class="day-card">
-                    <div class="day-title-tag day2">2일차 🌿</div>
-                    <ul class="schedule-list">${day2Html}</ul>
-                </div>`;
+        function showSchedule() {
+            document.getElementById('invitation-screen').style.display = 'none';
+            document.getElementById('schedule-screen').classList.add('active');
+            window.scrollTo(0, 0);
         }
 
-        if (!fullHtml) {
-            fullHtml = `
-                <div class="loading-box">
-                    🎈 등록된 일정이 없습니다.<br>
-                    <small style="font-size:16px; font-weight:normal;">하단 버튼을 눌러 새 일정을 추가해 보세요!</small>
-                </div>`;
+        function showInvitation() {
+            document.getElementById('schedule-screen').classList.remove('active');
+            document.getElementById('invitation-screen').style.display = 'flex';
+            window.scrollTo(0, 0);
         }
 
-        document.getElementById('schedule-content').innerHTML = fullHtml;
-    }
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('btn-toggle-edit');
+            const screen = document.getElementById('schedule-screen');
 
-    // 아이템 클릭 시 처리
-    function handleItemClick(id) {
-        if (!isEditMode) return;
-        openEditModal(id);
-    }
-
-    // 추가 모달
-    function openAddModal() {
-        modalMode = 'add';
-        document.getElementById('modal-title').innerText = '➕ 새 일정 추가';
-        document.getElementById('modal-item-id').value = '';
-        document.getElementById('modal-day').value = '1일차';
-        document.getElementById('modal-time').value = '';
-        document.getElementById('modal-text').value = '';
-        document.getElementById('btn-modal-delete').style.display = 'none';
-        document.getElementById('schedule-modal').classList.add('active');
-    }
-
-    // 수정/삭제 모달
-    function openEditModal(id) {
-        const item = currentSchedules.find(s => s.id === id);
-        if (!item) return;
-
-        modalMode = 'edit';
-        document.getElementById('modal-title').innerText = '⚙️ 일정 수정 및 삭제';
-        document.getElementById('modal-item-id').value = item.id;
-        document.getElementById('modal-day').value = item.day;
-        document.getElementById('modal-time').value = item.time;
-        document.getElementById('modal-text').value = item.text;
-        document.getElementById('btn-modal-delete').style.display = 'inline-block';
-        document.getElementById('schedule-modal').classList.add('active');
-    }
-
-    function closeModal() {
-        document.getElementById('schedule-modal').classList.remove('active');
-    }
-
-    // 저장 (추가/수정) 처리
-    async function handleSubmit() {
-        const id = document.getElementById('modal-item-id').value;
-        const day = document.getElementById('modal-day').value;
-        const time = document.getElementById('modal-time').value.trim();
-        const text = document.getElementById('modal-text').value.trim();
-
-        if (!time || !text) {
-            alert('시간과 일정 내용을 입력해주세요!');
-            return;
+            if (isEditMode) {
+                btn.innerText = '✅ 완료';
+                btn.classList.add('edit-active');
+                screen.classList.add('is-edit-mode');
+            } else {
+                btn.innerText = '✏️ 편집';
+                btn.classList.remove('edit-active');
+                screen.classList.remove('is-edit-mode');
+            }
+            renderSchedule(currentSchedules);
         }
 
-        closeModal();
+        async function loadScheduleFromSheet() {
+            const scheduleContent = document.getElementById('schedule-content');
 
-        if (modalMode === 'edit') {
-            // 화면 즉시 반영 (낙관적 업데이트)
-            const idx = currentSchedules.findIndex(s => s.id === Number(id));
-            if (idx !== -1) {
-                currentSchedules[idx] = { id: Number(id), day, time, text };
-                renderSchedule(currentSchedules);
+            if (!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('여기에_구글_웹앱_URL')) {
+                scheduleContent.innerHTML = `
+                    <div class="loading-box" style="background:#fff3bf;">
+                        ⚠️ Apps Script URL이 설정되지 않았습니다.<br>
+                        <small style="font-size:15px; font-weight:normal;">코드 상단의 GAS_WEBAPP_URL을 설정해 주세요.</small>
+                    </div>`;
+                return;
             }
 
             try {
-                await fetch(GAS_WEBAPP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'edit', id: id, day, time, text }),
-                    redirect: 'follow'
-                });
+                const res = await fetch(`${GAS_WEBAPP_URL}?t=${Date.now()}`, { cache: 'no-store' });
+                if (!res.ok) throw new Error('네트워크 응답 오류');
+
+                currentSchedules = await res.json();
+                renderSchedule(currentSchedules);
             } catch (err) {
-                console.error("수정 실패:", err);
-                alert("구글 시트 저장 중 오류가 발생했습니다.");
-                loadScheduleFromSheet();
+                console.error("로드 실패:", err);
+                if (currentSchedules.length === 0) {
+                    scheduleContent.innerHTML = `
+                        <div class="loading-box" style="background:#ffe3e3;">
+                            ❌ 일정을 불러오지 못했습니다.<br>
+                            <small style="font-size:15px; font-weight:normal;">구글 시트 배포 설정을 확인하세요.</small>
+                        </div>`;
+                }
+            }
+        }
+
+        function renderSchedule(items) {
+            let day1Html = '';
+            let day2Html = '';
+
+            items.forEach((item, index) => {
+                const itemHtml = `
+                    <li class="schedule-item">
+                        <div class="item-left">
+                            <span class="time-badge">${item.time}</span>
+                            <span class="item-text">${item.text}</span>
+                        </div>
+                        <div class="item-controls">
+                            <button class="btn-control" onclick="moveItem(${index}, 'up')">⬆️</button>
+                            <button class="btn-control" onclick="moveItem(${index}, 'down')">⬇️</button>
+                            <button class="btn-control edit-btn" onclick="openEditModal(${item.id})">⚙️ 수정/삭제</button>
+                        </div>
+                    </li>`;
+
+                if (String(item.day).includes('2')) {
+                    day2Html += itemHtml;
+                } else {
+                    day1Html += itemHtml;
+                }
+            });
+
+            let fullHtml = '';
+            if (day1Html) {
+                fullHtml += `
+                    <div class="day-card">
+                        <div class="day-title-tag">1일차 ✨</div>
+                        <ul class="schedule-list">${day1Html}</ul>
+                    </div>`;
+            }
+            if (day2Html) {
+                fullHtml += `
+                    <div class="day-card">
+                        <div class="day-title-tag day2">2일차 🌿</div>
+                        <ul class="schedule-list">${day2Html}</ul>
+                    </div>`;
             }
 
-        } else {
-            // 추가 처리: 화면 즉시 추가 후 백그라운드 전송
-            const tempId = Date.now();
-            currentSchedules.push({ id: tempId, day, time, text });
+            if (!fullHtml) {
+                fullHtml = `
+                    <div class="loading-box">
+                        🎈 등록된 일정이 없습니다.<br>
+                        <small style="font-size:16px; font-weight:normal;">하단 버튼을 눌러 새 일정을 추가해 보세요!</small>
+                    </div>`;
+            }
+
+            document.getElementById('schedule-content').innerHTML = fullHtml;
+        }
+
+        // 위/아래 순서 이동 처리
+        async function moveItem(index, direction) {
+            const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+            if (targetIndex < 0 || targetIndex >= currentSchedules.length) return;
+
+            // 같은 일차 내에서만 이동할 수 있도록 제한
+            if (currentSchedules[index].day !== currentSchedules[targetIndex].day) {
+                alert('같은 일차(1일차/2일차) 내에서만 순서를 변경할 수 있습니다.');
+                return;
+            }
+
+            // 위치 변경
+            const temp = currentSchedules[index];
+            currentSchedules[index] = currentSchedules[targetIndex];
+            currentSchedules[targetIndex] = temp;
+
+            // 화면 즉시 업데이트
             renderSchedule(currentSchedules);
 
+            // 시트에 변경된 전체 순서 반영
             try {
                 await fetch(GAS_WEBAPP_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'add', day, time, text }),
+                    body: JSON.stringify({ action: 'reorder', schedules: currentSchedules }),
                     redirect: 'follow'
                 });
-
-                // 시트 저장 완료 후 0.5초 뒤 캐시 없이 목록 다시 동기화
+                
                 setTimeout(() => {
                     loadScheduleFromSheet();
                 }, 500);
             } catch (err) {
-                console.error("추가 실패:", err);
-                alert("구글 시트 저장 중 오류가 발생했습니다.");
+                console.error("순서 변경 저장 실패:", err);
+            }
+        }
+
+        function openAddModal() {
+            modalMode = 'add';
+            document.getElementById('modal-title').innerText = '➕ 새 일정 추가';
+            document.getElementById('modal-item-id').value = '';
+            document.getElementById('modal-day').value = '1일차';
+            document.getElementById('modal-time').value = '';
+            document.getElementById('modal-text').value = '';
+            document.getElementById('btn-modal-delete').style.display = 'none';
+            document.getElementById('schedule-modal').classList.add('active');
+        }
+
+        function openEditModal(id) {
+            const item = currentSchedules.find(s => s.id === id);
+            if (!item) return;
+
+            modalMode = 'edit';
+            document.getElementById('modal-title').innerText = '⚙️ 일정 수정 및 삭제';
+            document.getElementById('modal-item-id').value = item.id;
+            document.getElementById('modal-day').value = item.day;
+            document.getElementById('modal-time').value = item.time;
+            document.getElementById('modal-text').value = item.text;
+            document.getElementById('btn-modal-delete').style.display = 'inline-block';
+            document.getElementById('schedule-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('schedule-modal').classList.remove('active');
+        }
+
+        async function handleSubmit() {
+            const id = document.getElementById('modal-item-id').value;
+            const day = document.getElementById('modal-day').value;
+            const time = document.getElementById('modal-time').value.trim();
+            const text = document.getElementById('modal-text').value.trim();
+
+            if (!time || !text) {
+                alert('시간과 일정 내용을 입력해주세요!');
+                return;
+            }
+
+            closeModal();
+
+            if (modalMode === 'edit') {
+                const idx = currentSchedules.findIndex(s => s.id === Number(id));
+                if (idx !== -1) {
+                    currentSchedules[idx] = { id: Number(id), day, time, text };
+                    renderSchedule(currentSchedules);
+                }
+
+                try {
+                    await fetch(GAS_WEBAPP_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'edit', id: id, day, time, text }),
+                        redirect: 'follow'
+                    });
+                } catch (err) {
+                    console.error("수정 실패:", err);
+                    loadScheduleFromSheet();
+                }
+
+            } else {
+                const tempId = Date.now();
+                currentSchedules.push({ id: tempId, day, time, text });
+                renderSchedule(currentSchedules);
+
+                try {
+                    await fetch(GAS_WEBAPP_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'add', day, time, text }),
+                        redirect: 'follow'
+                    });
+
+                    setTimeout(() => {
+                        loadScheduleFromSheet();
+                    }, 500);
+                } catch (err) {
+                    console.error("추가 실패:", err);
+                    loadScheduleFromSheet();
+                }
+            }
+        }
+
+        async function handleDelete() {
+            const id = document.getElementById('modal-item-id').value;
+            if (!id) return;
+
+            if (!confirm('이 일정을 삭제하시겠습니까?')) return;
+
+            closeModal();
+
+            currentSchedules = currentSchedules.filter(s => s.id !== Number(id));
+            renderSchedule(currentSchedules);
+
+            try {
+                await fetch(GAS_WEBAPP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'delete', id: id }),
+                    redirect: 'follow'
+                });
+
+                setTimeout(() => {
+                    loadScheduleFromSheet();
+                }, 500);
+            } catch (err) {
+                console.error("삭제 실패:", err);
                 loadScheduleFromSheet();
             }
         }
-    }
-
-    // 삭제 처리
-    async function handleDelete() {
-        const id = document.getElementById('modal-item-id').value;
-        if (!id) return;
-
-        if (!confirm('이 일정을 삭제하시겠습니까?')) return;
-
-        closeModal();
-
-        // 화면에서 즉시 삭제
-        currentSchedules = currentSchedules.filter(s => s.id !== Number(id));
-        renderSchedule(currentSchedules);
-
-        try {
-            await fetch(GAS_WEBAPP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'delete', id: id }),
-                redirect: 'follow'
-            });
-
-            // 삭제 후 0.5초 뒤 행 번호 동기화
-            setTimeout(() => {
-                loadScheduleFromSheet();
-            }, 500);
-        } catch (err) {
-            console.error("삭제 실패:", err);
-            alert("구글 시트 삭제 반영에 실패했습니다.");
-            loadScheduleFromSheet();
-        }
-    }
-</script>
+    </script>
 </body>
 </html>
