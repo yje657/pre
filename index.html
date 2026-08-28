@@ -7,6 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Single+Day&display=swap" rel="stylesheet">
+    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d13b0c2f4711c01b29565f88b9168268&libraries=services"></script>
+
     <style>
         :root {
             --bg-yellow: #ffe600;
@@ -17,1068 +20,236 @@
             --white: #ffffff;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Gaegu', cursive, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Gaegu', cursive, sans-serif; -webkit-tap-highlight-color: transparent; }
 
         html, body {
-            width: 100%;
-            min-height: 100vh;
-            background-color: #1a1a2e;
+            width: 100%; min-height: 100vh; background-color: #1a1a2e;
             background-image: radial-gradient(#ff007f 10%, transparent 11%), radial-gradient(#00d2ff 10%, transparent 11%);
-            background-size: 24px 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 4px;
+            background-size: 24px 24px; display: flex; justify-content: center; align-items: flex-start; padding: 12px;
         }
 
         .app-container {
-            width: 100%;
-            max-width: 440px;
-            background-color: var(--bg-yellow);
-            border: 4px solid var(--black);
-            border-radius: 20px;
-            box-shadow: 6px 8px 0px var(--black);
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            margin: auto;
+            width: 100%; max-width: 440px; background-color: var(--bg-yellow); border: 4px solid var(--black);
+            border-radius: 20px; box-shadow: 6px 8px 0px var(--black); overflow: hidden; position: relative;
+            display: flex; flex-direction: column; margin: auto; margin-top: 10px;
         }
 
-        .sticker {
-            position: absolute;
-            z-index: 10;
-            font-size: clamp(24px, 7vw, 32px);
-            filter: drop-shadow(2px 2px 0px #000);
-            user-select: none;
-            pointer-events: none;
-            animation: bounce 2.5s infinite ease-in-out;
-        }
-
+        /* 초대장 메인 화면 스타일 */
+        .sticker { position: absolute; z-index: 10; font-size: clamp(24px, 7vw, 32px); filter: drop-shadow(2px 2px 0px #000); pointer-events: none; animation: bounce 2.5s infinite ease-in-out; }
         .sticker-1 { top: 12px; right: 12px; transform: rotate(15deg); }
         .sticker-2 { top: 38%; left: -4px; transform: rotate(-20deg); }
         .sticker-3 { bottom: 90px; right: -2px; transform: rotate(25deg); }
+        @keyframes bounce { 0%, 100% { transform: translateY(0) rotate(10deg); } 50% { transform: translateY(-6px) rotate(-5deg); } }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) rotate(10deg); }
-            50% { transform: translateY(-6px) rotate(-5deg); }
-        }
+        #invitation-screen { padding: 20px 16px 0 16px; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .header-section { width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; margin: 10px 0 14px 0; }
+        .red-badge { background-color: var(--pink-accent); color: var(--white); padding: 10px 14px; border-radius: 50% 40% 60% 45% / 40% 60% 40% 55%; border: 3.5px solid var(--black); font-size: clamp(20px, 5.5vw, 26px); font-weight: 700; transform: rotate(-10deg); box-shadow: 3px 3px 0px var(--black); }
+        .main-title { font-size: clamp(48px, 13vw, 64px); font-weight: 700; color: var(--blue-accent); text-shadow: 2px 2px 0px var(--white), 4px 4px 0px var(--black); transform: rotate(1deg); font-family: 'Single Day', cursive; }
+        
+        .paper-box { width: 100%; background-color: var(--white); border: 3.5px solid var(--black); border-radius: 14px; padding: 24px 14px 18px 14px; box-shadow: 5px 5px 0px var(--black); margin-bottom: 16px; position: relative; }
+        .tape-top { position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(-2deg); width: 110px; height: 24px; background-color: rgba(255, 0, 128, 0.75); border: 2px solid var(--black); }
+        .info-line { font-size: clamp(22px, 6vw, 27px); font-weight: 700; color: var(--black); margin-bottom: 12px; }
+        .info-line span.highlight { background-color: #a6f4ff; padding: 2px 8px; border-radius: 8px; border: 2px solid var(--black); }
 
-        /* 초대장 화면 */
-        #invitation-screen {
-            padding: 20px 8px 0 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
+        .bottom-action-bar { width: calc(100% + 32px); margin-left: -16px; margin-right: -16px; background-color: var(--blue-accent); border-top: 4px solid var(--black); padding: 16px 18px; text-align: center; }
+        .btn-enter { width: 100%; padding: 14px 18px; background-color: var(--pink-accent); color: var(--white); border: 3.5px solid var(--black); border-radius: 35px; font-size: clamp(24px, 6.5vw, 30px); font-weight: 700; font-family: 'Jua', sans-serif; cursor: pointer; box-shadow: 0px 6px 0px var(--black); }
 
-        .header-section {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin: 10px 0 14px 0;
-        }
+        /* 일정 화면 스타일 */
+        #schedule-screen { display: none; padding: 18px 16px; background-color: var(--bg-yellow); flex-direction: column; width: 100%; min-height: 80vh; }
+        #schedule-screen.active { display: flex; }
+        .schedule-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .schedule-header-title { font-size: clamp(24px, 7vw, 30px); font-weight: 700; color: var(--blue-accent); background-color: var(--white); padding: 6px 12px; border: 3.5px solid var(--black); border-radius: 12px; box-shadow: 4px 4px 0px var(--black); font-family: 'Single Day', cursive; }
+        .btn-back { background-color: var(--pink-accent); color: var(--white); border: 3px solid var(--black); border-radius: 10px; padding: 6px 12px; font-size: clamp(16px, 4.5vw, 20px); font-weight: 700; cursor: pointer; box-shadow: 3px 3px 0px var(--black); }
 
-        .red-badge {
-            background-color: var(--pink-accent);
-            color: var(--white);
-            padding: 10px 14px;
-            border-radius: 50% 40% 60% 45% / 40% 60% 40% 55%;
-            border: 3.5px solid var(--black);
-            font-size: clamp(20px, 5.5vw, 26px);
-            font-weight: 700;
-            line-height: 1.1;
-            text-align: center;
-            transform: rotate(-10deg);
-            box-shadow: 3px 3px 0px var(--black);
-            flex-shrink: 0;
-        }
+        #map { width: 100%; height: 240px; border: 3.5px solid var(--black); border-radius: 12px; box-shadow: 4px 4px 0px var(--black); margin-bottom: 16px; background-color: #ddd; display: flex; align-items: center; justify-content: center; font-family: 'Jua', sans-serif; color: #555; }
 
-        .main-title {
-            font-size: clamp(48px, 13vw, 64px);
-            font-weight: 700;
-            color: var(--blue-accent);
-            text-shadow: 2px 2px 0px var(--white), 4px 4px 0px var(--black);
-            letter-spacing: 2px;
-            line-height: 1;
-            transform: rotate(1deg);
-            font-family: 'Single Day', cursive;
-        }
+        .btn-open-modal { width: 100%; background-color: var(--green-accent); color: var(--black); border: 3.5px solid var(--black); border-radius: 12px; padding: 12px; font-size: 22px; font-weight: 700; cursor: pointer; box-shadow: 4px 4px 0px var(--black); margin-bottom: 18px; }
+        .btn-open-modal:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--black); }
 
-        .sub-tag-box {
-            background-color: var(--green-accent);
-            border: 3.5px solid var(--black);
-            padding: 6px 16px;
-            border-radius: 24px;
-            box-shadow: 3.5px 3.5px 0px var(--black);
-            margin: 4px 0 16px 0;
-            transform: rotate(-1deg);
-            text-align: center;
-            max-width: 98%;
-        }
-
-        .sub-tag {
-            font-size: clamp(20px, 5.5vw, 25px);
-            font-weight: 700;
-            color: var(--black);
-            white-space: nowrap;
-        }
-
-        .paper-box {
-            width: 100%;
-            background-color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 14px;
-            padding: 18px 12px;
-            box-shadow: 5px 5px 0px var(--black);
-            margin-bottom: 16px;
-            position: relative;
-        }
-
-        .tape-top {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-2deg);
-            width: 110px;
-            height: 24px;
-            background-color: rgba(255, 0, 128, 0.75);
-            border: 2px solid var(--black);
-        }
-
-        .info-line {
-            font-size: clamp(22px, 6vw, 27px);
-            font-weight: 700;
-            color: var(--black);
-            margin-bottom: 12px;
-            line-height: 1.35;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .info-line:last-child {
-            margin-bottom: 0;
-        }
-
-        .info-line span.highlight {
-            background-color: #a6f4ff;
-            padding: 2px 8px;
-            border-radius: 8px;
-            border: 2px solid var(--black);
-        }
-
-        .info-line span.highlight-pink {
-            background-color: #ffb3d9;
-            padding: 2px 8px;
-            border-radius: 8px;
-            border: 2px solid var(--black);
-        }
-
-        .recruitment-banner {
-            width: 100%;
-            text-align: center;
-            font-size: clamp(22px, 6vw, 27px);
-            font-weight: 700;
-            color: var(--pink-accent);
-            background-color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 12px;
-            padding: 6px;
-            margin-bottom: 16px;
-            box-shadow: 4px 4px 0px var(--black);
-            letter-spacing: 1px;
-        }
-
-        .bottom-action-bar {
-            width: calc(100% + 16px);
-            margin-left: -8px;
-            margin-right: -8px;
-            background-color: var(--blue-accent);
-            border-top: 4px solid var(--black);
-            padding: 16px 12px;
-            text-align: center;
-            position: relative;
-            z-index: 20;
-        }
-
-        .bottom-bar-text {
-            font-size: clamp(17px, 4.8vw, 21px);
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--white);
-            text-shadow: 1.5px 1.5px 0px var(--black);
-        }
-
-        .btn-enter {
-            width: 100%;
-            padding: 14px 18px;
-            background-color: var(--pink-accent);
-            color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 35px;
-            font-size: clamp(24px, 6.5vw, 30px);
-            font-weight: 700;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 0px 6px 0px var(--black);
-            transition: all 0.1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        /* 일정 화면 */
-        #schedule-screen {
-            display: none;
-            padding: 18px 8px 24px 8px;
-            background-color: var(--bg-yellow);
-            flex-direction: column;
-            width: 100%;
-            min-height: 530px;
-        }
-
-        #schedule-screen.active {
-            display: flex;
-        }
-
-        .schedule-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            gap: 6px;
-        }
-
-        .schedule-header-title {
-            font-size: clamp(22px, 6vw, 28px);
-            font-weight: 700;
-            color: var(--blue-accent);
-            background-color: var(--white);
-            padding: 6px 10px;
-            border: 3.5px solid var(--black);
-            border-radius: 12px;
-            box-shadow: 3px 3px 0px var(--black);
-            font-family: 'Single Day', cursive;
-        }
-
-        .nav-btns {
-            display: flex;
-            gap: 6px;
-        }
-
-        .btn-nav-action {
-            background-color: var(--pink-accent);
-            color: var(--white);
-            border: 3px solid var(--black);
-            border-radius: 10px;
-            padding: 6px 10px;
-            font-size: clamp(17px, 4.5vw, 20px);
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--black);
-            white-space: nowrap;
-        }
-
-        .btn-nav-action.edit-active {
-            background-color: #00bcd4;
-            color: var(--black);
-        }
-
-        /* 편집 모드 시 초대장 버튼 숨김 */
-        .is-edit-mode #btn-back-invitation {
-            display: none;
-        }
-
-        #schedule-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-
-        .loading-box {
-            text-align: center;
-            padding: 30px 16px;
-            font-size: clamp(20px, 5.5vw, 26px);
-            font-weight: 700;
-            color: var(--black);
-            background-color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 14px;
-            box-shadow: 5px 5px 0px var(--black);
-            margin-bottom: 18px;
-            line-height: 1.4;
-        }
-
-        .day-card {
-            background-color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 14px;
-            padding: 16px 10px;
-            margin-bottom: 18px;
-            box-shadow: 5px 5px 0px var(--black);
-            position: relative;
-        }
-
-        .day-card::before {
-            content: '';
-            position: absolute;
-            top: -12px;
-            left: 16px;
-            width: 75px;
-            height: 22px;
-            background-color: rgba(0, 230, 118, 0.85);
-            border: 2px solid var(--black);
-            transform: rotate(-4deg);
-        }
-
-        .day-title-tag {
-            display: inline-block;
-            background-color: var(--pink-accent);
-            color: var(--white);
-            font-size: clamp(22px, 6vw, 27px);
-            font-weight: 700;
-            padding: 3px 14px;
-            border: 3px solid var(--black);
-            border-radius: 24px;
-            margin-bottom: 12px;
-            box-shadow: 3px 3px 0px var(--black);
-        }
-
-        .day-title-tag.day2 {
-            background-color: var(--blue-accent);
-        }
-
-        .schedule-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .schedule-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #f0f4ff;
-            border: 3px solid var(--black);
-            border-radius: 10px;
-            padding: 10px;
-            font-size: clamp(20px, 5.5vw, 24px);
-            font-weight: 700;
-            gap: 8px;
-            box-shadow: 3px 3px 0px var(--black);
-            transition: transform 0.15s ease, background-color 0.15s ease;
-            position: relative;
-        }
-
-        .is-edit-mode .schedule-item {
-            border-color: var(--pink-accent);
-            background-color: #fff0f5;
-        }
-
-        /* 드래그 중 및 드래그 위치 표시 스타일 */
-        .schedule-item.dragging {
-            opacity: 0.4;
-            background-color: #ffe0b2;
-            border-style: dashed;
-        }
-
-        .schedule-item.drag-over {
-            border-color: var(--blue-accent);
-            background-color: #e3f2fd;
-            transform: scale(1.02);
-        }
-
-        /* 드래그 핸들 버턴 */
-        .drag-handle {
-            display: none;
-            font-size: 20px;
-            color: var(--black);
-            cursor: grab;
-            padding: 0 4px;
-            user-select: none;
-            touch-action: none;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-
-        .is-edit-mode .drag-handle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .item-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .time-badge {
-            background-color: var(--bg-yellow);
-            color: var(--black);
-            padding: 2px 8px;
-            border: 2px solid var(--black);
-            border-radius: 8px;
-            font-size: clamp(16px, 4.2vw, 19px);
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .item-text {
-            color: var(--black);
-            word-break: keep-all;
-        }
-
-        /* 편집용 버튼 액션 박스 */
-        .item-controls {
-            display: none;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .is-edit-mode .item-controls {
-            display: flex;
-        }
-
-        .btn-control {
-            background-color: #ffffff;
-            border: 2px solid var(--black);
-            border-radius: 6px;
-            padding: 3px 8px;
-            font-size: 15px;
-            cursor: pointer;
-            box-shadow: 2px 2px 0px var(--black);
-            white-space: nowrap;
-        }
-
-        .btn-control:active {
-            transform: translate(1px, 1px);
-            box-shadow: 1px 1px 0px var(--black);
-        }
-
-        .btn-control.edit-btn {
-            background-color: #a6f4ff;
-        }
-
-        .btn-add-schedule {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--green-accent);
-            color: var(--black);
-            border: 3.5px solid var(--black);
-            border-radius: 16px;
-            font-size: clamp(22px, 6vw, 26px);
-            font-weight: 700;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 4px 4px 0px var(--black);
-            margin-bottom: 18px;
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-
-        .btn-add-schedule:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px var(--black);
-        }
-
-        .footer-doodle {
-            text-align: center;
-            font-size: clamp(20px, 5.5vw, 24px);
-            font-weight: 700;
-            color: var(--black);
-            background-color: var(--green-accent);
-            border: 3.5px solid var(--black);
-            padding: 10px;
-            border-radius: 12px;
-            box-shadow: 4px 4px 0px var(--black);
-        }
+        .day-card { background-color: var(--white); border: 3.5px solid var(--black); border-radius: 14px; padding: 16px 14px; box-shadow: 5px 5px 0px var(--black); }
+        .day-title-tag { display: inline-block; background-color: var(--pink-accent); color: var(--white); font-size: 24px; font-weight: 700; padding: 3px 14px; border: 3px solid var(--black); border-radius: 24px; margin-bottom: 12px; box-shadow: 3px 3px 0px var(--black); }
+        .schedule-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .schedule-item { display: flex; align-items: center; background-color: #f0f4ff; border: 3px solid var(--black); border-radius: 10px; padding: 10px 12px; font-size: 20px; font-weight: 700; gap: 10px; box-shadow: 3px 3px 0px var(--black); }
+        .time-badge { background-color: var(--bg-yellow); color: var(--black); padding: 2px 8px; border: 2px solid var(--black); border-radius: 8px; font-size: 18px; white-space: nowrap; }
+        .item-text { color: var(--black); flex: 1; word-break: keep-all; }
 
         /* 모달 스타일 */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.65);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            width: 100%;
-            max-width: 380px;
-            background-color: var(--white);
-            border: 4px solid var(--black);
-            border-radius: 18px;
-            padding: 18px 16px;
-            box-shadow: 6px 8px 0px var(--black);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            position: relative;
-            animation: popIn 0.2s ease-out;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid var(--black);
-            padding-bottom: 8px;
-        }
-
-        .modal-title {
-            font-size: clamp(22px, 6vw, 26px);
-            font-weight: 700;
-            color: var(--blue-accent);
-            font-family: 'Jua', sans-serif;
-        }
-
-        .btn-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            font-weight: 700;
-            cursor: pointer;
-            color: var(--black);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .form-group label {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--black);
-        }
-
-        .form-control {
-            border: 2.5px solid var(--black);
-            border-radius: 8px;
-            padding: 8px;
-            font-size: clamp(18px, 5vw, 21px);
-            font-weight: 700;
-            outline: none;
-            background-color: #fff;
-        }
-
-        .modal-btn-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 6px;
-        }
-
-        .btn-modal-delete {
-            padding: 10px 14px;
-            background-color: var(--pink-accent);
-            color: var(--white);
-            border: 3px solid var(--black);
-            border-radius: 10px;
-            font-size: clamp(18px, 5vw, 21px);
-            font-weight: 700;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--black);
-            display: none;
-        }
-
-        .btn-modal-submit {
-            flex: 1;
-            padding: 10px;
-            background-color: var(--green-accent);
-            color: var(--black);
-            border: 3px solid var(--black);
-            border-radius: 10px;
-            font-size: clamp(20px, 5.5vw, 24px);
-            font-weight: 700;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--black);
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background-color: #a6f4ff; border: 4px solid var(--black); border-radius: 16px; padding: 20px; width: 100%; max-width: 360px; box-shadow: 6px 6px 0px var(--black); display: flex; flex-direction: column; gap: 12px; }
+        .modal-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; color: var(--black); text-align: center; font-family: 'Jua', sans-serif; }
+        
+        .modal-content input { width: 100%; padding: 10px; border: 3px solid var(--black); border-radius: 8px; font-size: 18px; font-family: 'Gaegu', cursive; font-weight: 700; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
+        .btn-modal-add { flex: 2; background-color: var(--pink-accent); color: var(--white); border: 3px solid var(--black); border-radius: 8px; padding: 10px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 3px 3px 0px var(--black); }
+        .btn-modal-close { flex: 1; background-color: var(--white); color: var(--black); border: 3px solid var(--black); border-radius: 8px; padding: 10px; font-size: 20px; font-weight: 700; cursor: pointer; box-shadow: 3px 3px 0px var(--black); }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <!-- 초대장 화면 -->
         <div id="invitation-screen">
             <div class="sticker sticker-1">💖</div>
             <div class="sticker sticker-2">⭐</div>
             <div class="sticker sticker-3">💥</div>
-
             <div class="header-section">
                 <div class="red-badge">청주<br>여행</div>
                 <div class="main-title">초댓장</div>
             </div>
-
-            <div class="sub-tag-box">
-                <span class="sub-tag">♣ 주인공: 청주 놀러갈 사람 ♣</span>
-            </div>
-
             <div class="paper-box">
                 <div class="tape-top"></div>
-                <div class="info-line">📍 <span class="highlight">목적지:</span> 충북 청주 일대 🗺️</div>
-                <div class="info-line">🗓️ <span class="highlight">일시:</span> 1박 2일 힐링 투어 🚗</div>
-                <div class="info-line">⚡️ <span class="highlight-pink">특징:</span> 맛집 폭격 & 꿀휴식 🍣</div>
-                <div class="info-line">💯 <span class="highlight-pink">재미:</span> 999.99% 장담! 🔥</div>
+                <div class="info-line">📍 <span class="highlight">목적지:</span> 충북 청주 일대</div>
+                <div class="info-line">🗓️ <span class="highlight">일시:</span> 1박 2일 투어</div>
             </div>
-
-            <div class="recruitment-banner">
-                ★ 상 ♡ 시 ♠ 모 ♥ 집 ☆
-            </div>
-
             <div class="bottom-action-bar">
-                <div class="bottom-bar-text">※ 아래 버튼을 누르면 일정 공개! ※</div>
-                <button class="btn-enter" onclick="showSchedule()">
-                    👉 일정 확인하기 👈
-                </button>
+                <button class="btn-enter" onclick="showSchedule()">👉 일정 확인하기 👈</button>
             </div>
         </div>
 
-        <!-- 일정표 화면 -->
         <div id="schedule-screen">
             <div class="schedule-nav">
-                <div class="schedule-header-title">여행 일정표</div>
-                <div class="nav-btns">
-                    <button id="btn-toggle-edit" class="btn-nav-action" onclick="toggleEditMode()">✏️ 편집</button>
-                    <button id="btn-back-invitation" class="btn-nav-action" onclick="showInvitation()">← 초대장</button>
-                </div>
+                <div class="schedule-header-title">🗺️ 우리의 일정</div>
+                <button class="btn-back" onclick="showInvitation()">← 뒤로</button>
             </div>
 
-            <div id="schedule-content">
-                <div class="loading-box">⏳ 일정을 불러오는 중입니다...</div>
-            </div>
+            <div id="map">API 키를 입력하면 지도가 표시됩니다.</div>
 
-            <button class="btn-add-schedule" onclick="openAddModal()">➕ 새 일정 추가하기</button>
+            <button class="btn-open-modal" onclick="openModal()">+ 새 일정 장소 추가하기</button>
 
-            <div class="footer-doodle">
-                🎉 재미 1000% 보장! 준비완료! 🎉
+            <div class="day-card">
+                <div class="day-title-tag">확정된 일정 ✨</div>
+                <ul class="schedule-list" id="my-schedule-list">
+                    <li class="schedule-item">
+                        <span class="time-badge">도착</span>
+                        <span class="item-text">청주 시외버스터미널</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 
-    <!-- 모달 -->
     <div id="schedule-modal" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-header">
-                <div id="modal-title" class="modal-title">✏️ 일정 관리</div>
-                <button class="btn-close" onclick="closeModal()">✖</button>
-            </div>
-            
-            <input type="hidden" id="modal-item-id">
-
-            <div class="form-group">
-                <label>일자</label>
-                <select id="modal-day" class="form-control">
-                    <option value="1일차">1일차</option>
-                    <option value="2일차">2일차</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>시간</label>
-                <input type="text" id="modal-time" class="form-control" placeholder="예: 점심, 14:00">
-            </div>
-
-            <div class="form-group">
-                <label>일정 내용</label>
-                <input type="text" id="modal-text" class="form-control" placeholder="일정 내용을 입력하세요">
-            </div>
-
-            <div class="modal-btn-group">
-                <button id="btn-modal-delete" class="btn-modal-delete" onclick="handleDelete()">🗑️ 삭제</button>
-                <button id="btn-modal-submit" class="btn-modal-submit" onclick="handleSubmit()">저장하기</button>
+            <div class="modal-title">📌 새 일정 검색/추가</div>
+            <input type="text" id="input-time" placeholder="시간 (예: 점심, 13:00)">
+            <input type="text" id="input-place" placeholder="장소 검색 (예: 청주 성안길)">
+            <div class="modal-actions">
+                <button class="btn-modal-add" onclick="addKakaoSchedule()">장소 추가하기</button>
+                <button class="btn-modal-close" onclick="closeModal()">취소</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ⚠️ 본인의 구글 앱스 스크립트 웹앱 URL을 입력해 주세요.
-        const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwS799Ew-6Y2qmtQaLGiZCqIsVP7agZ41dpngIDiXNAwKoWmPL8GKFHxTNvfz5z065c/exec';
-
-        let currentSchedules = [];
-        let isEditMode = false;
-        let modalMode = 'add';
-
-        // 드래그 상태 관련 변수
-        let activeDragIndex = null;
-        let currentTouchItem = null;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadScheduleFromSheet();
-        });
+        let map, ps;
+        let isMapInitialized = false;
+        let markers = [];
 
         function showSchedule() {
             document.getElementById('invitation-screen').style.display = 'none';
             document.getElementById('schedule-screen').classList.add('active');
-            window.scrollTo(0, 0);
+            
+            if (typeof kakao !== 'undefined' && kakao.maps && !isMapInitialized) {
+                document.getElementById('map').innerText = ""; 
+                
+                var mapContainer = document.getElementById('map');
+                var mapOption = {
+                    center: new kakao.maps.LatLng(36.6267, 127.4342),
+                    level: 5
+                };
+                map = new kakao.maps.Map(mapContainer, mapOption);
+                ps = new kakao.maps.services.Places();
+                
+                var marker = new kakao.maps.Marker({
+                    position: new kakao.maps.LatLng(36.6267, 127.4342)
+                });
+                marker.setMap(map);
+                markers.push(marker);
+
+                isMapInitialized = true;
+            } else if (isMapInitialized) {
+                map.relayout();
+            }
         }
 
         function showInvitation() {
             document.getElementById('schedule-screen').classList.remove('active');
             document.getElementById('invitation-screen').style.display = 'flex';
-            window.scrollTo(0, 0);
         }
 
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const btn = document.getElementById('btn-toggle-edit');
-            const screen = document.getElementById('schedule-screen');
-
-            if (isEditMode) {
-                btn.innerText = '✅ 완료';
-                btn.classList.add('edit-active');
-                screen.classList.add('is-edit-mode');
-            } else {
-                btn.innerText = '✏️ 편집';
-                btn.classList.remove('edit-active');
-                screen.classList.remove('is-edit-mode');
-            }
-            renderSchedule(currentSchedules);
-        }
-
-        async function loadScheduleFromSheet() {
-            const scheduleContent = document.getElementById('schedule-content');
-
-            if (!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('여기에_구글_웹앱_URL')) {
-                scheduleContent.innerHTML = `
-                    <div class="loading-box" style="background:#fff3bf;">
-                        ⚠️ Apps Script URL이 설정되지 않았습니다.<br>
-                        <small style="font-size:15px; font-weight:normal;">코드 상단의 GAS_WEBAPP_URL을 설정해 주세요.</small>
-                    </div>`;
-                return;
-            }
-
-            try {
-                const res = await fetch(`${GAS_WEBAPP_URL}?t=${Date.now()}`, { cache: 'no-store' });
-                if (!res.ok) throw new Error('네트워크 응답 오류');
-
-                currentSchedules = await res.json();
-                renderSchedule(currentSchedules);
-            } catch (err) {
-                console.error("로드 실패:", err);
-                if (currentSchedules.length === 0) {
-                    scheduleContent.innerHTML = `
-                        <div class="loading-box" style="background:#ffe3e3;">
-                            ❌ 일정을 불러오지 못했습니다.<br>
-                            <small style="font-size:15px; font-weight:normal;">구글 시트 배포 설정을 확인하세요.</small>
-                        </div>`;
-                }
-            }
-        }
-
-        function renderSchedule(items) {
-            let day1Html = '';
-            let day2Html = '';
-
-            items.forEach((item, index) => {
-                const itemHtml = `
-                    <li class="schedule-item" data-index="${index}" draggable="true">
-                        <div class="drag-handle">☰</div>
-                        <div class="item-left">
-                            <span class="time-badge">${item.time}</span>
-                            <span class="item-text">${item.text}</span>
-                        </div>
-                        <div class="item-controls">
-                            <button class="btn-control edit-btn" onclick="openEditModal(${item.id})">⚙️ 수정/삭제</button>
-                        </div>
-                    </li>`;
-
-                if (String(item.day).includes('2')) {
-                    day2Html += itemHtml;
-                } else {
-                    day1Html += itemHtml;
-                }
-            });
-
-            let fullHtml = '';
-            if (day1Html) {
-                fullHtml += `
-                    <div class="day-card">
-                        <div class="day-title-tag">1일차 ✨</div>
-                        <ul class="schedule-list">${day1Html}</ul>
-                    </div>`;
-            }
-            if (day2Html) {
-                fullHtml += `
-                    <div class="day-card">
-                        <div class="day-title-tag day2">2일차 🌿</div>
-                        <ul class="schedule-list">${day2Html}</ul>
-                    </div>`;
-            }
-
-            if (!fullHtml) {
-                fullHtml = `
-                    <div class="loading-box">
-                        🎈 등록된 일정이 없습니다.<br>
-                        <small style="font-size:16px; font-weight:normal;">하단 버튼을 눌러 새 일정을 추가해 보세요!</small>
-                    </div>`;
-            }
-
-            document.getElementById('schedule-content').innerHTML = fullHtml;
-
-            // 이벤트 바인딩 (드래그앤드롭 및 터치)
-            bindDragAndDropEvents();
-        }
-
-        /* PC 마우스 & 모바일 터치 드래그앤드롭 바인딩 */
-        function bindDragAndDropEvents() {
-            const items = document.querySelectorAll('.schedule-item');
-
-            items.forEach(item => {
-                const index = parseInt(item.dataset.index);
-
-                // --- PC 마우스 드래그 ---
-                item.addEventListener('dragstart', (e) => {
-                    if (!isEditMode) return;
-                    activeDragIndex = index;
-                    currentTouchItem = item;
-                    item.classList.add('dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                });
-
-                item.addEventListener('dragover', (e) => {
-                    if (!isEditMode) return;
-                    e.preventDefault();
-                    item.classList.add('drag-over');
-                });
-
-                item.addEventListener('dragleave', () => {
-                    item.classList.remove('drag-over');
-                });
-
-                item.addEventListener('drop', (e) => {
-                    if (!isEditMode) return;
-                    e.preventDefault();
-                    item.classList.remove('drag-over');
-                    const targetIndex = parseInt(item.dataset.index);
-                    
-                    if (activeDragIndex !== null && activeDragIndex !== targetIndex) {
-                        executeReorder(activeDragIndex, targetIndex);
-                    }
-                });
-
-                item.addEventListener('dragend', () => {
-                    item.classList.remove('dragging');
-                    document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('drag-over'));
-                });
-
-                // --- 모바일 터치 핸들 드래그 ---
-                const handle = item.querySelector('.drag-handle');
-                if (handle) {
-                    handle.addEventListener('touchstart', (e) => {
-                        if (!isEditMode) return;
-                        activeDragIndex = index;
-                        currentTouchItem = item;
-                        item.classList.add('dragging');
-                    }, { passive: true });
-
-                    handle.addEventListener('touchmove', (e) => {
-                        if (!isEditMode || activeDragIndex === null) return;
-                        e.preventDefault(); // 스크롤 방지
-                        const touch = e.touches[0];
-                        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-                        const targetItem = targetEl ? targetEl.closest('.schedule-item') : null;
-
-                        document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('drag-over'));
-                        if (targetItem && targetItem !== currentTouchItem) {
-                            targetItem.classList.add('drag-over');
-                        }
-                    }, { passive: false });
-
-                    handle.addEventListener('touchend', (e) => {
-                        if (!isEditMode || activeDragIndex === null) return;
-                        const touch = e.changedTouches[0];
-                        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-                        const targetItem = targetEl ? targetEl.closest('.schedule-item') : null;
-
-                        if (currentTouchItem) currentTouchItem.classList.remove('dragging');
-                        document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('drag-over'));
-
-                        if (targetItem) {
-                            const targetIndex = parseInt(targetItem.dataset.index);
-                            if (activeDragIndex !== targetIndex) {
-                                executeReorder(activeDragIndex, targetIndex);
-                            }
-                        }
-
-                        activeDragIndex = null;
-                        currentTouchItem = null;
-                    }, { passive: false });
-                }
-            });
-        }
-
-        /* 순서 교체 및 구글 시트 저장 */
-        async function executeReorder(fromIdx, toIdx) {
-            if (currentSchedules[fromIdx].day !== currentSchedules[toIdx].day) {
-                alert('같은 일차(1일차/2일차) 내에서만 순서를 변경할 수 있습니다.');
-                return;
-            }
-
-            // 배열 요소 이동
-            const [movedItem] = currentSchedules.splice(fromIdx, 1);
-            currentSchedules.splice(toIdx, 0, movedItem);
-
-            // 화면 반영
-            renderSchedule(currentSchedules);
-
-            // 구글 시트 저장
-            try {
-                await fetch(GAS_WEBAPP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'reorder', schedules: currentSchedules }),
-                    redirect: 'follow'
-                });
-            } catch (err) {
-                console.error("순서 저장 실패:", err);
-            }
-        }
-
-        function openAddModal() {
-            modalMode = 'add';
-            document.getElementById('modal-title').innerText = '➕ 새 일정 추가';
-            document.getElementById('modal-item-id').value = '';
-            document.getElementById('modal-day').value = '1일차';
-            document.getElementById('modal-time').value = '';
-            document.getElementById('modal-text').value = '';
-            document.getElementById('btn-modal-delete').style.display = 'none';
+        function openModal() {
             document.getElementById('schedule-modal').classList.add('active');
-        }
-
-        function openEditModal(id) {
-            const item = currentSchedules.find(s => s.id === id);
-            if (!item) return;
-
-            modalMode = 'edit';
-            document.getElementById('modal-title').innerText = '⚙️ 일정 수정 및 삭제';
-            document.getElementById('modal-item-id').value = item.id;
-            document.getElementById('modal-day').value = item.day;
-            document.getElementById('modal-time').value = item.time;
-            document.getElementById('modal-text').value = item.text;
-            document.getElementById('btn-modal-delete').style.display = 'inline-block';
-            document.getElementById('schedule-modal').classList.add('active');
+            document.getElementById('input-time').value = '';
+            document.getElementById('input-place').value = '';
         }
 
         function closeModal() {
             document.getElementById('schedule-modal').classList.remove('active');
         }
 
-        async function handleSubmit() {
-            const id = document.getElementById('modal-item-id').value;
-            const day = document.getElementById('modal-day').value;
-            const time = document.getElementById('modal-time').value.trim();
-            const text = document.getElementById('modal-text').value.trim();
+        function addKakaoSchedule() {
+            const timeVal = document.getElementById('input-time').value.trim() || "시간미정";
+            const placeVal = document.getElementById('input-place').value.trim();
 
-            if (!time || !text) {
-                alert('시간과 일정 내용을 입력해주세요!');
+            if (!placeVal) {
+                alert("장소를 입력해주세요!");
                 return;
             }
 
-            closeModal();
-
-            if (modalMode === 'edit') {
-                const idx = currentSchedules.findIndex(s => s.id === Number(id));
-                if (idx !== -1) {
-                    currentSchedules[idx] = { id: Number(id), day, time, text };
-                    renderSchedule(currentSchedules);
-                }
-
-                try {
-                    await fetch(GAS_WEBAPP_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'edit', id: id, day, time, text }),
-                        redirect: 'follow'
-                    });
-                } catch (err) {
-                    console.error("수정 실패:", err);
-                    loadScheduleFromSheet();
-                }
-
-            } else {
-                const tempId = Date.now();
-                currentSchedules.push({ id: tempId, day, time, text });
-                renderSchedule(currentSchedules);
-
-                try {
-                    await fetch(GAS_WEBAPP_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'add', day, time, text }),
-                        redirect: 'follow'
-                    });
-
-                    setTimeout(() => {
-                        loadScheduleFromSheet();
-                    }, 500);
-                } catch (err) {
-                    console.error("추가 실패:", err);
-                    loadScheduleFromSheet();
-                }
+            if (!ps) {
+                alert("카카오맵 API 키가 설정되지 않았습니다.");
+                return;
             }
-        }
 
-        async function handleDelete() {
-            const id = document.getElementById('modal-item-id').value;
-            if (!id) return;
+            ps.keywordSearch(placeVal, function(data, status, pagination) {
+                if (status === kakao.maps.services.Status.OK) {
+                    var lat = data[0].y;
+                    var lng = data[0].x;
+                    var placeName = data[0].place_name;
 
-            if (!confirm('이 일정을 삭제하시겠습니까?')) return;
+                    var coords = new kakao.maps.LatLng(lat, lng);
 
-            closeModal();
+                    var marker = new kakao.maps.Marker({
+                        map: map,
+                        position: coords
+                    });
+                    markers.push(marker);
 
-            currentSchedules = currentSchedules.filter(s => s.id !== Number(id));
-            renderSchedule(currentSchedules);
+                    map.setCenter(coords);
+                    
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: `<div style="padding:5px;font-family:'Jua';font-size:14px;color:#000;">${placeName}</div>`
+                    });
+                    infowindow.open(map, marker);
 
-            try {
-                await fetch(GAS_WEBAPP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'delete', id: id }),
-                    redirect: 'follow'
-                });
+                    // 화면 리스트에 추가
+                    const ul = document.getElementById('my-schedule-list');
+                    const li = document.createElement('li');
+                    li.className = 'schedule-item';
+                    li.innerHTML = `
+                        <span class="time-badge">${timeVal}</span>
+                        <span class="item-text">${placeName}</span>
+                    `;
+                    ul.appendChild(li);
 
-                setTimeout(() => {
-                    loadScheduleFromSheet();
-                }, 500);
-            } catch (err) {
-                console.error("삭제 실패:", err);
-                loadScheduleFromSheet();
-            }
+                    // 👇 구글 스프레드 시트로 데이터 전송 (YOUR_GOOGLE_APPS_SCRIPT_URL_HERE 부분을 웹 앱 URL로 변경하세요)
+                    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwS799Ew-6Y2qmtQaLGiZCqIsVP7agZ41dpngIDiXNAwKoWmPL8GKFHxTNvfz5z065c/exec'; 
+                    if (WEB_APP_URL !== 'https://script.google.com/macros/s/AKfycbwS799Ew-6Y2qmtQaLGiZCqIsVP7agZ41dpngIDiXNAwKoWmPL8GKFHxTNvfz5z065c/exec') {
+                        fetch(WEB_APP_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ time: timeVal, place: placeName })
+                        }).catch(err => console.log('시트 전송 오류:', err));
+                    }
+
+                    closeModal();
+                } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+                    alert('검색 결과가 존재하지 않습니다.');
+                } else {
+                    alert('검색 중 오류가 발생했습니다.');
+                }
+            });
         }
     </script>
 </body>
