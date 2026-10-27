@@ -1,1085 +1,689 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>⚡️청주 여행 초특급 초대장⚡️</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Single+Day&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-yellow: #ffe600;
-            --pink-accent: #ff0055;
-            --blue-accent: #0022ff;
-            --green-accent: #00e676;
-            --black: #000000;
-            --white: #ffffff;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Gaegu', cursive, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100%;
-            min-height: 100vh;
-            background-color: #1a1a2e;
-            background-image: radial-gradient(#ff007f 10%, transparent 11%), radial-gradient(#00d2ff 10%, transparent 11%);
-            background-size: 24px 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 4px;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 440px;
-            background-color: var(--bg-yellow);
-            border: 4px solid var(--black);
-            border-radius: 20px;
-            box-shadow: 6px 8px 0px var(--black);
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            margin: auto;
-        }
-
-        .sticker {
-            position: absolute;
-            z-index: 10;
-            font-size: clamp(24px, 7vw, 32px);
-            filter: drop-shadow(2px 2px 0px #000);
-            user-select: none;
-            pointer-events: none;
-            animation: bounce 2.5s infinite ease-in-out;
-        }
-
-        .sticker-1 { top: 12px; right: 12px; transform: rotate(15deg); }
-        .sticker-2 { top: 38%; left: -4px; transform: rotate(-20deg); }
-        .sticker-3 { bottom: 90px; right: -2px; transform: rotate(25deg); }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) rotate(10deg); }
-            50% { transform: translateY(-6px) rotate(-5deg); }
-        }
-
-        /* 초대장 화면 */
-        #invitation-screen {
-            padding: 20px 8px 0 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        .header-section {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin: 10px 0 14px 0;
-        }
-
-        .red-badge {
-            background-color: var(--pink-accent);
-            color: var(--white);
-            padding: 10px 14px;
-            border-radius: 50% 40% 60% 45% / 40% 60% 40% 55%;
-            border: 3.5px solid var(--black);
-            font-size: clamp(20px, 5.5vw, 26px);
-            font-weight: 700;
-            line-height: 1.1;
-            text-align: center;
-            transform: rotate(-10deg);
-            box-shadow: 3px 3px 0px var(--black);
-            flex-shrink: 0;
-        }
-
-        .main-title {
-            font-size: clamp(48px, 13vw, 64px);
-            font-weight: 700;
-            color: var(--blue-accent);
-            text-shadow: 2px 2px 0px var(--white), 4px 4px 0px var(--black);
-            letter-spacing: 2px;
-            line-height: 1;
-            transform: rotate(1deg);
-            font-family: 'Single Day', cursive;
-        }
-
-        .sub-tag-box {
-            background-color: var(--green-accent);
-            border: 3.5px solid var(--black);
-            padding: 6px 16px;
-            border-radius: 24px;
-            box-shadow: 3.5px 3.5px 0px var(--black);
-            margin: 4px 0 16px 0;
-            transform: rotate(-1deg);
-            text-align: center;
-            max-width: 98%;
-        }
-
-        .sub-tag {
-            font-size: clamp(20px, 5.5vw, 25px);
-            font-weight: 700;
-            color: var(--black);
-            white-space: nowrap;
-        }
-
-        .paper-box {
-            width: 100%;
-            background-color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 14px;
-            padding: 18px 12px;
-            box-shadow: 5px 5px 0px var(--black);
-            margin-bottom: 16px;
-            position: relative;
-        }
-
-        .tape-top {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-2deg);
-            width: 110px;
-            height: 24px;
-            background-color: rgba(255, 0, 128, 0.75);
-            border: 2px solid var(--black);
-        }
-
-        .info-line {
-            font-size: clamp(22px, 6vw, 27px);
-            font-weight: 700;
-            color: var(--black);
-            margin-bottom: 12px;
-            line-height: 1.35;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .info-line:last-child {
-            margin-bottom: 0;
-        }
-
-        .info-line span.highlight {
-            background-color: #a6f4ff;
-            padding: 2px 8px;
-            border-radius: 8px;
-            border: 2px solid var(--black);
-        }
-
-        .info-line span.highlight-pink {
-            background-color: #ffb3d9;
-            padding: 2px 8px;
-            border-radius: 8px;
-            border: 2px solid var(--black);
-        }
-
-        .recruitment-banner {
-            width: 100%;
-            text-align: center;
-            font-size: clamp(22px, 6vw, 27px);
-            font-weight: 700;
-            color: var(--pink-accent);
-            background-color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 12px;
-            padding: 6px;
-            margin-bottom: 16px;
-            box-shadow: 4px 4px 0px var(--black);
-            letter-spacing: 1px;
-        }
-
-        .bottom-action-bar {
-            width: calc(100% + 16px);
-            margin-left: -8px;
-            margin-right: -8px;
-            background-color: var(--blue-accent);
-            border-top: 4px solid var(--black);
-            padding: 16px 12px;
-            text-align: center;
-            position: relative;
-            z-index: 20;
-        }
-
-        .bottom-bar-text {
-            font-size: clamp(17px, 4.8vw, 21px);
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--white);
-            text-shadow: 1.5px 1.5px 0px var(--black);
-        }
-
-        .btn-enter {
-            width: 100%;
-            padding: 14px 18px;
-            background-color: var(--pink-accent);
-            color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 35px;
-            font-size: clamp(24px, 6.5vw, 30px);
-            font-weight: 700;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 0px 6px 0px var(--black);
-            transition: all 0.1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        /* 일정 화면 */
-        #schedule-screen {
-            display: none;
-            padding: 18px 8px 24px 8px;
-            background-color: var(--bg-yellow);
-            flex-direction: column;
-            width: 100%;
-            min-height: 530px;
-        }
-
-        #schedule-screen.active {
-            display: flex;
-        }
-
-        .schedule-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-            gap: 6px;
-        }
-
-        .schedule-header-title {
-            font-size: clamp(22px, 6vw, 28px);
-            font-weight: 700;
-            color: var(--blue-accent);
-            background-color: var(--white);
-            padding: 6px 10px;
-            border: 3.5px solid var(--black);
-            border-radius: 12px;
-            box-shadow: 3px 3px 0px var(--black);
-            font-family: 'Single Day', cursive;
-        }
-
-        .nav-btns {
-            display: flex;
-            gap: 6px;
-        }
-
-        .btn-nav-action {
-            background-color: var(--pink-accent);
-            color: var(--white);
-            border: 3px solid var(--black);
-            border-radius: 10px;
-            padding: 6px 10px;
-            font-size: clamp(17px, 4.5vw, 20px);
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--black);
-            white-space: nowrap;
-        }
-
-        .btn-nav-action.edit-active {
-            background-color: #00bcd4;
-            color: var(--black);
-        }
-
-        /* 편집 모드 시 초대장 버튼 숨김 */
-        .is-edit-mode #btn-back-invitation {
-            display: none;
-        }
-
-        #schedule-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-
-        .loading-box {
-            text-align: center;
-            padding: 30px 16px;
-            font-size: clamp(20px, 5.5vw, 26px);
-            font-weight: 700;
-            color: var(--black);
-            background-color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 14px;
-            box-shadow: 5px 5px 0px var(--black);
-            margin-bottom: 18px;
-            line-height: 1.4;
-        }
-
-        .day-card {
-            background-color: var(--white);
-            border: 3.5px solid var(--black);
-            border-radius: 14px;
-            padding: 16px 10px;
-            margin-bottom: 18px;
-            box-shadow: 5px 5px 0px var(--black);
-            position: relative;
-        }
-
-        .day-card::before {
-            content: '';
-            position: absolute;
-            top: -12px;
-            left: 16px;
-            width: 75px;
-            height: 22px;
-            background-color: rgba(0, 230, 118, 0.85);
-            border: 2px solid var(--black);
-            transform: rotate(-4deg);
-        }
-
-        .day-title-tag {
-            display: inline-block;
-            background-color: var(--pink-accent);
-            color: var(--white);
-            font-size: clamp(22px, 6vw, 27px);
-            font-weight: 700;
-            padding: 3px 14px;
-            border: 3px solid var(--black);
-            border-radius: 24px;
-            margin-bottom: 12px;
-            box-shadow: 3px 3px 0px var(--black);
-        }
-
-        .day-title-tag.day2 {
-            background-color: var(--blue-accent);
-        }
-
-        .schedule-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .schedule-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #f0f4ff;
-            border: 3px solid var(--black);
-            border-radius: 10px;
-            padding: 10px;
-            font-size: clamp(20px, 5.5vw, 24px);
-            font-weight: 700;
-            gap: 8px;
-            box-shadow: 3px 3px 0px var(--black);
-            transition: transform 0.15s ease, background-color 0.15s ease;
-            position: relative;
-        }
-
-        .is-edit-mode .schedule-item {
-            border-color: var(--pink-accent);
-            background-color: #fff0f5;
-        }
-
-        /* 드래그 중 및 드래그 위치 표시 스타일 */
-        .schedule-item.dragging {
-            opacity: 0.4;
-            background-color: #ffe0b2;
-            border-style: dashed;
-        }
-
-        .schedule-item.drag-over {
-            border-color: var(--blue-accent);
-            background-color: #e3f2fd;
-            transform: scale(1.02);
-        }
-
-        /* 드래그 핸들 버턴 */
-        .drag-handle {
-            display: none;
-            font-size: 20px;
-            color: var(--black);
-            cursor: grab;
-            padding: 0 4px;
-            user-select: none;
-            touch-action: none;
-            flex-shrink: 0;
-            font-weight: bold;
-        }
-
-        .is-edit-mode .drag-handle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .item-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .time-badge {
-            background-color: var(--bg-yellow);
-            color: var(--black);
-            padding: 2px 8px;
-            border: 2px solid var(--black);
-            border-radius: 8px;
-            font-size: clamp(16px, 4.2vw, 19px);
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        .item-text {
-            color: var(--black);
-            word-break: keep-all;
-        }
-
-        /* 편집용 버튼 액션 박스 */
-        .item-controls {
-            display: none;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .is-edit-mode .item-controls {
-            display: flex;
-        }
-
-        .btn-control {
-            background-color: #ffffff;
-            border: 2px solid var(--black);
-            border-radius: 6px;
-            padding: 3px 8px;
-            font-size: 15px;
-            cursor: pointer;
-            box-shadow: 2px 2px 0px var(--black);
-            white-space: nowrap;
-        }
-
-        .btn-control:active {
-            transform: translate(1px, 1px);
-            box-shadow: 1px 1px 0px var(--black);
-        }
-
-        .btn-control.edit-btn {
-            background-color: #a6f4ff;
-        }
-
-        .btn-add-schedule {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--green-accent);
-            color: var(--black);
-            border: 3.5px solid var(--black);
-            border-radius: 16px;
-            font-size: clamp(22px, 6vw, 26px);
-            font-weight: 700;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 4px 4px 0px var(--black);
-            margin-bottom: 18px;
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-
-        .btn-add-schedule:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px var(--black);
-        }
-
-        .footer-doodle {
-            text-align: center;
-            font-size: clamp(20px, 5.5vw, 24px);
-            font-weight: 700;
-            color: var(--black);
-            background-color: var(--green-accent);
-            border: 3.5px solid var(--black);
-            padding: 10px;
-            border-radius: 12px;
-            box-shadow: 4px 4px 0px var(--black);
-        }
-
-        /* 모달 스타일 */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.65);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            width: 100%;
-            max-width: 380px;
-            background-color: var(--white);
-            border: 4px solid var(--black);
-            border-radius: 18px;
-            padding: 18px 16px;
-            box-shadow: 6px 8px 0px var(--black);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            position: relative;
-            animation: popIn 0.2s ease-out;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid var(--black);
-            padding-bottom: 8px;
-        }
-
-        .modal-title {
-            font-size: clamp(22px, 6vw, 26px);
-            font-weight: 700;
-            color: var(--blue-accent);
-            font-family: 'Jua', sans-serif;
-        }
-
-        .btn-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            font-weight: 700;
-            cursor: pointer;
-            color: var(--black);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .form-group label {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--black);
-        }
-
-        .form-control {
-            border: 2.5px solid var(--black);
-            border-radius: 8px;
-            padding: 8px;
-            font-size: clamp(18px, 5vw, 21px);
-            font-weight: 700;
-            outline: none;
-            background-color: #fff;
-        }
-
-        .modal-btn-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 6px;
-        }
-
-        .btn-modal-delete {
-            padding: 10px 14px;
-            background-color: var(--pink-accent);
-            color: var(--white);
-            border: 3px solid var(--black);
-            border-radius: 10px;
-            font-size: clamp(18px, 5vw, 21px);
-            font-weight: 700;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--black);
-            display: none;
-        }
-
-        .btn-modal-submit {
-            flex: 1;
-            padding: 10px;
-            background-color: var(--green-accent);
-            color: var(--black);
-            border: 3px solid var(--black);
-            border-radius: 10px;
-            font-size: clamp(20px, 5.5vw, 24px);
-            font-weight: 700;
-            font-family: 'Jua', sans-serif;
-            cursor: pointer;
-            box-shadow: 3px 3px 0px var(--black);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>도쿄 여행 플래너 (11/28 - 12/02)</title>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --primary-dark: #1e3a8a;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 40px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+      color: white;
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header-sub {
+      font-size: 0.85rem;
+      opacity: 0.85;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Day Tabs */
+    .day-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .day-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 70px;
+      padding: 10px 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn .day-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .tab-btn .day-date {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .tab-btn.active .day-title,
+    .tab-btn.active .day-date {
+      color: white;
+    }
+
+    /* Schedule List */
+    .schedule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .card.completed {
+      opacity: 0.55;
+      background-color: #f1f5f9;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .custom-checkbox {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .card.completed .custom-checkbox {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .custom-checkbox::after {
+      content: "✓";
+      color: white;
+      font-size: 12px;
+      display: none;
+    }
+
+    .card.completed .custom-checkbox::after {
+      display: block;
+    }
+
+    .time-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary-light);
+      background: #eff6ff;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .tag-move { background: #e0f2fe; color: #0369a1; }
+    .tag-food { background: #ffedd5; color: #c2410c; }
+    .tag-shop { background: #fce7f3; color: #be185d; }
+    .tag-spot { background: #dcfce7; color: #15803d; }
+    .tag-etc { background: #f1f5f9; color: #475569; }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .card.completed .card-title {
+      text-decoration: line-through;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      padding-left: 30px;
+    }
+
+    .card-btn-group {
+      display: flex;
+      gap: 6px;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 2px 4px;
+    }
+
+    .icon-btn:hover {
+      color: var(--text-main);
+    }
+
+    /* Modal Form */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal h2 {
+      font-size: 1.1rem;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 8px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--primary-light);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background: var(--border-color);
+      color: var(--text-main);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <!-- 초대장 화면 -->
-        <div id="invitation-screen">
-            <div class="sticker sticker-1">💖</div>
-            <div class="sticker sticker-2">⭐</div>
-            <div class="sticker sticker-3">💥</div>
+  <div class="app-container">
+    <header>
+      <div class="header-top">
+        <h1>도쿄 여행 플래너 ✈️</h1>
+      </div>
+      <div class="header-sub">2026.11.28(토) - 12.02(수) | 4박 5일</div>
+      <div class="header-actions">
+        <button class="btn-action" onclick="openAddModal()">+ 일정 추가</button>
+        <button class="btn-action" onclick="resetToDefault()">초기화</button>
+      </div>
+    </header>
 
-            <div class="header-section">
-                <div class="red-badge">청주<br>여행</div>
-                <div class="main-title">초댓장</div>
-            </div>
-
-            <div class="sub-tag-box">
-                <span class="sub-tag">♣ 주인공: 청주 놀러갈 사람 ♣</span>
-            </div>
-
-            <div class="paper-box">
-                <div class="tape-top"></div>
-                <div class="info-line">📍 <span class="highlight">목적지:</span> 충북 청주 일대 🗺️</div>
-                <div class="info-line">🗓️ <span class="highlight">일시:</span> 1박 2일 힐링 투어 🚗</div>
-                <div class="info-line">⚡️ <span class="highlight-pink">특징:</span> 맛집 폭격 & 꿀휴식 🍣</div>
-                <div class="info-line">💯 <span class="highlight-pink">재미:</span> 999.99% 장담! 🔥</div>
-            </div>
-
-            <div class="recruitment-banner">
-                ★ 상 ♡ 시 ♠ 모 ♥ 집 ☆
-            </div>
-
-            <div class="bottom-action-bar">
-                <div class="bottom-bar-text">※ 아래 버튼을 누르면 일정 공개! ※</div>
-                <button class="btn-enter" onclick="showSchedule()">
-                    👉 일정 확인하기 👈
-                </button>
-            </div>
-        </div>
-
-        <!-- 일정표 화면 -->
-        <div id="schedule-screen">
-            <div class="schedule-nav">
-                <div class="schedule-header-title">여행 일정표</div>
-                <div class="nav-btns">
-                    <button id="btn-toggle-edit" class="btn-nav-action" onclick="toggleEditMode()">✏️ 편집</button>
-                    <button id="btn-back-invitation" class="btn-nav-action" onclick="showInvitation()">← 초대장</button>
-                </div>
-            </div>
-
-            <div id="schedule-content">
-                <div class="loading-box">⏳ 일정을 불러오는 중입니다...</div>
-            </div>
-
-            <button class="btn-add-schedule" onclick="openAddModal()">➕ 새 일정 추가하기</button>
-
-            <div class="footer-doodle">
-                🎉 재미 1000% 보장! 준비완료! 🎉
-            </div>
-        </div>
+    <div class="day-tabs">
+      <div class="tab-btn active" onclick="switchDay(1)">
+        <div class="day-title">1일차</div>
+        <div class="day-date">11.28 토</div>
+      </div>
+      <div class="tab-btn" onclick="switchDay(2)">
+        <div class="day-title">2일차</div>
+        <div class="day-date">11.29 일</div>
+      </div>
+      <div class="tab-btn" onclick="switchDay(3)">
+        <div class="day-title">3일차</div>
+        <div class="day-date">11.30 월</div>
+      </div>
+      <div class="tab-btn" onclick="switchDay(4)">
+        <div class="day-title">4일차</div>
+        <div class="day-date">12.01 화</div>
+      </div>
+      <div class="tab-btn" onclick="switchDay(5)">
+        <div class="day-title">5일차</div>
+        <div class="day-date">12.02 수</div>
+      </div>
     </div>
 
-    <!-- 모달 -->
-    <div id="schedule-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div id="modal-title" class="modal-title">✏️ 일정 관리</div>
-                <button class="btn-close" onclick="closeModal()">✖</button>
-            </div>
-            
-            <input type="hidden" id="modal-item-id">
-
-            <div class="form-group">
-                <label>일자</label>
-                <select id="modal-day" class="form-control">
-                    <option value="1일차">1일차</option>
-                    <option value="2일차">2일차</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>시간</label>
-                <input type="text" id="modal-time" class="form-control" placeholder="예: 점심, 14:00">
-            </div>
-
-            <div class="form-group">
-                <label>일정 내용</label>
-                <input type="text" id="modal-text" class="form-control" placeholder="일정 내용을 입력하세요">
-            </div>
-
-            <div class="modal-btn-group">
-                <button id="btn-modal-delete" class="btn-modal-delete" onclick="handleDelete()">🗑️ 삭제</button>
-                <button id="btn-modal-submit" class="btn-modal-submit" onclick="handleSubmit()">저장하기</button>
-            </div>
-        </div>
+    <div class="schedule-list" id="scheduleList">
+      <!-- 동적 일정 카드 생성 영역 -->
     </div>
+  </div>
 
-    <script>
-        // ⚠️ 본인의 구글 앱스 스크립트 웹앱 URL을 입력해 주세요.
-        const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwS799Ew-6Y2qmtQaLGiZCqIsVP7agZ41dpngIDiXNAwKoWmPL8GKFHxTNvfz5z065c/exec';
+  <!-- 일정 추가/수정 모달 -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2 id="modalTitle">일정 추가</h2>
+      <input type="hidden" id="editId">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>일차</label>
+          <select id="formDay">
+            <option value="1">1일차 (11.28)</option>
+            <option value="2">2일차 (11.29)</option>
+            <option value="3">3일차 (11.30)</option>
+            <option value="4">4일차 (12.01)</option>
+            <option value="5">5일차 (12.02)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>카테고리</label>
+          <select id="formCategory">
+            <option value="move">이동</option>
+            <option value="food">식사</option>
+            <option value="shop">쇼핑</option>
+            <option value="spot">관광/테마</option>
+            <option value="etc">기타</option>
+          </select>
+        </div>
+      </div>
 
-        let currentSchedules = [];
-        let isEditMode = false;
-        let modalMode = 'add';
+      <div class="form-group">
+        <label>시간대</label>
+        <input type="text" id="formTime" placeholder="예: 14:00 - 15:00">
+      </div>
 
-        // 드래그 상태 관련 변수
-        let activeDragIndex = null;
-        let currentTouchItem = null;
+      <div class="form-group">
+        <label>일정 제목</label>
+        <input type="text" id="formTitle" placeholder="예: 신주쿠 GU 쇼핑">
+      </div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadScheduleFromSheet();
-        });
+      <div class="form-group">
+        <label>상세 내용 (선택)</label>
+        <textarea id="formDesc" rows="3" placeholder="메모할 내용을 입력하세요"></textarea>
+      </div>
 
-        function showSchedule() {
-            document.getElementById('invitation-screen').style.display = 'none';
-            document.getElementById('schedule-screen').classList.add('active');
-            window.scrollTo(0, 0);
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal()">취소</button>
+        <button class="btn-primary" onclick="saveSchedule()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_SCHEDULES = [
+      // 1일차
+      { id: '1-1', day: 1, time: '10:55 - 11:40', category: 'spot', title: '나리타 공항 T3 도착', desc: '입국 수속 및 수하물 수령 (이스타항공 ZE601)', completed: false },
+      { id: '1-2', day: 1, time: '11:40 - 12:00', category: 'move', title: 'T2 터미널로 이동', desc: '무료 셔틀버스 또는 도보 이동', completed: false },
+      { id: '1-3', day: 1, time: '12:00 - 12:20', category: 'move', title: 'N\'EX 티켓 발권', desc: 'T2 지하 1층 N\'EX 승차권 발권', completed: false },
+      { id: '1-4', day: 1, time: '12:20 - 13:40', category: 'move', title: '신주쿠역 이동', desc: 'N\'EX 직통 탑승 (약 1시간 15분)', completed: false },
+      { id: '1-5', day: 1, time: '13:40 - 14:00', category: 'etc', title: '짐 맡기기', desc: '신주쿠역 주변 짐 보관소 이용 (약 1,275엔)', completed: false },
+      { id: '1-6', day: 1, time: '14:00 - 15:00', category: 'food', title: '점심 식사', desc: '신주쿠 주변 맛집', completed: false },
+      { id: '1-7', day: 1, time: '15:00 - 16:30', category: 'shop', title: '신주쿠 쇼핑', desc: 'GU, 아식스 등 매장 탐방', completed: false },
+      { id: '1-8', day: 1, time: '16:30 - 17:15', category: 'etc', title: '짐 찾기 & 체크인', desc: 'PATIO서신주쿠 (니시신주쿠 8초메) 입실', completed: false },
+      { id: '1-9', day: 1, time: '17:15 - 17:30', category: 'move', title: '시부야 이동', desc: '신주쿠역 -> 시부야역 (JR 야마노테선 10분)', completed: false },
+      { id: '1-10', day: 1, time: '17:30 - 19:30', category: 'shop', title: '시부야 쇼핑', desc: '스탠다드 프로덕츠 마크시티점, 스크램블 교차로', completed: false },
+      { id: '1-11', day: 1, time: '19:30 - 21:00', category: 'food', title: '저녁 식사', desc: '시부야 맛집 식사 후 신주쿠 복귀', completed: false },
+
+      // 2일차
+      { id: '2-1', day: 2, time: '09:30 - 10:05', category: 'move', title: '아사쿠사 이동', desc: '신주쿠 -> 아사쿠사역 (지하철 30분)', completed: false },
+      { id: '2-2', day: 2, time: '10:05 - 11:30', category: 'spot', title: '아사쿠사 센소지', desc: '카미나리몬, 나카미세도리 산책', completed: false },
+      { id: '2-3', day: 2, time: '11:30 - 11:40', category: 'move', title: '아키하바라 이동', desc: '아사쿠사 -> 아키하바라 (지하철 10분)', completed: false },
+      { id: '2-4', day: 2, time: '11:40 - 13:00', category: 'spot', title: '아키하바라 거리 구경', desc: '요도바시 카메라, 피규어/오락실', completed: false },
+      { id: '2-5', day: 2, time: '13:00 - 14:00', category: 'food', title: '점심 식사', desc: '아키하바라 맛집 (규카츠/카레)', completed: false },
+      { id: '2-6', day: 2, time: '14:00 - 14:20', category: 'move', title: '긴자 이동', desc: '아키하바라 -> 긴자역 (히비야선 12분)', completed: false },
+      { id: '2-7', day: 2, time: '14:20 - 14:50', category: 'food', title: '긴자 팡메종', desc: '원조 소금빵 테이크아웃', completed: false },
+      { id: '2-8', day: 2, time: '14:50 - 15:15', category: 'move', title: '시바 공원 이동', desc: '긴자 -> 카미야초/아카바네바시역', completed: false },
+      { id: '2-9', day: 2, time: '15:15 - 15:45', category: 'spot', title: '시바 공원 피크닉', desc: '도쿄타워 배경 사진 촬영 & 소금빵 타임', completed: false },
+      { id: '2-10', day: 2, time: '15:45 - 17:00', category: 'spot', title: '도쿄타워 메인 데크', desc: '16:00 입장 / 16:28 일몰 & 16:50 라이트업 감상', completed: false },
+      { id: '2-11', day: 2, time: '17:00 - 18:30', category: 'food', title: '저녁 식사', desc: '도쿄타워 주변 (아카바네바시/다이몬)', completed: false },
+      { id: '2-12', day: 2, time: '18:30 - 19:00', category: 'move', title: '신주쿠 복귀', desc: '아카바네바시 -> 신주쿠 (오에도선 20분)', completed: false },
+      { id: '2-13', day: 2, time: '20:00 ~', category: 'shop', title: '돈키호테 가부키초점', desc: '20시 이후 여유로운 드럭스토어 심야 쇼핑', completed: false },
+
+      // 3일차
+      { id: '3-1', day: 3, time: '06:00 - 06:45', category: 'etc', title: '기상 및 준비', desc: '바스타 신주쿠 버스터미널 이동', completed: false },
+      { id: '3-2', day: 3, time: '06:45 - 08:30', category: 'move', title: '후지큐 이동 (고속버스)', desc: '바스타 신주쿠 출발 -> 후지큐 하이랜드', completed: false },
+      { id: '3-3', day: 3, time: '08:30 - 09:00', category: 'spot', title: '후지큐 오픈런 대기', desc: '09:00 정시 오픈에 맞춘 입장 대기', completed: false },
+      { id: '3-4', day: 3, time: '09:00 - 17:00', category: 'spot', title: '후지큐 하이랜드 즐기기', desc: '인기 어트랙션 우선 탑승 & 파크 내 점심', completed: false },
+      { id: '3-5', day: 3, time: '17:30 - 19:15', category: 'move', title: '신주쿠 복귀 (고속버스)', desc: '후지큐 -> 바스타 신주쿠 도착', completed: false },
+      { id: '3-6', day: 3, time: '19:30 ~', category: 'food', title: '저녁 식사 & 휴식', desc: '신주쿠 근처 맛집 저녁 식사', completed: false },
+
+      // 4일차
+      { id: '4-1', day: 4, time: '07:00 - 08:00', category: 'move', title: '디즈니씨 이동', desc: '신주쿠 -> 도쿄 디즈니씨 (직행버스/지하철)', completed: false },
+      { id: '4-2', day: 4, time: '08:30 - 21:00', category: 'spot', title: '도쿄 디즈니씨 올데이', desc: '어트랙션, 20:30 불꽃놀이 쇼, 21:00 폐장 완주', completed: false },
+      { id: '4-3', day: 4, time: '21:15 - 22:15', category: 'move', title: '신주쿠 복귀', desc: '디즈니씨 -> 신주쿠 이동', completed: false },
+      { id: '4-4', day: 4, time: '22:15 ~', category: 'etc', title: '귀국 짐 정리', desc: '숙소 복귀 후 마지막 밤 짐 싸기', completed: false },
+
+      // 5일차
+      { id: '5-1', day: 5, time: '06:30 - 07:00', category: 'etc', title: '체크아웃', desc: '에어비앤비 퇴실 및 신주쿠역 이동', completed: false },
+      { id: '5-2', day: 5, time: '07:00 - 07:18', category: 'move', title: 'N\'EX 승차장 이동', desc: '신주쿠역 JR N\'EX 승강장 대기', completed: false },
+      { id: '5-3', day: 5, time: '07:18 - 08:37', category: 'move', title: '공항 이동 (N\'EX)', desc: '신주쿠 출발 -> 나리타 T2 도착 (07:18 탑승)', completed: false },
+      { id: '5-4', day: 5, time: '08:37 - 09:00', category: 'move', title: 'T3 터미널 이동', desc: '셔틀버스 또는 도보 이동', completed: false },
+      { id: '5-5', day: 5, time: '09:00 - 11:50', category: 'etc', title: '출국 수속 & 면세점', desc: '이스타항공(T3) 수속, 보안검색, 면세 쇼핑', completed: false },
+      { id: '5-6', day: 5, time: '11:50 ~', category: 'spot', title: '인천으로 출발', desc: '이스타항공 ZE602 탑승 및 귀국 ✈️', completed: false }
+    ];
+
+    let currentDay = 1;
+    let schedules = [];
+
+    const categoryNames = {
+      move: '이동',
+      food: '식사',
+      shop: '쇼핑',
+      spot: '관광/테마',
+      etc: '기타'
+    };
+
+    // App Init
+    window.onload = () => {
+      loadData();
+      renderSchedules();
+    };
+
+    function loadData() {
+      const saved = localStorage.getItem('tokyo_schedule_data');
+      if (saved) {
+        schedules = JSON.parse(saved);
+      } else {
+        schedules = [...DEFAULT_SCHEDULES];
+        saveData();
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('tokyo_schedule_data', JSON.stringify(schedules));
+    }
+
+    function switchDay(day) {
+      currentDay = day;
+      document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx + 1 === day);
+      });
+      renderSchedules();
+    }
+
+    function renderSchedules() {
+      const listEl = document.getElementById('scheduleList');
+      listEl.innerHTML = '';
+
+      const dayItems = schedules.filter(item => item.day === currentDay);
+
+      if (dayItems.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted); font-size: 0.9rem;">등록된 일정이 없습니다.</div>';
+        return;
+      }
+
+      dayItems.forEach(item => {
+        const card = document.createElement('div');
+        card.className = `card ${item.completed ? 'completed' : ''}`;
+        
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-left">
+              <div class="custom-checkbox" onclick="toggleComplete('${item.id}')"></div>
+              <span class="time-badge">${item.time}</span>
+              <span class="tag tag-${item.category}">${categoryNames[item.category] || '기타'}</span>
+            </div>
+            <div class="card-btn-group">
+              <button class="icon-btn" onclick="openEditModal('${item.id}')">수정</button>
+              <button class="icon-btn" onclick="deleteSchedule('${item.id}')">삭제</button>
+            </div>
+          </div>
+          <div class="card-title">${item.title}</div>
+          ${item.desc ? `<div class="card-desc">${item.desc}</div>` : ''}
+        `;
+
+        listEl.appendChild(card);
+      });
+    }
+
+    function toggleComplete(id) {
+      const item = schedules.find(s => s.id === id);
+      if (item) {
+        item.completed = !item.completed;
+        saveData();
+        renderSchedules();
+      }
+    }
+
+    function resetToDefault() {
+      if (confirm('모든 일정을 초기 데이터로 되돌리시겠습니까?')) {
+        schedules = JSON.parse(JSON.stringify(DEFAULT_SCHEDULES));
+        saveData();
+        renderSchedules();
+      }
+    }
+
+    // Modal Operations
+    function openAddModal() {
+      document.getElementById('modalTitle').innerText = '일정 추가';
+      document.getElementById('editId').value = '';
+      document.getElementById('formDay').value = currentDay;
+      document.getElementById('formCategory').value = 'spot';
+      document.getElementById('formTime').value = '';
+      document.getElementById('formTitle').value = '';
+      document.getElementById('formDesc').value = '';
+      
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function openEditModal(id) {
+      const item = schedules.find(s => s.id === id);
+      if (!item) return;
+
+      document.getElementById('modalTitle').innerText = '일정 수정';
+      document.getElementById('editId').value = item.id;
+      document.getElementById('formDay').value = item.day;
+      document.getElementById('formCategory').value = item.category;
+      document.getElementById('formTime').value = item.time;
+      document.getElementById('formTitle').value = item.title;
+      document.getElementById('formDesc').value = item.desc || '';
+
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    function saveSchedule() {
+      const id = document.getElementById('editId').value;
+      const day = parseInt(document.getElementById('formDay').value, 10);
+      const category = document.getElementById('formCategory').value;
+      const time = document.getElementById('formTime').value || '시간 미정';
+      const title = document.getElementById('formTitle').value;
+      const desc = document.getElementById('formDesc').value;
+
+      if (!title) {
+        alert('일정 제목을 입력해주세요.');
+        return;
+      }
+
+      if (id) {
+        // Edit
+        const item = schedules.find(s => s.id === id);
+        if (item) {
+          item.day = day;
+          item.category = category;
+          item.time = time;
+          item.title = title;
+          item.desc = desc;
         }
+      } else {
+        // Add
+        const newSchedule = {
+          id: Date.now().toString(),
+          day,
+          category,
+          time,
+          title,
+          desc,
+          completed: false
+        };
+        schedules.push(newSchedule);
+      }
 
-        function showInvitation() {
-            document.getElementById('schedule-screen').classList.remove('active');
-            document.getElementById('invitation-screen').style.display = 'flex';
-            window.scrollTo(0, 0);
-        }
+      saveData();
+      closeModal();
+      
+      // If day was changed in modal, switch tab to target day
+      if (currentDay !== day) {
+        switchDay(day);
+      } else {
+        renderSchedules();
+      }
+    }
 
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            const btn = document.getElementById('btn-toggle-edit');
-            const screen = document.getElementById('schedule-screen');
-
-            if (isEditMode) {
-                btn.innerText = '✅ 완료';
-                btn.classList.add('edit-active');
-                screen.classList.add('is-edit-mode');
-            } else {
-                btn.innerText = '✏️ 편집';
-                btn.classList.remove('edit-active');
-                screen.classList.remove('is-edit-mode');
-            }
-            renderSchedule(currentSchedules);
-        }
-
-        async function loadScheduleFromSheet() {
-            const scheduleContent = document.getElementById('schedule-content');
-
-            if (!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('여기에_구글_웹앱_URL')) {
-                scheduleContent.innerHTML = `
-                    <div class="loading-box" style="background:#fff3bf;">
-                        ⚠️ Apps Script URL이 설정되지 않았습니다.<br>
-                        <small style="font-size:15px; font-weight:normal;">코드 상단의 GAS_WEBAPP_URL을 설정해 주세요.</small>
-                    </div>`;
-                return;
-            }
-
-            try {
-                const res = await fetch(`${GAS_WEBAPP_URL}?t=${Date.now()}`, { cache: 'no-store' });
-                if (!res.ok) throw new Error('네트워크 응답 오류');
-
-                currentSchedules = await res.json();
-                renderSchedule(currentSchedules);
-            } catch (err) {
-                console.error("로드 실패:", err);
-                if (currentSchedules.length === 0) {
-                    scheduleContent.innerHTML = `
-                        <div class="loading-box" style="background:#ffe3e3;">
-                            ❌ 일정을 불러오지 못했습니다.<br>
-                            <small style="font-size:15px; font-weight:normal;">구글 시트 배포 설정을 확인하세요.</small>
-                        </div>`;
-                }
-            }
-        }
-
-        function renderSchedule(items) {
-            let day1Html = '';
-            let day2Html = '';
-
-            items.forEach((item, index) => {
-                const itemHtml = `
-                    <li class="schedule-item" data-index="${index}" draggable="true">
-                        <div class="drag-handle">☰</div>
-                        <div class="item-left">
-                            <span class="time-badge">${item.time}</span>
-                            <span class="item-text">${item.text}</span>
-                        </div>
-                        <div class="item-controls">
-                            <button class="btn-control edit-btn" onclick="openEditModal(${item.id})">⚙️ 수정/삭제</button>
-                        </div>
-                    </li>`;
-
-                if (String(item.day).includes('2')) {
-                    day2Html += itemHtml;
-                } else {
-                    day1Html += itemHtml;
-                }
-            });
-
-            let fullHtml = '';
-            if (day1Html) {
-                fullHtml += `
-                    <div class="day-card">
-                        <div class="day-title-tag">1일차 ✨</div>
-                        <ul class="schedule-list">${day1Html}</ul>
-                    </div>`;
-            }
-            if (day2Html) {
-                fullHtml += `
-                    <div class="day-card">
-                        <div class="day-title-tag day2">2일차 🌿</div>
-                        <ul class="schedule-list">${day2Html}</ul>
-                    </div>`;
-            }
-
-            if (!fullHtml) {
-                fullHtml = `
-                    <div class="loading-box">
-                        🎈 등록된 일정이 없습니다.<br>
-                        <small style="font-size:16px; font-weight:normal;">하단 버튼을 눌러 새 일정을 추가해 보세요!</small>
-                    </div>`;
-            }
-
-            document.getElementById('schedule-content').innerHTML = fullHtml;
-
-            // 이벤트 바인딩 (드래그앤드롭 및 터치)
-            bindDragAndDropEvents();
-        }
-
-        /* PC 마우스 & 모바일 터치 드래그앤드롭 바인딩 */
-        function bindDragAndDropEvents() {
-            const items = document.querySelectorAll('.schedule-item');
-
-            items.forEach(item => {
-                const index = parseInt(item.dataset.index);
-
-                // --- PC 마우스 드래그 ---
-                item.addEventListener('dragstart', (e) => {
-                    if (!isEditMode) return;
-                    activeDragIndex = index;
-                    currentTouchItem = item;
-                    item.classList.add('dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                });
-
-                item.addEventListener('dragover', (e) => {
-                    if (!isEditMode) return;
-                    e.preventDefault();
-                    item.classList.add('drag-over');
-                });
-
-                item.addEventListener('dragleave', () => {
-                    item.classList.remove('drag-over');
-                });
-
-                item.addEventListener('drop', (e) => {
-                    if (!isEditMode) return;
-                    e.preventDefault();
-                    item.classList.remove('drag-over');
-                    const targetIndex = parseInt(item.dataset.index);
-                    
-                    if (activeDragIndex !== null && activeDragIndex !== targetIndex) {
-                        executeReorder(activeDragIndex, targetIndex);
-                    }
-                });
-
-                item.addEventListener('dragend', () => {
-                    item.classList.remove('dragging');
-                    document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('drag-over'));
-                });
-
-                // --- 모바일 터치 핸들 드래그 ---
-                const handle = item.querySelector('.drag-handle');
-                if (handle) {
-                    handle.addEventListener('touchstart', (e) => {
-                        if (!isEditMode) return;
-                        activeDragIndex = index;
-                        currentTouchItem = item;
-                        item.classList.add('dragging');
-                    }, { passive: true });
-
-                    handle.addEventListener('touchmove', (e) => {
-                        if (!isEditMode || activeDragIndex === null) return;
-                        e.preventDefault(); // 스크롤 방지
-                        const touch = e.touches[0];
-                        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-                        const targetItem = targetEl ? targetEl.closest('.schedule-item') : null;
-
-                        document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('drag-over'));
-                        if (targetItem && targetItem !== currentTouchItem) {
-                            targetItem.classList.add('drag-over');
-                        }
-                    }, { passive: false });
-
-                    handle.addEventListener('touchend', (e) => {
-                        if (!isEditMode || activeDragIndex === null) return;
-                        const touch = e.changedTouches[0];
-                        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-                        const targetItem = targetEl ? targetEl.closest('.schedule-item') : null;
-
-                        if (currentTouchItem) currentTouchItem.classList.remove('dragging');
-                        document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('drag-over'));
-
-                        if (targetItem) {
-                            const targetIndex = parseInt(targetItem.dataset.index);
-                            if (activeDragIndex !== targetIndex) {
-                                executeReorder(activeDragIndex, targetIndex);
-                            }
-                        }
-
-                        activeDragIndex = null;
-                        currentTouchItem = null;
-                    }, { passive: false });
-                }
-            });
-        }
-
-        /* 순서 교체 및 구글 시트 저장 */
-        async function executeReorder(fromIdx, toIdx) {
-            if (currentSchedules[fromIdx].day !== currentSchedules[toIdx].day) {
-                alert('같은 일차(1일차/2일차) 내에서만 순서를 변경할 수 있습니다.');
-                return;
-            }
-
-            // 배열 요소 이동
-            const [movedItem] = currentSchedules.splice(fromIdx, 1);
-            currentSchedules.splice(toIdx, 0, movedItem);
-
-            // 화면 반영
-            renderSchedule(currentSchedules);
-
-            // 구글 시트 저장
-            try {
-                await fetch(GAS_WEBAPP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'reorder', schedules: currentSchedules }),
-                    redirect: 'follow'
-                });
-            } catch (err) {
-                console.error("순서 저장 실패:", err);
-            }
-        }
-
-        function openAddModal() {
-            modalMode = 'add';
-            document.getElementById('modal-title').innerText = '➕ 새 일정 추가';
-            document.getElementById('modal-item-id').value = '';
-            document.getElementById('modal-day').value = '1일차';
-            document.getElementById('modal-time').value = '';
-            document.getElementById('modal-text').value = '';
-            document.getElementById('btn-modal-delete').style.display = 'none';
-            document.getElementById('schedule-modal').classList.add('active');
-        }
-
-        function openEditModal(id) {
-            const item = currentSchedules.find(s => s.id === id);
-            if (!item) return;
-
-            modalMode = 'edit';
-            document.getElementById('modal-title').innerText = '⚙️ 일정 수정 및 삭제';
-            document.getElementById('modal-item-id').value = item.id;
-            document.getElementById('modal-day').value = item.day;
-            document.getElementById('modal-time').value = item.time;
-            document.getElementById('modal-text').value = item.text;
-            document.getElementById('btn-modal-delete').style.display = 'inline-block';
-            document.getElementById('schedule-modal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('schedule-modal').classList.remove('active');
-        }
-
-        async function handleSubmit() {
-            const id = document.getElementById('modal-item-id').value;
-            const day = document.getElementById('modal-day').value;
-            const time = document.getElementById('modal-time').value.trim();
-            const text = document.getElementById('modal-text').value.trim();
-
-            if (!time || !text) {
-                alert('시간과 일정 내용을 입력해주세요!');
-                return;
-            }
-
-            closeModal();
-
-            if (modalMode === 'edit') {
-                const idx = currentSchedules.findIndex(s => s.id === Number(id));
-                if (idx !== -1) {
-                    currentSchedules[idx] = { id: Number(id), day, time, text };
-                    renderSchedule(currentSchedules);
-                }
-
-                try {
-                    await fetch(GAS_WEBAPP_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'edit', id: id, day, time, text }),
-                        redirect: 'follow'
-                    });
-                } catch (err) {
-                    console.error("수정 실패:", err);
-                    loadScheduleFromSheet();
-                }
-
-            } else {
-                const tempId = Date.now();
-                currentSchedules.push({ id: tempId, day, time, text });
-                renderSchedule(currentSchedules);
-
-                try {
-                    await fetch(GAS_WEBAPP_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'add', day, time, text }),
-                        redirect: 'follow'
-                    });
-
-                    setTimeout(() => {
-                        loadScheduleFromSheet();
-                    }, 500);
-                } catch (err) {
-                    console.error("추가 실패:", err);
-                    loadScheduleFromSheet();
-                }
-            }
-        }
-
-        async function handleDelete() {
-            const id = document.getElementById('modal-item-id').value;
-            if (!id) return;
-
-            if (!confirm('이 일정을 삭제하시겠습니까?')) return;
-
-            closeModal();
-
-            currentSchedules = currentSchedules.filter(s => s.id !== Number(id));
-            renderSchedule(currentSchedules);
-
-            try {
-                await fetch(GAS_WEBAPP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'delete', id: id }),
-                    redirect: 'follow'
-                });
-
-                setTimeout(() => {
-                    loadScheduleFromSheet();
-                }, 500);
-            } catch (err) {
-                console.error("삭제 실패:", err);
-                loadScheduleFromSheet();
-            }
-        }
-    </script>
+    function deleteSchedule(id) {
+      if (confirm('이 일정을 삭제하시겠습니까?')) {
+        schedules = schedules.filter(s => s.id !== id);
+        saveData();
+        renderSchedules();
+      }
+    }
+  </script>
 </body>
 </html>
