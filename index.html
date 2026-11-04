@@ -516,9 +516,11 @@
     function initMap() {
       map = L.map('map', { zoomControl: false }).setView([35.6812, 139.7671], 12);
       
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-      }).addTo(map);
+     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap & CARTO',
+  subdomains: 'abcd',
+  maxZoom: 20
+}).addTo(map);
     }
 
     // 일정 및 지도 마커 렌더링
