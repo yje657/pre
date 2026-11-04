@@ -3,15 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>도쿄 여행 플래너</title>
-  
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>도쿄 여행 플래너 (Google Maps)</title>
   
   <style>
     :root {
-      --primary: #8b5cf6; /* 트리플 스타일 보라색 */
-      --primary-dark: #7c3aed;
+      --primary: #1a73e8; /* 구글 블루 */
+      --primary-dark: #1557b0;
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
       --text-main: #1e293b;
@@ -87,23 +84,7 @@
       z-index: 1;
     }
 
-    /* Custom Leaflet Marker */
-    .custom-marker {
-      background: var(--primary);
-      color: white;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 12px;
-      border: 2px solid white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-
-    /* Day Selector Header */
+    /* Day Header */
     .day-header {
       background: white;
       padding: 12px 16px;
@@ -341,6 +322,9 @@
       color: var(--text-main);
     }
   </style>
+
+  <!-- Google Maps API 로드 (language=ko를 지정하여 한국어 명칭 출력) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&language=ko&region=KR" async defer></script>
 </head>
 <body>
 
@@ -358,7 +342,7 @@
       </div>
     </div>
 
-    <!-- Map -->
+    <!-- Google Map 영역 -->
     <div id="map"></div>
 
     <!-- Day Header -->
@@ -434,11 +418,7 @@
     </div>
   </div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script>
-    // 초기 도쿄 여행 데이터
     const INITIAL_DATA = {
       1: [
         { name: "나리타 공항 T3", sub: "10:55 도착 & N'EX 이동", lat: 35.7647, lng: 140.3863 },
@@ -481,17 +461,32 @@
     let tripData = {};
     let map = null;
     let markers = [];
-    let polyline = null;
+    let flightPath = null;
 
-    // 초기화
     window.onload = () => {
       loadTripData();
-      initMap();
+    };
+
+    // Google Maps API가 로드된 후 실행될 콜백 함수
+    window.initMap = function() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: { lat: 35.6812, lng: 139.7671 },
+        disableDefaultUI: true,
+        zoomControl: false
+      });
       renderDay(currentDay);
     };
 
+    // 스크립트 로드 에러 대비 대체 실행 (비동기 로드 시)
+    setTimeout(() => {
+      if (!map && typeof google !== 'undefined' && google.maps) {
+        initMap();
+      }
+    }, 1000);
+
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_triple_data');
+      const saved = localStorage.getItem('tokyo_google_map_data');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -501,7 +496,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_triple_data', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_google_map_data', JSON.stringify(tripData));
     }
 
     function resetData() {
@@ -512,20 +507,6 @@
       }
     }
 
-    // 지도 초기화
-   // 지도 초기화
-function initMap() {
-  map = L.map('map', { zoomControl: false }).setView([35.6812, 139.7671], 12);
-  
-  // 한국어 및 모던 스타일을 지원하는 CARTO Voyager 타일 사용
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 20
-  }).addTo(map);
-}
-
-    // 일정 및 지도 마커 렌더링
     function renderDay(day) {
       currentDay = day;
       document.getElementById('currentDayText').innerText = dayTitles[day];
@@ -534,37 +515,49 @@ function initMap() {
       const listEl = document.getElementById('timelineList');
       listEl.innerHTML = '';
 
-      // 기존 마커 및 경로 제거
-      markers.forEach(m => map.removeLayer(m));
+      // 기존 마커 및 선 제거
+      markers.forEach(m => m.setMap(null));
       markers = [];
-      if (polyline) map.removeLayer(polyline);
+      if (flightPath) flightPath.setMap(null);
 
-      const latLngs = [];
+      const bounds = new google.maps.LatLngBounds();
+      const pathCoords = [];
 
       places.forEach((place, index) => {
         const placeNum = index + 1;
-        latLngs.push([place.lat, place.lng]);
+        const pos = { lat: place.lat, lng: place.lng };
+        pathCoords.push(pos);
+        bounds.extend(pos);
 
-        // 1. 지도 마커 추가
-        const customIcon = L.divIcon({
-          className: '',
-          html: `<div class="custom-marker">${placeNum}</div>`,
-          iconSize: [24, 24],
-          iconAnchor: [12, 12]
+        // 구글 지도 마커 생성 (라벨 번호 포함)
+        const marker = new google.maps.Marker({
+          position: pos,
+          map: map,
+          label: {
+            text: String(placeNum),
+            color: "white",
+            fontWeight: "bold"
+          },
+          title: place.name
         });
 
-        const marker = L.marker([place.lat, place.lng], { icon: customIcon })
-          .addTo(map)
-          .bindPopup(`<b>${placeNum}. ${place.name}</b><br>${place.sub}`);
-        
+        const infowindow = new google.maps.InfoWindow({
+          content: `<div style="padding:4px;"><b>${placeNum}. ${place.name}</b><br>${place.sub}</div>`
+        });
+
+        marker.addListener('click', () => {
+          infowindow.open(map, marker);
+        });
+
         markers.push(marker);
 
-        // 2. 타임라인 HTML 생성
+        // 타임라인 HTML 생성
         const itemEl = document.createElement('div');
         itemEl.className = 'timeline-item';
         itemEl.onclick = () => {
-          map.flyTo([place.lat, place.lng], 14);
-          marker.openPopup();
+          map.setCenter(pos);
+          map.setZoom(14);
+          infowindow.open(map, marker);
         };
 
         const isLast = index === places.length - 1;
@@ -583,7 +576,7 @@ function initMap() {
 
         listEl.appendChild(itemEl);
 
-        // 3. 거리 표시 배지 추가
+        // 거리 표시 배지
         if (!isLast) {
           const nextPlace = places[index + 1];
           const dist = calculateDistance(place.lat, place.lng, nextPlace.lat, nextPlace.lng);
@@ -595,22 +588,22 @@ function initMap() {
         }
       });
 
-      // 4. 지도 선(Polyline) 그리기 및 카메라 영역 맞춤
-      if (latLngs.length > 0) {
-        polyline = L.polyline(latLngs, {
-          color: '#8b5cf6',
-          weight: 3,
-          dashArray: '6, 8'
-        }).addTo(map);
-
-        const bounds = L.latLngBounds(latLngs);
-        map.fitBounds(bounds, { padding: [40, 40] });
+      // 경로 선 그리기
+      if (pathCoords.length > 0 && map) {
+        flightPath = new google.maps.Polyline({
+          path: pathCoords,
+          geodesic: true,
+          strokeColor: '#1a73e8',
+          strokeOpacity: 0.8,
+          strokeWeight: 3
+        });
+        flightPath.setMap(map);
+        map.fitBounds(bounds);
       }
     }
 
-    // 하버사인 공식 (거리 계산)
     function calculateDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371; // 지구 반지름 (km)
+      const R = 6371;
       const dLat = (lat2 - lat1) * Math.PI / 180;
       const dLon = (lon2 - lon1) * Math.PI / 180;
       const a = 
@@ -622,7 +615,6 @@ function initMap() {
       return d < 10 ? d.toFixed(1) : Math.round(d);
     }
 
-    // 모달 관리
     function openAddModal() {
       document.getElementById('addModal').classList.add('active');
     }
@@ -658,7 +650,6 @@ function initMap() {
       closeModal('addModal');
       renderDay(currentDay);
 
-      // 입력 필드 초기화
       document.getElementById('placeName').value = '';
       document.getElementById('placeSub').value = '';
       document.getElementById('placeLat').value = '';
