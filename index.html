@@ -45,3 +45,629 @@
       position: relative;
       box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
+
+    /* Top Bar */
+    .top-bar {
+      height: 52px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .top-bar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .top-bar-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .top-bar-icons {
+      display: flex;
+      gap: 16px;
+      color: var(--text-main);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    /* Map Container */
+    #map {
+      width: 100%;
+      height: 260px;
+      z-index: 1;
+    }
+
+    /* Custom Leaflet Marker */
+    .custom-marker {
+      background: var(--primary);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      border: 2px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
+    /* Day Selector Header */
+    .day-header {
+      background: white;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .day-selector-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* Timeline Container */
+    .timeline-container {
+      flex: 1;
+      padding: 16px;
+      padding-bottom: 120px;
+    }
+
+    .timeline-item {
+      position: relative;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+
+    .timeline-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 24px;
+    }
+
+    .number-badge {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .timeline-line {
+      width: 2px;
+      background-color: #cbd5e1;
+      flex: 1;
+      margin-top: 4px;
+      margin-bottom: -4px;
+    }
+
+    .distance-badge {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin: 8px 0 8px 38px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    .place-card {
+      flex: 1;
+      background: white;
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .place-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .place-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* Bottom Buttons */
+    .action-btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .action-btn {
+      flex: 1;
+      height: 42px;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 430px;
+      height: 60px;
+      background: white;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: #94a3b8;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .nav-icon {
+      font-size: 1.2rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal h3 {
+      font-size: 1rem;
+      color: var(--text-main);
+    }
+
+    .modal input, .modal select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .modal-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    .modal-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .modal-btn.cancel {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div>
+        <div class="top-bar-title">도쿄 여행 ✈️</div>
+        <div class="top-bar-sub">2026.11.28 - 12.02</div>
+      </div>
+      <div class="top-bar-icons">
+        <span>✏️</span>
+        <span>🗺️</span>
+        <span>☰</span>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Day Header -->
+    <div class="day-header">
+      <button class="day-selector-btn" onclick="openDaySelectModal()">
+        <span id="currentDayText">day 1 11.28/토</span>
+        <span>∨</span>
+      </button>
+      <button class="edit-btn" onclick="resetData()">초기화</button>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-container">
+      <div id="timelineList"></div>
+
+      <div class="action-btn-group">
+        <button class="action-btn" onclick="openAddModal()">장소 추가</button>
+        <button class="action-btn" onclick="alert('메모 기능 준비 중입니다.')">메모 추가</button>
+      </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item">
+        <span class="nav-icon">📍</span>
+        <span>여행 홈</span>
+      </div>
+      <div class="nav-item active">
+        <span class="nav-icon">📅</span>
+        <span>일정</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🧰</span>
+        <span>여행 도구</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">♡</span>
+        <span>저장</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 장소 추가 모달 -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal">
+      <h3>새 장소 추가</h3>
+      <input type="text" id="placeName" placeholder="장소명 (예: 신주쿠역)">
+      <input type="text" id="placeSub" placeholder="설명 (예: 브랜드 쇼핑)">
+      <input type="number" step="any" id="placeLat" placeholder="위도 (예: 35.6905)">
+      <input type="number" step="any" id="placeLng" placeholder="경도 (예: 139.7006)">
+      <div class="modal-btns">
+        <button class="modal-btn cancel" onclick="closeModal('addModal')">취소</button>
+        <button class="modal-btn primary" onclick="addPlace()">추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 선택 모달 -->
+  <div class="modal-overlay" id="dayModal">
+    <div class="modal">
+      <h3>일차 선택</h3>
+      <select id="daySelect">
+        <option value="1">Day 1 (11.28 토) - 신주쿠 & 시부야</option>
+        <option value="2">Day 2 (11.29 일) - 아사쿠사 & 도쿄타워</option>
+        <option value="3">Day 3 (11.30 월) - 후지큐 하이랜드</option>
+        <option value="4">Day 4 (12.01 화) - 도쿄 디즈니씨</option>
+        <option value="5">Day 5 (12.02 수) - 귀국</option>
+      </select>
+      <div class="modal-btns">
+        <button class="modal-btn cancel" onclick="closeModal('dayModal')">취소</button>
+        <button class="modal-btn primary" onclick="changeDay()">이동</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // 초기 도쿄 여행 데이터
+    const INITIAL_DATA = {
+      1: [
+        { name: "나리타 공항 T3", sub: "10:55 도착 & N'EX 이동", lat: 35.7647, lng: 140.3863 },
+        { name: "신주쿠역 주변 짐 보관소", sub: "짐 맡기기 (약 1,275엔)", lat: 35.6905, lng: 139.7006 },
+        { name: "신주쿠 GU & 아식스", sub: "쇼핑 및 점심 식사", lat: 35.6915, lng: 139.7020 },
+        { name: "PATIO서신주쿠", sub: "에어비앤비 체크인", lat: 35.6975, lng: 139.6952 },
+        { name: "시부야 마크시티", sub: "스탠다드 프로덕츠 & 쇼핑", lat: 35.6581, lng: 139.6995 }
+      ],
+      2: [
+        { name: "아사쿠사 센소지", sub: "전통 거리 산책", lat: 35.7148, lng: 139.7967 },
+        { name: "아키하바라", sub: "거리 구경 & 점심", lat: 35.6983, lng: 139.7731 },
+        { name: "긴자 팡메종", sub: "원조 소금빵 테이크아웃", lat: 35.6713, lng: 139.7695 },
+        { name: "도쿄타워 (시바 공원)", sub: "16:00 입장 & 일몰/야경 감상", lat: 35.6586, lng: 139.7454 },
+        { name: "돈키호테 신주쿠가부키초점", sub: "20:00 심야 쇼핑", lat: 35.6954, lng: 139.7020 }
+      ],
+      3: [
+        { name: "바스타 신주쿠", sub: "06:45 고속버스 탑승", lat: 35.6887, lng: 139.7005 },
+        { name: "후지큐 하이랜드", sub: "09:00 오픈런 & 어트랙션", lat: 35.4872, lng: 138.7806 }
+      ],
+      4: [
+        { name: "신주쿠역", sub: "07:00 출발", lat: 35.6905, lng: 139.7006 },
+        { name: "도쿄 디즈니씨", sub: "08:30 - 21:00 폐장 관람", lat: 35.6267, lng: 139.8881 }
+      ],
+      5: [
+        { name: "PATIO서신주쿠", sub: "06:30 체크아웃", lat: 35.6975, lng: 139.6952 },
+        { name: "신주쿠역 N'EX 승강장", sub: "07:18 공항철도 탑승", lat: 35.6905, lng: 139.7006 },
+        { name: "나리타 공항 T3", sub: "11:50 이스타항공 귀국", lat: 35.7647, lng: 140.3863 }
+      ]
+    };
+
+    const dayTitles = {
+      1: "day 1 11.28/토",
+      2: "day 2 11.29/일",
+      3: "day 3 11.30/월",
+      4: "day 4 12.01/화",
+      5: "day 5 12.02/수"
+    };
+
+    let currentDay = 1;
+    let tripData = {};
+    let map = null;
+    let markers = [];
+    let polyline = null;
+
+    // 초기화
+    window.onload = () => {
+      loadTripData();
+      initMap();
+      renderDay(currentDay);
+    };
+
+    function loadTripData() {
+      const saved = localStorage.getItem('tokyo_triple_data');
+      if (saved) {
+        tripData = JSON.parse(saved);
+      } else {
+        tripData = JSON.parse(JSON.stringify(INITIAL_DATA));
+        saveTripData();
+      }
+    }
+
+    function saveTripData() {
+      localStorage.setItem('tokyo_triple_data', JSON.stringify(tripData));
+    }
+
+    function resetData() {
+      if (confirm('초기 일정 데이터로 되돌리시겠습니까?')) {
+        tripData = JSON.parse(JSON.stringify(INITIAL_DATA));
+        saveTripData();
+        renderDay(currentDay);
+      }
+    }
+
+    // 지도 초기화
+    function initMap() {
+      map = L.map('map', { zoomControl: false }).setView([35.6812, 139.7671], 12);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+    }
+
+    // 일정 및 지도 마커 렌더링
+    function renderDay(day) {
+      currentDay = day;
+      document.getElementById('currentDayText').innerText = dayTitles[day];
+
+      const places = tripData[day] || [];
+      const listEl = document.getElementById('timelineList');
+      listEl.innerHTML = '';
+
+      // 기존 마커 및 경로 제거
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+      if (polyline) map.removeLayer(polyline);
+
+      const latLngs = [];
+
+      places.forEach((place, index) => {
+        const placeNum = index + 1;
+        latLngs.push([place.lat, place.lng]);
+
+        // 1. 지도 마커 추가
+        const customIcon = L.divIcon({
+          className: '',
+          html: `<div class="custom-marker">${placeNum}</div>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
+
+        const marker = L.marker([place.lat, place.lng], { icon: customIcon })
+          .addTo(map)
+          .bindPopup(`<b>${placeNum}. ${place.name}</b><br>${place.sub}`);
+        
+        markers.push(marker);
+
+        // 2. 타임라인 HTML 생성
+        const itemEl = document.createElement('div');
+        itemEl.className = 'timeline-item';
+        itemEl.onclick = () => {
+          map.flyTo([place.lat, place.lng], 14);
+          marker.openPopup();
+        };
+
+        const isLast = index === places.length - 1;
+
+        itemEl.innerHTML = `
+          <div class="timeline-left">
+            <div class="number-badge">${placeNum}</div>
+            ${!isLast ? '<div class="timeline-line"></div>' : ''}
+          </div>
+          <div class="place-card">
+            <button class="delete-btn" onclick="event.stopPropagation(); deletePlace(${index})">✕</button>
+            <div class="place-title">${place.name}</div>
+            <div class="place-sub">${place.sub}</div>
+          </div>
+        `;
+
+        listEl.appendChild(itemEl);
+
+        // 3. 거리 표시 배지 추가
+        if (!isLast) {
+          const nextPlace = places[index + 1];
+          const dist = calculateDistance(place.lat, place.lng, nextPlace.lat, nextPlace.lng);
+          
+          const distEl = document.createElement('div');
+          distEl.className = 'distance-badge';
+          distEl.innerText = `${dist}km`;
+          listEl.appendChild(distEl);
+        }
+      });
+
+      // 4. 지도 선(Polyline) 그리기 및 카메라 영역 맞춤
+      if (latLngs.length > 0) {
+        polyline = L.polyline(latLngs, {
+          color: '#8b5cf6',
+          weight: 3,
+          dashArray: '6, 8'
+        }).addTo(map);
+
+        const bounds = L.latLngBounds(latLngs);
+        map.fitBounds(bounds, { padding: [40, 40] });
+      }
+    }
+
+    // 하버사인 공식 (거리 계산)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // 지구 반지름 (km)
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const d = R * c;
+      return d < 10 ? d.toFixed(1) : Math.round(d);
+    }
+
+    // 모달 관리
+    function openAddModal() {
+      document.getElementById('addModal').classList.add('active');
+    }
+
+    function openDaySelectModal() {
+      document.getElementById('daySelect').value = currentDay;
+      document.getElementById('dayModal').classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function changeDay() {
+      const day = parseInt(document.getElementById('daySelect').value, 10);
+      closeModal('dayModal');
+      renderDay(day);
+    }
+
+    function addPlace() {
+      const name = document.getElementById('placeName').value;
+      const sub = document.getElementById('placeSub').value;
+      const lat = parseFloat(document.getElementById('placeLat').value);
+      const lng = parseFloat(document.getElementById('placeLng').value);
+
+      if (!name || isNaN(lat) || isNaN(lng)) {
+        alert('장소명과 올바른 위도/경도를 입력해주세요.');
+        return;
+      }
+
+      tripData[currentDay].push({ name, sub, lat, lng });
+      saveTripData();
+      closeModal('addModal');
+      renderDay(currentDay);
+
+      // 입력 필드 초기화
+      document.getElementById('placeName').value = '';
+      document.getElementById('placeSub').value = '';
+      document.getElementById('placeLat').value = '';
+      document.getElementById('placeLng').value = '';
+    }
+
+    function deletePlace(index) {
+      if (confirm('이 장소를 삭제하시겠습니까?')) {
+        tripData[currentDay].splice(index, 1);
+        saveTripData();
+        renderDay(currentDay);
+      }
+    }
+  </script>
+</body>
+</html>
