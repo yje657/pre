@@ -513,15 +513,17 @@
     }
 
     // 지도 초기화
-    function initMap() {
-      map = L.map('map', { zoomControl: false }).setView([35.6812, 139.7671], 12);
-      
-     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '© OpenStreetMap & CARTO',
-  subdomains: 'abcd',
-  maxZoom: 20
-}).addTo(map);
-    }
+   // 지도 초기화
+function initMap() {
+  map = L.map('map', { zoomControl: false }).setView([35.6812, 139.7671], 12);
+  
+  // 한국어 및 모던 스타일을 지원하는 CARTO Voyager 타일 사용
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
+  }).addTo(map);
+}
 
     // 일정 및 지도 마커 렌더링
     function renderDay(day) {
