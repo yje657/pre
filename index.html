@@ -10,7 +10,7 @@
   
   <style>
     :root {
-      --primary: #8b5cf6; /* 트리플 스타일 보라색 */
+      --primary: #8b5cf6;
       --primary-dark: #7c3aed;
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
@@ -489,7 +489,7 @@
     };
 
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_triple_free_data');
+      const saved = localStorage.getItem('tokyo_osm_free_data');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -499,7 +499,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_triple_free_data', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_osm_free_data', JSON.stringify(tripData));
     }
 
     function resetData() {
@@ -510,14 +510,13 @@
       }
     }
 
-    // 지도 초기화 (Carto Voyager 타일 사용하여 깔끔한 한국어 지명 지원)
+    // 100% 무료 OpenStreetMap 표준 타일 레이어로 설정
     function initMap() {
       map = L.map('map', { zoomControl: false }).setView([35.6812, 139.7671], 12);
       
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap contributors © CARTO',
-        subdomains: 'abcd',
-        maxZoom: 20
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
       }).addTo(map);
     }
 
