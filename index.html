@@ -44,7 +44,7 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.15);
     }
 
-    /* Map Area (상단을 꽉 채우는 지도) */
+    /* Map Area */
     #map {
       width: 100%;
       height: 48vh;
@@ -54,7 +54,7 @@
       z-index: 1;
     }
 
-    /* Floating Bottom Sheet (하단 둥근 패널) */
+    /* Floating Bottom Sheet */
     .bottom-sheet {
       position: absolute;
       bottom: 0;
@@ -68,7 +68,6 @@
       display: flex;
       flex-direction: column;
       z-index: 10;
-      transition: height 0.3s ease;
     }
 
     /* Sheet Handle Bar */
@@ -78,7 +77,6 @@
       justify-content: center;
       align-items: center;
       padding: 12px 0 8px 0;
-      cursor: pointer;
     }
 
     .sheet-handle {
@@ -88,7 +86,7 @@
       border-radius: 2px;
     }
 
-    /* Day Chips Rail (칩 형태의 날짜 선택) */
+    /* Day Chips Rail */
     .day-chips-container {
       padding: 0 16px 12px 16px;
       overflow-x: auto;
@@ -133,7 +131,7 @@
       box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
     }
 
-    /* Scrollable Timeline Area inside Sheet */
+    /* Sheet Content */
     .sheet-content {
       flex: 1;
       overflow-y: auto;
@@ -201,11 +199,6 @@
       border: 1px solid var(--border-color);
       cursor: pointer;
       position: relative;
-      transition: background 0.2s;
-    }
-
-    .place-card:active {
-      background: #f1f5f9;
     }
 
     .place-title {
@@ -232,7 +225,6 @@
       cursor: pointer;
     }
 
-    /* Add Button & Reset */
     .sheet-footer {
       display: flex;
       gap: 8px;
@@ -271,7 +263,7 @@
       justify-content: center;
     }
 
-    /* Modal & Search */
+    /* Modal (오류 방지를 위해 단순 팝업 형태로 전환) */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -279,9 +271,9 @@
       backdrop-filter: blur(2px);
       display: none;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       z-index: 2000;
-      padding: 40px 16px 16px 16px;
+      padding: 16px;
     }
 
     .modal-overlay.active {
@@ -297,8 +289,6 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      position: relative;
-      z-index: 2001;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
 
@@ -349,11 +339,11 @@
       color: var(--text-muted);
     }
 
-    /* 구글 자동완성 드롭다운 스타일 강제 고정 */
+    /* 구글 자동완성 드롭다운 스타일 */
     .pac-container {
       z-index: 99999 !important;
       border-radius: 12px;
-      margin-top: 6px;
+      margin-top: 4px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.18);
       border: 1px solid var(--border-color);
       font-family: inherit;
@@ -366,7 +356,7 @@
 <body>
 
   <div class="app-container">
-    <!-- Full Screen Map -->
+    <!-- Map -->
     <div id="map"></div>
 
     <!-- Floating Bottom Sheet -->
@@ -399,7 +389,7 @@
         </div>
       </div>
 
-      <!-- Sheet Scrollable Content -->
+      <!-- Sheet Content -->
       <div class="sheet-content">
         <div id="timelineList"></div>
 
@@ -440,240 +430,4 @@
       2: [
         { name: "아사쿠사 센소지", sub: "전통 거리 산책", lat: 35.7148, lng: 139.7967 },
         { name: "아키하바라", sub: "거리 구경 & 점심", lat: 35.6983, lng: 139.7731 },
-        { name: "긴자 팡메종", sub: "원조 소금빵 테이크아웃", lat: 35.6713, lng: 139.7695 },
-        { name: "도쿄타워 (시바 공원)", sub: "16:00 입장 & 일몰/야경 감상", lat: 35.6586, lng: 139.7454 },
-        { name: "돈키호테 신주쿠가부키초점", sub: "20:00 심야 쇼핑", lat: 35.6954, lng: 139.7020 }
-      ],
-      3: [
-        { name: "바스타 신주쿠", sub: "06:45 고속버스 탑승", lat: 35.6887, lng: 139.7005 },
-        { name: "후지큐 하이랜드", sub: "09:00 오픈런 & 어트랙션", lat: 35.4872, lng: 138.7806 }
-      ],
-      4: [
-        { name: "신주쿠역", sub: "07:00 출발", lat: 35.6905, lng: 139.7006 },
-        { name: "도쿄 디즈니씨", sub: "08:30 - 21:00 폐장 관람", lat: 35.6267, lng: 139.8881 }
-      ],
-      5: [
-        { name: "PATIO서신주쿠", sub: "06:30 체크아웃", lat: 35.6975, lng: 139.6952 },
-        { name: "신주쿠역 N'EX 승강장", sub: "07:18 공항철도 탑승", lat: 35.6905, lng: 139.7006 },
-        { name: "나리타 공항 T3", sub: "11:50 이스타항공 귀국", lat: 35.7647, lng: 140.3863 }
-      ]
-    };
-
-    let currentDay = 1;
-    let tripData = {};
-    let map = null;
-    let markers = [];
-    let flightPath = null;
-    let autocomplete = null;
-
-    window.onload = () => {
-      loadTripData();
-    };
-
-    window.initMap = function() {
-      map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12,
-        center: { lat: 35.6812, lng: 139.7671 },
-        disableDefaultUI: true,
-        zoomControl: false
-      });
-      
-      initAutocomplete();
-      renderDay(currentDay);
-    };
-
-    setTimeout(() => {
-      if (!map && typeof google !== 'undefined' && google.maps) {
-        initMap();
-      }
-    }, 1000);
-
-    function initAutocomplete() {
-      const input = document.getElementById('placeSearchInput');
-      autocomplete = new google.maps.places.Autocomplete(input);
-      autocomplete.bindTo('bounds', map);
-
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        if (!place.geometry || !place.geometry.location) {
-          return;
-        }
-        document.getElementById('placeLat').value = place.geometry.location.lat();
-        document.getElementById('placeLng').value = place.geometry.location.lng();
-      });
-    }
-
-    function loadTripData() {
-      const saved = localStorage.getItem('tokyo_sheet_planner_v6');
-      if (saved) {
-        tripData = JSON.parse(saved);
-      } else {
-        tripData = JSON.parse(JSON.stringify(INITIAL_DATA));
-        saveTripData();
-      }
-    }
-
-    function saveTripData() {
-      localStorage.setItem('tokyo_sheet_planner_v6', JSON.stringify(tripData));
-    }
-
-    function resetData() {
-      if (confirm('초기 일정 데이터로 되돌리시겠습니까?')) {
-        tripData = JSON.parse(JSON.stringify(INITIAL_DATA));
-        saveTripData();
-        renderDay(currentDay);
-      }
-    }
-
-    function selectDay(day) {
-      currentDay = day;
-      const chips = document.querySelectorAll('.day-chip');
-      chips.forEach((chip, index) => {
-        if (index + 1 === day) {
-          chip.classList.add('active');
-        } else {
-          chip.classList.remove('active');
-        }
-      });
-      renderDay(day);
-    }
-
-    function renderDay(day) {
-      const places = tripData[day] || [];
-      const listEl = document.getElementById('timelineList');
-      listEl.innerHTML = '';
-
-      markers.forEach(m => m.setMap(null));
-      markers = [];
-      if (flightPath) flightPath.setMap(null);
-
-      const bounds = new google.maps.LatLngBounds();
-      const pathCoords = [];
-
-      places.forEach((place, index) => {
-        const placeNum = index + 1;
-        const pos = { lat: place.lat, lng: place.lng };
-        pathCoords.push(pos);
-        bounds.extend(pos);
-
-        const marker = new google.maps.Marker({
-          position: pos,
-          map: map,
-          label: {
-            text: String(placeNum),
-            color: "white",
-            fontWeight: "bold"
-          },
-          title: place.name
-        });
-
-        const infowindow = new google.maps.InfoWindow({
-          content: `<div style="padding:4px;"><b>${placeNum}. ${place.name}</b><br><span style="font-size:12px; color:#64748b;">${place.sub}</span></div>`
-        });
-
-        marker.addListener('click', () => {
-          infowindow.open(map, marker);
-        });
-
-        markers.push(marker);
-
-        const itemEl = document.createElement('div');
-        itemEl.className = 'timeline-item';
-        itemEl.onclick = () => {
-          map.setCenter(pos);
-          map.setZoom(14);
-          infowindow.open(map, marker);
-        };
-
-        const isLast = index === places.length - 1;
-
-        itemEl.innerHTML = `
-          <div class="timeline-left">
-            <div class="number-badge">${placeNum}</div>
-            ${!isLast ? '<div class="timeline-line"></div>' : ''}
-          </div>
-          <div class="place-card">
-            <button class="delete-btn" onclick="event.stopPropagation(); deletePlace(${index})">✕</button>
-            <div class="place-title">${place.name}</div>
-            <div class="place-sub">${place.sub}</div>
-          </div>
-        `;
-
-        listEl.appendChild(itemEl);
-
-        if (!isLast) {
-          const nextPlace = places[index + 1];
-          const dist = calculateDistance(place.lat, place.lng, nextPlace.lat, nextPlace.lng);
-          
-          const distEl = document.createElement('div');
-          distEl.className = 'distance-wrapper';
-          distEl.innerHTML = `<div class="distance-badge">${dist}km</div>`;
-          listEl.appendChild(distEl);
-        }
-      });
-
-      if (pathCoords.length > 0 && map) {
-        flightPath = new google.maps.Polyline({
-          path: pathCoords,
-          geodesic: true,
-          strokeColor: '#2563eb',
-          strokeOpacity: 0.85,
-          strokeWeight: 3
-        });
-        flightPath.setMap(map);
-        map.fitBounds(bounds);
-      }
-    }
-
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      const d = R * c;
-      return d < 10 ? d.toFixed(1) : Math.round(d);
-    }
-
-    function openAddModal() {
-      document.getElementById('addModal').classList.add('active');
-    }
-
-    function closeModal() {
-      document.getElementById('addModal').classList.remove('active');
-      document.getElementById('placeSearchInput').value = '';
-      document.getElementById('placeSub').value = '';
-      document.getElementById('placeLat').value = '';
-      document.getElementById('placeLng').value = '';
-    }
-
-    function addPlace() {
-      const name = document.getElementById('placeSearchInput').value;
-      const sub = document.getElementById('placeSub').value;
-      const lat = parseFloat(document.getElementById('placeLat').value);
-      const lng = parseFloat(document.getElementById('placeLng').value);
-
-      if (!name || isNaN(lat) || isNaN(lng)) {
-        alert('검색 목록(드롭다운)에서 장소를 클릭하여 선택해 주세요.');
-        return;
-      }
-
-      tripData[currentDay].push({ name, sub, lat, lng });
-      saveTripData();
-      closeModal();
-      renderDay(currentDay);
-    }
-
-    function deletePlace(index) {
-      if (confirm('이 장소를 삭제하시겠습니까?')) {
-        tripData[currentDay].splice(index, 1);
-        saveTripData();
-        renderDay(currentDay);
-      }
-    }
-  </script>
-</body>
-</html>
+        { name: "긴자 팡메종", sub: "원조 소금빵 테이크아웃", lat: 35.6713, lng: 139.769
