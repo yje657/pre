@@ -44,7 +44,7 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.15);
     }
 
-    /* Map Area (상단 지도) */
+    /* Map Area */
     #map {
       width: 100%;
       height: 46vh;
@@ -54,7 +54,7 @@
       z-index: 1;
     }
 
-    /* Floating Bottom Sheet (하단 독바 패널) */
+    /* Floating Bottom Sheet */
     .bottom-sheet {
       position: absolute;
       bottom: 0;
@@ -85,7 +85,7 @@
       border-radius: 2px;
     }
 
-    /* Day Chips Rail (일차 선택 칩) */
+    /* Day Chips Rail */
     .day-chips-container {
       padding: 0 16px 12px 16px;
       overflow-x: auto;
@@ -231,7 +231,7 @@
       cursor: pointer;
     }
 
-    /* Action Buttons (하단 독바 버튼 그룹) */
+    /* Action Buttons */
     .sheet-footer {
       display: flex;
       gap: 8px;
@@ -262,7 +262,7 @@
       box-shadow: none;
     }
 
-    /* Modal */
+    /* Modal & Place Picker */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -312,6 +312,13 @@
       background: #fff;
     }
 
+    /* 최신 구글 자동완성 컴포넌트 커스텀 파트 */
+    gmp-place-picker {
+      width: 100%;
+      --gmp-picker-border-radius: 10px;
+      --gmp-picker-font-family: inherit;
+    }
+
     .modal-btns {
       display: flex;
       gap: 8px;
@@ -339,8 +346,13 @@
     }
   </style>
 
-  <!-- Google Maps API (places 라이브러리를 제외하여 레거시 오류를 완전히 차단) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&language=ko&region=KR" async defer></script>
+  <!-- Google Maps JavaScript API (최신 표준 방식 및 places 라이브러리 동시 로드) -->
+  <script>
+    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in p)e.set(k,p[k]);e.set("key","AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o");e.set("v","weekly");a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",p):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+      key: "AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o",
+      v: "weekly"
+    });
+  </script>
 </head>
 <body>
 
@@ -354,7 +366,7 @@
         <div class="sheet-handle"></div>
       </div>
 
-      <!-- Day Chips -->
+      <!-- Day Chips Rail -->
       <div class="day-chips-container">
         <div class="day-chip active" onclick="selectDay(1)">
           <span class="chip-day">Day 1</span>
@@ -390,12 +402,15 @@
     </div>
   </div>
 
-  <!-- 장소 추가 모달 (시간 입력 포함) -->
+  <!-- 장소 추가 모달 (구글 공식 PlacePicker 드롭다운 탑재) -->
   <div class="modal-overlay" id="addModal">
     <div class="modal">
       <h3>새 장소 추가</h3>
       <input type="text" id="placeTimeInput" placeholder="시간 (예: 10:00)">
-      <input type="text" id="placeNameInput" placeholder="장소명 (예: 아사쿠사 센소지)">
+      
+      <!-- 구글 장소 자동완성 드롭다운 요소 -->
+      <gmp-place-picker id="placePicker" placeholder="🔍 장소 검색 (예: 센소지)"></gmp-place-picker>
+
       <input type="text" id="placeSubInput" placeholder="설명 (예: 전통 거리 산책)">
 
       <div class="modal-btns">
@@ -455,29 +470,36 @@
     let map = null;
     let markers = [];
     let flightPath = null;
+    let selectedPlace = null;
 
-    window.onload = () => {
-      loadTripData();
-    };
+    async function initApp() {
+      // 구글 최신 라이브러리 비동기 로드
+      const { Map } = await google.maps.importLibrary("maps");
+      await google.maps.importLibrary("places");
 
-    window.initMap = function() {
-      map = new google.maps.Map(document.getElementById('map'), {
+      map = new Map(document.getElementById('map'), {
         zoom: 12,
         center: { lat: 35.6812, lng: 139.7671 },
         disableDefaultUI: true,
         zoomControl: false
       });
+
+      // PlacePicker 드롭다운 선택 이벤트 연결
+      const picker = document.getElementById('placePicker');
+      picker.addEventListener('gmpx-placechange', () => {
+        selectedPlace = picker.value;
+      });
+
+      loadTripData();
       renderDay(currentDay);
+    }
+
+    window.onload = () => {
+      initApp();
     };
 
-    setTimeout(() => {
-      if (!map && typeof google !== 'undefined' && google.maps) {
-        initMap();
-      }
-    }, 1000);
-
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v14_clean');
+      const saved = localStorage.getItem('tokyo_planner_v15_dropdown');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -487,7 +509,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v14_clean', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v15_dropdown', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -622,8 +644,8 @@
       document.getElementById(id).classList.remove('active');
       if (id === 'addModal') {
         document.getElementById('placeTimeInput').value = '';
-        document.getElementById('placeNameInput').value = '';
         document.getElementById('placeSubInput').value = '';
+        selectedPlace = null;
       } else {
         document.getElementById('memoTimeInput').value = '';
         document.getElementById('memoTextInput').value = '';
@@ -632,16 +654,16 @@
 
     function addPlace() {
       const time = document.getElementById('placeTimeInput').value.trim();
-      const name = document.getElementById('placeNameInput').value.trim();
       const sub = document.getElementById('placeSubInput').value.trim();
 
-      if (!name) {
-        alert('장소명을 입력해 주세요.');
+      if (!selectedPlace || !selectedPlace.displayName) {
+        alert('검색 목록(드롭다운)에서 장소를 선택해 주세요.');
         return;
       }
 
-      const lat = 35.6812 + (Math.random() - 0.5) * 0.03;
-      const lng = 139.7671 + (Math.random() - 0.5) * 0.03;
+      const name = selectedPlace.displayName;
+      const lat = selectedPlace.location.lat();
+      const lng = selectedPlace.location.lng();
 
       tripData[currentDay].push({ 
         time: time || "시간 미정", 
