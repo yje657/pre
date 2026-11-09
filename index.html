@@ -144,7 +144,7 @@
       flex: 1;
       overflow-y: auto;
       padding: 16px;
-      padding-bottom: 90px; /* 하단 fixed 버튼 공간 확보 */
+      padding-bottom: 90px;
       touch-action: pan-y;
     }
 
@@ -241,7 +241,7 @@
       cursor: pointer;
     }
 
-    /* 하단 고정(Fixed) 독바 액션 버튼 그룹 */
+    /* 하단 고정(Fixed) 액션 버튼 그룹 */
     .sheet-footer-fixed {
       position: absolute;
       bottom: 0;
@@ -280,7 +280,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
-    /* 전체 화면 입력 페이지 (Sub-page View) */
+    /* Sub-page View */
     .sub-page {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -408,10 +408,10 @@
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
-    /* 구글 InfoWindow 상단 여백 완벽 제거 및 컴팩트 정렬 */
+    /* 구글 InfoWindow 패딩 및 상단 여백 완벽 수정 */
     .gm-style-iw-c {
       padding: 0 !important;
-      border-radius: 12px !important;
+      border-radius: 14px !important;
       box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
     }
     .gm-style-iw-d {
@@ -722,7 +722,7 @@
     }
 
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v24_fixed');
+      const saved = localStorage.getItem('tokyo_planner_v25_top_padding');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -732,7 +732,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v24_fixed', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v25_top_padding', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -780,17 +780,17 @@
             title: place.name
           });
 
-          // 상단 불필요한 패딩을 완전 제거하고 타이틀과 시간을 밀착시킨 인포윈도우
+          // 상단 잘림 현상 해결 및 시계 이모지 제거된 깔끔한 인포윈도우
           const infowindow = new google.maps.InfoWindow({
             content: `
-              <div style="position: relative; margin: -4px -2px -4px -2px; padding: 2px 20px 2px 2px; font-family: sans-serif; min-width: 160px;">
-                <button onclick="if(window.activeInfoWindow) window.activeInfoWindow.close();" style="position: absolute; top: 0px; right: 0px; background: none; border: none; font-size: 13px; font-weight: bold; color: #94a3b8; cursor: pointer;">✕</button>
+              <div style="position: relative; padding: 10px 24px 10px 12px; font-family: sans-serif; min-width: 160px;">
+                <button onclick="if(window.activeInfoWindow) window.activeInfoWindow.close();" style="position: absolute; top: 8px; right: 8px; background: none; border: none; font-size: 13px; font-weight: bold; color: #94a3b8; cursor: pointer;">✕</button>
                 <div style="font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.2;">${placeNum}. ${place.name}</div>
-                <div style="font-size: 11px; color: #64748b; margin-top: 1px; line-height: 1.2;">${place.sub}</div>
-                <div style="font-size: 11px; font-weight: 700; color: #2563eb; margin-top: 2px;">⏰ ${place.time || ''}</div>
+                <div style="font-size: 11px; color: #64748b; margin-top: 2px; line-height: 1.2;">${place.sub}</div>
+                <div style="font-size: 11px; font-weight: 700; color: #2563eb; margin-top: 4px;">${place.time || ''}</div>
               </div>
             `,
-            pixelOffset: new google.maps.Size(0, -2)
+            pixelOffset: new google.maps.Size(0, -5)
           });
 
           marker.addListener('click', () => {
