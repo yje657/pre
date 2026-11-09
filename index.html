@@ -13,7 +13,7 @@
       --text-main: #0f172a;
       --text-muted: #64748b;
       --border-color: #e2e8f0;
-      --shadow-lg: 0 -4px 20px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 -4px 20px rgba(0, 0, 0, 0.12);
       --radius: 24px;
     }
 
@@ -47,14 +47,14 @@
     /* Map Area */
     #map {
       width: 100%;
-      height: 46vh;
+      height: 50vh;
       position: absolute;
       top: 0;
       left: 0;
       z-index: 1;
     }
 
-    /* Floating Bottom Sheet */
+    /* Floating Bottom Sheet (드래그 제스처 적용) */
     .bottom-sheet {
       position: absolute;
       bottom: 0;
@@ -68,6 +68,12 @@
       display: flex;
       flex-direction: column;
       z-index: 10;
+      touch-action: none;
+      transition: height 0.1s ease-out;
+    }
+
+    .bottom-sheet.dragging {
+      transition: none;
     }
 
     .sheet-handle-bar {
@@ -75,14 +81,15 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 12px 0 8px 0;
+      padding: 14px 0 10px 0;
+      cursor: grab;
     }
 
     .sheet-handle {
-      width: 36px;
-      height: 4px;
+      width: 40px;
+      height: 5px;
       background-color: #cbd5e1;
-      border-radius: 2px;
+      border-radius: 3px;
     }
 
     /* Day Chips Rail */
@@ -136,6 +143,7 @@
       overflow-y: auto;
       padding: 16px;
       padding-bottom: 40px;
+      touch-action: pan-y;
     }
 
     .timeline-item {
@@ -262,52 +270,77 @@
       box-shadow: none;
     }
 
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.5);
-      backdrop-filter: blur(2px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-      padding: 16px;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal {
-      background: white;
-      width: 100%;
-      max-width: 360px;
-      border-radius: 20px;
-      padding: 20px;
+    /* 전체 화면 입력 페이지 (Sub-page View) */
+    .sub-page {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #ffffff;
+      z-index: 100;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .modal h3 {
+    .sub-page.active {
+      transform: translateY(0);
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .page-header h3 {
       font-size: 1rem;
       font-weight: 800;
       color: var(--text-main);
     }
 
-    .modal input, .modal select {
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .page-body {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .form-group input, .form-group select {
       width: 100%;
-      padding: 11px 14px;
+      padding: 12px 14px;
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      font-size: 0.88rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
       outline: none;
       background: #f8fafc;
     }
 
-    .modal input:focus, .modal select:focus {
+    .form-group input:focus, .form-group select:focus {
       border-color: var(--primary);
       background: #fff;
     }
@@ -326,7 +359,7 @@
       border: 1px solid var(--border-color);
       border-radius: 10px;
       margin-top: 4px;
-      max-height: 150px;
+      max-height: 180px;
       overflow-y: auto;
       z-index: 3000;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -334,8 +367,8 @@
     }
 
     .autocomplete-item {
-      padding: 10px 14px;
-      font-size: 0.85rem;
+      padding: 12px 14px;
+      font-size: 0.88rem;
       color: var(--text-main);
       cursor: pointer;
       border-bottom: 1px solid #f1f5f9;
@@ -346,43 +379,37 @@
       color: var(--primary);
     }
 
-    .modal-btns {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-      margin-top: 6px;
+    .page-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+      background: #fff;
     }
 
-    .modal-btn {
-      padding: 9px 18px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-    }
-
-    .modal-btn.primary {
+    .submit-btn {
+      width: 100%;
+      height: 48px;
       background: var(--primary);
+      border: none;
+      border-radius: 14px;
+      font-size: 0.92rem;
+      font-weight: 700;
       color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
-    .modal-btn.cancel {
-      background: #f1f5f9;
-      color: var(--text-muted);
-    }
-
-    /* 구글 기본 InfoWindow 닫기 버튼 숨기기 및 여백 제거 최적화 스타일 */
+    /* 구글 InfoWindow 여백 제거 스타일 */
     .gm-style-iw-c {
       padding: 0 !important;
-      border-radius: 14px !important;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
     }
     .gm-style-iw-d {
       overflow: hidden !important;
+      padding: 0 !important;
     }
     .gm-ui-hover-effect {
-      display: none !important; /* 구글 기본 엑스 버튼 제거 */
+      display: none !important;
     }
   </style>
 
@@ -391,13 +418,13 @@
 </head>
 <body>
 
-  <div class="app-container">
+  <div class="app-container" id="appContainer">
     <!-- Map -->
     <div id="map"></div>
 
     <!-- Floating Bottom Sheet -->
-    <div class="bottom-sheet">
-      <div class="sheet-handle-bar">
+    <div class="bottom-sheet" id="bottomSheet">
+      <div class="sheet-handle-bar" id="sheetHandleBar">
         <div class="sheet-handle"></div>
       </div>
 
@@ -430,85 +457,105 @@
         <div id="timelineList"></div>
 
         <div class="sheet-footer">
-          <button class="action-btn" onclick="openAddModal()">+ 장소 추가</button>
-          <button class="action-btn secondary" onclick="openMemoModal()">📝 메모 추가</button>
+          <button class="action-btn" onclick="openPage('addPage')">+ 장소 추가</button>
+          <button class="action-btn secondary" onclick="openPage('memoPage')">📝 메모 추가</button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- 장소 추가 모달 -->
-  <div class="modal-overlay" id="addModal">
-    <div class="modal">
-      <h3>새 장소 추가</h3>
-      
-      <select id="placeTimeInput">
-        <option value="">⏰ 시간 선택</option>
-        <option value="07:00">07:00</option>
-        <option value="08:00">08:00</option>
-        <option value="09:00">09:00</option>
-        <option value="10:00">10:00</option>
-        <option value="11:00">11:00</option>
-        <option value="12:00">12:00</option>
-        <option value="13:00">13:00</option>
-        <option value="14:00">14:00</option>
-        <option value="15:00">15:00</option>
-        <option value="16:00">16:00</option>
-        <option value="17:00">17:00</option>
-        <option value="18:00">18:00</option>
-        <option value="19:00">19:00</option>
-        <option value="20:00">20:00</option>
-        <option value="21:00">21:00</option>
-        <option value="22:00">22:00</option>
-      </select>
-
-      <div class="autocomplete-wrapper">
-        <input type="text" id="placeSearchInput" placeholder="🔍 장소 검색 (예: 센소지, 도쿄타워)" oninput="filterPlaces(this.value)" autocomplete="off">
-        <div id="autocompleteList" class="autocomplete-list"></div>
+    <!-- 장소 추가 페이지 (전환형 뷰) -->
+    <div class="sub-page" id="addPage">
+      <div class="page-header">
+        <button class="back-btn" onclick="closePage('addPage')">← 취소</button>
+        <h3>새 장소 추가</h3>
+        <div style="width: 36px;"></div>
       </div>
+      <div class="page-body">
+        <div class="form-group">
+          <label>방문 시간</label>
+          <select id="placeTimeInput">
+            <option value="">⏰ 시간 선택</option>
+            <option value="07:00">07:00</option>
+            <option value="08:00">08:00</option>
+            <option value="09:00">09:00</option>
+            <option value="10:00">10:00</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+            <option value="14:00">14:00</option>
+            <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+            <option value="18:00">18:00</option>
+            <option value="19:00">19:00</option>
+            <option value="20:00">20:00</option>
+            <option value="21:00">21:00</option>
+            <option value="22:00">22:00</option>
+          </select>
+        </div>
 
-      <input type="text" id="placeSubInput" placeholder="설명 (예: 전통 거리 산책)">
-      
-      <input type="hidden" id="placeLat">
-      <input type="hidden" id="placeLng">
+        <div class="form-group">
+          <label>장소 검색</label>
+          <div class="autocomplete-wrapper">
+            <input type="text" id="placeSearchInput" placeholder="🔍 장소 검색 (예: 센소지, 도쿄타워)" oninput="filterPlaces(this.value)" autocomplete="off">
+            <div id="autocompleteList" class="autocomplete-list"></div>
+          </div>
+        </div>
 
-      <div class="modal-btns">
-        <button class="modal-btn cancel" onclick="closeModal('addModal')">취소</button>
-        <button class="modal-btn primary" onclick="addPlace()">추가</button>
+        <div class="form-group">
+          <label>상세 설명</label>
+          <input type="text" id="placeSubInput" placeholder="예: 전통 거리 산책 및 구경">
+        </div>
+
+        <input type="hidden" id="placeLat">
+        <input type="hidden" id="placeLng">
       </div>
-    </div>
-  </div>
-
-  <!-- 메모 추가 모달 -->
-  <div class="modal-overlay" id="memoModal">
-    <div class="modal">
-      <h3>메모 추가</h3>
-      <select id="memoTimeInput">
-        <option value="">⏰ 시간 선택</option>
-        <option value="07:00">07:00</option>
-        <option value="08:00">08:00</option>
-        <option value="09:00">09:00</option>
-        <option value="10:00">10:00</option>
-        <option value="11:00">11:00</option>
-        <option value="12:00">12:00</option>
-        <option value="13:00">13:00</option>
-        <option value="14:00">14:00</option>
-        <option value="15:00">15:00</option>
-        <option value="16:00">16:00</option>
-        <option value="17:00">17:00</option>
-        <option value="18:00">18:00</option>
-        <option value="19:00">19:00</option>
-        <option value="20:00">20:00</option>
-        <option value="21:00">21:00</option>
-        <option value="22:00">22:00</option>
-      </select>
-      <input type="text" id="memoTextInput" placeholder="메모 내용 (예: 점심 식사 예약 장소)">
-
-      <div class="modal-btns">
-        <button class="modal-btn cancel" onclick="closeModal('memoModal')">취소</button>
-        <button class="modal-btn primary" onclick="addMemo()">추가</button>
+      <div class="page-footer">
+        <button class="submit-btn" onclick="addPlace()">장소 추가하기</button>
       </div>
     </div>
+
+    <!-- 메모 추가 페이지 (전환형 뷰) -->
+    <div class="sub-page" id="memoPage">
+      <div class="page-header">
+        <button class="back-btn" onclick="closePage('memoPage')">← 취소</button>
+        <h3>메모 추가</h3>
+        <div style="width: 36px;"></div>
+      </div>
+      <div class="page-body">
+        <div class="form-group">
+          <label>관련 시간</label>
+          <select id="memoTimeInput">
+            <option value="">⏰ 시간 선택</option>
+            <option value="07:00">07:00</option>
+            <option value="08:00">08:00</option>
+            <option value="09:00">09:00</option>
+            <option value="10:00">10:00</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+            <option value="14:00">14:00</option>
+            <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+            <option value="18:00">18:00</option>
+            <option value="19:00">19:00</option>
+            <option value="20:00">20:00</option>
+            <option value="21:00">21:00</option>
+            <option value="22:00">22:00</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>메모 내용</label>
+          <input type="text" id="memoTextInput" placeholder="예: 점심 식사 예약 장소 / 티켓 수령 등">
+        </div>
+      </div>
+      <div class="page-footer">
+        <button class="submit-btn" onclick="addMemo()">메모 추가하기</button>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -564,6 +611,7 @@
 
     window.onload = () => {
       loadTripData();
+      initBottomSheetGesture();
     };
 
     window.initMap = function() {
@@ -581,6 +629,54 @@
         initMap();
       }
     }, 1000);
+
+    /* 하단 독바(BottomSheet) 드래그 제스처 구현 */
+    function initBottomSheetGesture() {
+      const sheet = document.getElementById('bottomSheet');
+      const handleBar = document.getElementById('sheetHandleBar');
+      const container = document.getElementById('appContainer');
+
+      let startY = 0;
+      let startHeight = 0;
+      let isDragging = false;
+
+      function onStart(e) {
+        isDragging = true;
+        sheet.classList.add('dragging');
+        startY = e.touches ? e.touches[0].clientY : e.clientY;
+        startHeight = sheet.getBoundingClientRect().height;
+      }
+
+      function onMove(e) {
+        if (!isDragging) return;
+        const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+        const deltaY = startY - currentY;
+        const containerHeight = container.getBoundingClientRect().height;
+        let newHeight = startHeight + deltaY;
+
+        const minHeight = containerHeight * 0.3;
+        const maxHeight = containerHeight * 0.88;
+
+        if (newHeight < minHeight) newHeight = minHeight;
+        if (newHeight > maxHeight) newHeight = maxHeight;
+
+        sheet.style.height = `${newHeight}px`;
+      }
+
+      function onEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        sheet.classList.remove('dragging');
+      }
+
+      handleBar.addEventListener('touchstart', onStart, { passive: true });
+      window.addEventListener('touchmove', onMove, { passive: true });
+      window.addEventListener('touchend', onEnd);
+
+      handleBar.addEventListener('mousedown', onStart);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onEnd);
+    }
 
     function filterPlaces(query) {
       const listEl = document.getElementById('autocompleteList');
@@ -615,7 +711,7 @@
     }
 
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v20_perfect');
+      const saved = localStorage.getItem('tokyo_planner_v23_gesture');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -625,7 +721,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v20_perfect', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v23_gesture', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -673,14 +769,13 @@
             title: place.name
           });
 
-          // 여백을 완전히 없애고 우측 상단 커스텀 닫기 버튼을 포함한 컴팩트 레이아웃
           const infowindow = new google.maps.InfoWindow({
             content: `
-              <div style="position: relative; padding: 10px 24px 10px 12px; font-family: sans-serif; min-width: 180px;">
-                <button onclick="if(window.activeInfoWindow) window.activeInfoWindow.close();" style="position: absolute; top: 8px; right: 8px; background: none; border: none; font-size: 14px; font-weight: bold; color: #94a3b8; cursor: pointer;">✕</button>
-                <div style="font-size: 11px; font-weight: 700; color: #2563eb;">${place.time || ''}</div>
-                <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 2px;">${placeNum}. ${place.name}</div>
-                <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${place.sub}</div>
+              <div style="position: relative; padding: 6px 24px 6px 8px; font-family: sans-serif; min-width: 170px;">
+                <button onclick="if(window.activeInfoWindow) window.activeInfoWindow.close();" style="position: absolute; top: 4px; right: 6px; background: none; border: none; font-size: 13px; font-weight: bold; color: #94a3b8; cursor: pointer;">✕</button>
+                <div style="font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.2;">${placeNum}. ${place.name}</div>
+                <div style="font-size: 11px; color: #64748b; margin-top: 1px; line-height: 1.2;">${place.sub}</div>
+                <div style="font-size: 11px; font-weight: 700; color: #2563eb; margin-top: 3px;">⏰ ${place.time || ''}</div>
               </div>
             `,
             pixelOffset: new google.maps.Size(0, -5)
@@ -765,17 +860,13 @@
       return d < 10 ? d.toFixed(1) : Math.round(d);
     }
 
-    function openAddModal() {
-      document.getElementById('addModal').classList.add('active');
+    function openPage(pageId) {
+      document.getElementById(pageId).classList.add('active');
     }
 
-    function openMemoModal() {
-      document.getElementById('memoModal').classList.add('active');
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-      if (id === 'addModal') {
+    function closePage(pageId) {
+      document.getElementById(pageId).classList.remove('active');
+      if (pageId === 'addPage') {
         document.getElementById('placeTimeInput').value = '';
         document.getElementById('placeSearchInput').value = '';
         document.getElementById('placeSubInput').value = '';
@@ -820,7 +911,7 @@
       });
       
       saveTripData();
-      closeModal('addModal');
+      closePage('addPage');
       renderDay(currentDay);
     }
 
@@ -848,7 +939,7 @@
       });
 
       saveTripData();
-      closeModal('memoModal');
+      closePage('memoPage');
       renderDay(currentDay);
     }
 
