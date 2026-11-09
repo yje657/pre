@@ -200,6 +200,13 @@
       position: relative;
     }
 
+    .place-time {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+
     .place-title {
       font-size: 0.92rem;
       font-weight: 700;
@@ -224,19 +231,20 @@
       cursor: pointer;
     }
 
+    /* 하단 버튼 그룹 (초기화 제거, 장소 추가 + 메모 추가) */
     .sheet-footer {
       display: flex;
       gap: 8px;
       margin-top: 16px;
     }
 
-    .add-btn {
+    .action-btn {
       flex: 1;
       height: 44px;
       background: var(--primary);
       border: none;
       border-radius: 14px;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 700;
       color: white;
       cursor: pointer;
@@ -247,19 +255,11 @@
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
-    .reset-btn {
-      width: 44px;
-      height: 44px;
-      background: #f1f5f9;
+    .action-btn.secondary {
+      background: #ffffff;
+      color: var(--primary);
       border: 1px solid var(--border-color);
-      border-radius: 14px;
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      box-shadow: none;
     }
 
     /* Modal */
@@ -337,20 +337,352 @@
       background: #f1f5f9;
       color: var(--text-muted);
     }
+  </style>
 
-    /* 구글 자동완성 드롭다운 디자인 최적화 및 우선순위 설정 */
-    .pac-container {
-      z-index: 99999 !important;
+  <!-- Google Maps API (순수 Maps JS API만 호출하여 오류 원천 차단) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>도쿄 여행 플래너</title>
+  
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --shadow-lg: 0 -4px 20px rgba(0, 0, 0, 0.08);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #cbd5e1;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      background-color: var(--bg-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.15);
+    }
+
+    /* Map Area */
+    #map {
+      width: 100%;
+      height: 48vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* Floating Bottom Sheet */
+    .bottom-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 58vh;
+      background: #ffffff;
+      border-top-left-radius: var(--radius);
+      border-top-right-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .sheet-handle-bar {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 0 8px 0;
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background-color: #cbd5e1;
+      border-radius: 2px;
+    }
+
+    /* Day Chips Rail */
+    .day-chips-container {
+      padding: 0 16px 12px 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .day-chips-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .day-chip {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px 14px;
       border-radius: 12px;
-      margin-top: 6px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      background: #f1f5f9;
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .day-chip .chip-day {
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .day-chip .chip-date {
+      font-size: 0.68rem;
+      margin-top: 1px;
+    }
+
+    .day-chip.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Sheet Content */
+    .sheet-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      padding-bottom: 40px;
+    }
+
+    .timeline-item {
+      position: relative;
+      display: flex;
+      gap: 12px;
+    }
+
+    .timeline-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 22px;
+      flex-shrink: 0;
+    }
+
+    .number-badge {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .timeline-line {
+      width: 2px;
+      background-color: #cbd5e1;
+      flex: 1;
+      margin-top: 4px;
+      margin-bottom: -4px;
+    }
+
+    .distance-wrapper {
+      display: flex;
+      align-items: center;
+      padding: 6px 0 6px 34px;
+    }
+
+    .distance-badge {
+      background: #f8fafc;
       border: 1px solid var(--border-color);
-      font-family: inherit;
+      border-radius: 16px;
+      padding: 2px 8px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .place-card {
+      flex: 1;
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .place-time {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+
+    .place-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 3px;
+      padding-right: 18px;
+    }
+
+    .place-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* 하단 버튼 그룹 (초기화 제거, 장소 추가 + 메모 추가) */
+    .sheet-footer {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .action-btn {
+      flex: 1;
+      height: 44px;
+      background: var(--primary);
+      border: none;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .action-btn.secondary {
+      background: #ffffff;
+      color: var(--primary);
+      border: 1px solid var(--border-color);
+      box-shadow: none;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(2px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .modal h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .modal input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      outline: none;
+      background: #f8fafc;
+    }
+
+    .modal input:focus {
+      border-color: var(--primary);
+      background: #fff;
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+
+    .modal-btn {
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    .modal-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .modal-btn.cancel {
+      background: #f1f5f9;
+      color: var(--text-muted);
     }
   </style>
 
-  <!-- Google Maps API (places 라이브러리 포함) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&libraries=places&language=ko&region=KR" async defer></script>
+  <!-- Google Maps API (순수 Maps JS API만 호출하여 오류 원천 차단) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&language=ko&region=KR" async defer></script>
 </head>
 <body>
 
@@ -393,26 +725,38 @@
         <div id="timelineList"></div>
 
         <div class="sheet-footer">
-          <button class="add-btn" onclick="openAddModal()">+ 새 장소 추가</button>
-          <button class="reset-btn" onclick="resetData()" title="초기화">🔄</button>
+          <button class="action-btn" onclick="openAddModal()">+ 장소 추가</button>
+          <button class="action-btn secondary" onclick="openMemoModal()">📝 메모 추가</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 장소 추가 모달 -->
+  <!-- 장소 추가 모달 (시간 입력 포함) -->
   <div class="modal-overlay" id="addModal">
     <div class="modal">
       <h3>새 장소 추가</h3>
-      <input type="text" id="placeSearchInput" placeholder="🔍 장소 검색 (예: 센소지)">
-      <input type="text" id="placeSubInput" placeholder="설명 (예: 산책 및 테이크아웃)">
-      
-      <input type="hidden" id="placeLat">
-      <input type="hidden" id="placeLng">
+      <input type="text" id="placeTimeInput" placeholder="시간 (예: 10:00)">
+      <input type="text" id="placeNameInput" placeholder="장소명 (예: 아사쿠사 센소지)">
+      <input type="text" id="placeSubInput" placeholder="설명 (예: 전통 거리 산책)">
 
       <div class="modal-btns">
-        <button class="modal-btn cancel" onclick="closeModal()">취소</button>
+        <button class="modal-btn cancel" onclick="closeModal('addModal')">취소</button>
         <button class="modal-btn primary" onclick="addPlace()">추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 메모 추가 모달 -->
+  <div class="modal-overlay" id="memoModal">
+    <div class="modal">
+      <h3>메모 추가</h3>
+      <input type="text" id="memoTimeInput" placeholder="시간 (예: 12:30)">
+      <input type="text" id="memoTextInput" placeholder="메모 내용 (예: 점심 식사 예약 장소)">
+
+      <div class="modal-btns">
+        <button class="modal-btn cancel" onclick="closeModal('memoModal')">취소</button>
+        <button class="modal-btn primary" onclick="addMemo()">추가</button>
       </div>
     </div>
   </div>
@@ -420,31 +764,24 @@
   <script>
     const INITIAL_DATA = {
       1: [
-        { name: "나리타 공항 T3", sub: "10:55 도착 & N'EX 이동", lat: 35.7647, lng: 140.3863 },
-        { name: "신주쿠역 주변 짐 보관소", sub: "짐 맡기기 (약 1,275엔)", lat: 35.6905, lng: 139.7006 },
-        { name: "신주쿠 GU & 아식스", sub: "쇼핑 및 점심 식사", lat: 35.6915, lng: 139.7020 },
-        { name: "PATIO서신주쿠", sub: "에어비앤비 체크인", lat: 35.6975, lng: 139.6952 },
-        { name: "시부야 마크시티", sub: "스탠다드 프로덕츠 & 쇼핑", lat: 35.6581, lng: 139.6995 }
+        { time: "10:55", name: "나리타 공항 T3", sub: "도착 & N'EX 이동", lat: 35.7647, lng: 140.3863, isMemo: false },
+        { time: "12:30", name: "신주쿠역 주변 짐 보관소", sub: "짐 맡기기 (약 1,275엔)", lat: 35.6905, lng: 139.7006, isMemo: false },
+        { time: "14:00", name: "신주쿠 GU & 아식스", sub: "쇼핑 및 점심 식사", lat: 35.6915, lng: 139.7020, isMemo: false }
       ],
       2: [
-        { name: "아사쿠사 센소지", sub: "전통 거리 산책", lat: 35.7148, lng: 139.7967 },
-        { name: "아키하바라", sub: "거리 구경 & 점심", lat: 35.6983, lng: 139.7731 },
-        { name: "긴자 팡메종", sub: "원조 소금빵 테이크아웃", lat: 35.6713, lng: 139.7695 },
-        { name: "도쿄타워 (시바 공원)", sub: "16:00 입장 & 일몰/야경 감상", lat: 35.6586, lng: 139.7454 },
-        { name: "돈키호테 신주쿠가부키초점", sub: "20:00 심야 쇼핑", lat: 35.6954, lng: 139.7020 }
+        { time: "09:30", name: "아사쿠사 센소지", sub: "전통 거리 산책", lat: 35.7148, lng: 139.7967, isMemo: false },
+        { time: "12:00", name: "긴자 팡메종", sub: "원조 소금빵 테이크아웃", lat: 35.6713, lng: 139.7695, isMemo: false }
       ],
       3: [
-        { name: "바스타 신주쿠", sub: "06:45 고속버스 탑승", lat: 35.6887, lng: 139.7005 },
-        { name: "후지큐 하이랜드", sub: "09:00 오픈런 & 어트랙션", lat: 35.4872, lng: 138.7806 }
+        { time: "06:45", name: "바스타 신주쿠", sub: "고속버스 탑승", lat: 35.6887, lng: 139.7005, isMemo: false },
+        { time: "09:00", name: "후지큐 하이랜드", sub: "어트랙션 즐기기", lat: 35.4872, lng: 138.7806, isMemo: false }
       ],
       4: [
-        { name: "신주쿠역", sub: "07:00 출발", lat: 35.6905, lng: 139.7006 },
-        { name: "도쿄 디즈니씨", sub: "08:30 - 21:00 폐장 관람", lat: 35.6267, lng: 139.8881 }
+        { time: "08:30", name: "도쿄 디즈니씨", sub: "종일 관람", lat: 35.6267, lng: 139.8881, isMemo: false }
       ],
       5: [
-        { name: "PATIO서신주쿠", sub: "06:30 체크아웃", lat: 35.6975, lng: 139.6952 },
-        { name: "신주쿠역 N'EX 승강장", sub: "07:18 공항철도 탑승", lat: 35.6905, lng: 139.7006 },
-        { name: "나리타 공항 T3", sub: "11:50 이스타항공 귀국", lat: 35.7647, lng: 140.3863 }
+        { time: "07:18", name: "신주쿠역 N'EX 승강장", sub: "공항철도 탑승", lat: 35.6905, lng: 139.7006, isMemo: false },
+        { time: "11:50", name: "나리타 공항 T3", sub: "귀국", lat: 35.7647, lng: 140.3863, isMemo: false }
       ]
     };
 
@@ -453,7 +790,6 @@
     let map = null;
     let markers = [];
     let flightPath = null;
-    let autocomplete = null;
 
     window.onload = () => {
       loadTripData();
@@ -466,8 +802,6 @@
         disableDefaultUI: true,
         zoomControl: false
       });
-      
-      initAutocomplete();
       renderDay(currentDay);
     };
 
@@ -477,33 +811,8 @@
       }
     }, 1000);
 
-    // 구글 장소 자동완성(Autocomplete) 연동
-    function initAutocomplete() {
-      const input = document.getElementById('placeSearchInput');
-      if (!input) return;
-
-      autocomplete = new google.maps.places.Autocomplete(input, {
-        fields: ["name", "geometry", "formatted_address"]
-      });
-
-      // 도쿄 주변 지역으로 검색 바운드 지정
-      const tokyoBounds = new google.maps.LatLngBounds(
-        new google.maps.LatLng(35.5, 139.3),
-        new google.maps.LatLng(35.8, 140.0)
-      );
-      autocomplete.setBounds(tokyoBounds);
-
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        if (place && place.geometry && place.geometry.location) {
-          document.getElementById('placeLat').value = place.geometry.location.lat();
-          document.getElementById('placeLng').value = place.geometry.location.lng();
-        }
-      });
-    }
-
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v12');
+      const saved = localStorage.getItem('tokyo_planner_v13');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -513,15 +822,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v12', JSON.stringify(tripData));
-    }
-
-    function resetData() {
-      if (confirm('초기 일정 데이터로 되돌리시겠습니까?')) {
-        tripData = JSON.parse(JSON.stringify(INITIAL_DATA));
-        saveTripData();
-        renderDay(currentDay);
-      }
+      localStorage.setItem('tokyo_planner_v13', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -555,44 +856,50 @@
         pathCoords.push(pos);
         bounds.extend(pos);
 
-        const marker = new google.maps.Marker({
-          position: pos,
-          map: map,
-          label: {
-            text: String(placeNum),
-            color: "white",
-            fontWeight: "bold"
-          },
-          title: place.name
-        });
+        let marker = null;
+        if (!place.isMemo) {
+          marker = new google.maps.Marker({
+            position: pos,
+            map: map,
+            label: {
+              text: String(placeNum),
+              color: "white",
+              fontWeight: "bold"
+            },
+            title: place.name
+          });
 
-        const infowindow = new google.maps.InfoWindow({
-          content: `<div style="padding:4px;"><b>${placeNum}. ${place.name}</b><br><span style="font-size:12px; color:#64748b;">${place.sub}</span></div>`
-        });
+          const infowindow = new google.maps.InfoWindow({
+            content: `<div style="padding:4px;"><b>${placeNum}. ${place.name}</b><br><span style="font-size:12px; color:#64748b;">${place.time} - ${place.sub}</span></div>`
+          });
 
-        marker.addListener('click', () => {
-          infowindow.open(map, marker);
-        });
+          marker.addListener('click', () => {
+            infowindow.open(map, marker);
+          });
 
-        markers.push(marker);
+          markers.push(marker);
+        }
 
         const itemEl = document.createElement('div');
         itemEl.className = 'timeline-item';
-        itemEl.onclick = () => {
-          map.setCenter(pos);
-          map.setZoom(14);
-          infowindow.open(map, marker);
-        };
+        
+        if (!place.isMemo) {
+          itemEl.onclick = () => {
+            map.setCenter(pos);
+            map.setZoom(14);
+          };
+        }
 
         const isLast = index === places.length - 1;
 
         itemEl.innerHTML = `
           <div class="timeline-left">
-            <div class="number-badge">${placeNum}</div>
+            <div class="number-badge" style="${place.isMemo ? 'background:#94a3b8;' : ''}">${place.isMemo ? '📌' : placeNum}</div>
             ${!isLast ? '<div class="timeline-line"></div>' : ''}
           </div>
-          <div class="place-card">
+          <div class="place-card" style="${place.isMemo ? 'background:#fef9c3; border-faded:true;' : ''}">
             <button class="delete-btn" onclick="event.stopPropagation(); deletePlace(${index})">✕</button>
+            <div class="place-time">${place.time || ''}</div>
             <div class="place-title">${place.name}</div>
             <div class="place-sub">${place.sub}</div>
           </div>
@@ -600,14 +907,15 @@
 
         listEl.appendChild(itemEl);
 
-        if (!isLast) {
+        if (!isLast && !place.isMemo) {
           const nextPlace = places[index + 1];
-          const dist = calculateDistance(place.lat, place.lng, nextPlace.lat, nextPlace.lng);
-          
-          const distEl = document.createElement('div');
-          distEl.className = 'distance-wrapper';
-          distEl.innerHTML = `<div class="distance-badge">${dist}km</div>`;
-          listEl.appendChild(distEl);
+          if (nextPlace && !nextPlace.isMemo) {
+            const dist = calculateDistance(place.lat, place.lng, nextPlace.lat, nextPlace.lng);
+            const distEl = document.createElement('div');
+            distEl.className = 'distance-wrapper';
+            distEl.innerHTML = `<div class="distance-badge">${dist}km</div>`;
+            listEl.appendChild(distEl);
+          }
         }
       });
 
@@ -641,39 +949,420 @@
       document.getElementById('addModal').classList.add('active');
     }
 
-    function closeModal() {
-      document.getElementById('addModal').classList.remove('active');
-      document.getElementById('placeSearchInput').value = '';
-      document.getElementById('placeSubInput').value = '';
-      document.getElementById('placeLat').value = '';
-      document.getElementById('placeLng').value = '';
+    function openMemoModal() {
+      document.getElementById('memoModal').classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+      if (id === 'addModal') {
+        document.getElementById('placeTimeInput').value = '';
+        document.getElementById('placeNameInput').value = '';
+        document.getElementById('placeSubInput').value = '';
+      } else {
+        document.getElementById('memoTimeInput').value = '';
+        document.getElementById('memoTextInput').value = '';
+      }
     }
 
     function addPlace() {
-      const name = document.getElementById('placeSearchInput').value.trim();
+      const time = document.getElementById('placeTimeInput').value.trim();
+      const name = document.getElementById('placeNameInput').value.trim();
       const sub = document.getElementById('placeSubInput').value.trim();
-      let lat = parseFloat(document.getElementById('placeLat').value);
-      let lng = parseFloat(document.getElementById('placeLng').value);
 
       if (!name) {
         alert('장소명을 입력해 주세요.');
         return;
       }
 
-      // 드롭다운 목록에서 선택하지 않고 엔터를 치거나 그냥 추가했을 때의 대비책
-      if (isNaN(lat) || isNaN(lng)) {
-        lat = 35.6812 + (Math.random() - 0.5) * 0.03;
-        lng = 139.7671 + (Math.random() - 0.5) * 0.03;
+      // 도쿄 중심부 기준 무작위 오프셋으로 안정적으로 마커 표시
+      const lat = 35.6812 + (Math.random() - 0.5) * 0.03;
+      const lng = 139.7671 + (Math.random() - 0.5) * 0.03;
+
+      tripData[currentDay].push({ 
+        time: time || "시간 미정", 
+        name, 
+        sub: sub || "일정", 
+        lat, 
+        lng, 
+        isMemo: false 
+      });
+      
+      saveTripData();
+      closeModal('addModal');
+      renderDay(currentDay);
+    }
+
+    function addMemo() {
+      const time = document.getElementById('memoTimeInput').value.trim();
+      const text = document.getElementById('memoTextInput').value.trim();
+
+      if (!text) {
+        alert('메모 내용을 입력해 주세요.');
+        return;
       }
 
-      tripData[currentDay].push({ name, sub: sub || "새 일정", lat, lng });
+      // 메모는 지도 마커 좌표가 필요 없으므로 기본 도쿄 중심 좌표 대입
+      tripData[currentDay].push({ 
+        time: time || "참고", 
+        name: text, 
+        sub: "메모", 
+        lat: 35.6812, 
+        lng: 139.7671, 
+        isMemo: true 
+      });
+
       saveTripData();
-      closeModal();
+      closeModal('memoModal');
       renderDay(currentDay);
     }
 
     function deletePlace(index) {
-      if (confirm('이 장소를 삭제하시겠습니까?')) {
+      if (confirm('이 항목을 삭제하시겠습니까?')) {
+        tripData[currentDay].splice(index, 1);
+        saveTripData();
+        renderDay(currentDay);
+      }
+    }
+  </script>
+</body>
+</html>&language=ko&region=KR" async defer></script>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Floating Bottom Sheet -->
+    <div class="bottom-sheet">
+      <div class="sheet-handle-bar">
+        <div class="sheet-handle"></div>
+      </div>
+
+      <!-- Day Chips -->
+      <div class="day-chips-container">
+        <div class="day-chip active" onclick="selectDay(1)">
+          <span class="chip-day">Day 1</span>
+          <span class="chip-date">11.28 토</span>
+        </div>
+        <div class="day-chip" onclick="selectDay(2)">
+          <span class="chip-day">Day 2</span>
+          <span class="chip-date">11.29 일</span>
+        </div>
+        <div class="day-chip" onclick="selectDay(3)">
+          <span class="chip-day">Day 3</span>
+          <span class="chip-date">11.30 월</span>
+        </div>
+        <div class="day-chip" onclick="selectDay(4)">
+          <span class="chip-day">Day 4</span>
+          <span class="chip-date">12.01 화</span>
+        </div>
+        <div class="day-chip" onclick="selectDay(5)">
+          <span class="chip-day">Day 5</span>
+          <span class="chip-date">12.02 수</span>
+        </div>
+      </div>
+
+      <!-- Sheet Content -->
+      <div class="sheet-content">
+        <div id="timelineList"></div>
+
+        <div class="sheet-footer">
+          <button class="action-btn" onclick="openAddModal()">+ 장소 추가</button>
+          <button class="action-btn secondary" onclick="openMemoModal()">📝 메모 추가</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 장소 추가 모달 (시간 입력 포함) -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal">
+      <h3>새 장소 추가</h3>
+      <input type="text" id="placeTimeInput" placeholder="시간 (예: 10:00)">
+      <input type="text" id="placeNameInput" placeholder="장소명 (예: 아사쿠사 센소지)">
+      <input type="text" id="placeSubInput" placeholder="설명 (예: 전통 거리 산책)">
+
+      <div class="modal-btns">
+        <button class="modal-btn cancel" onclick="closeModal('addModal')">취소</button>
+        <button class="modal-btn primary" onclick="addPlace()">추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 메모 추가 모달 -->
+  <div class="modal-overlay" id="memoModal">
+    <div class="modal">
+      <h3>메모 추가</h3>
+      <input type="text" id="memoTimeInput" placeholder="시간 (예: 12:30)">
+      <input type="text" id="memoTextInput" placeholder="메모 내용 (예: 점심 식사 예약 장소)">
+
+      <div class="modal-btns">
+        <button class="modal-btn cancel" onclick="closeModal('memoModal')">취소</button>
+        <button class="modal-btn primary" onclick="addMemo()">추가</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const INITIAL_DATA = {
+      1: [
+        { time: "10:55", name: "나리타 공항 T3", sub: "도착 & N'EX 이동", lat: 35.7647, lng: 140.3863, isMemo: false },
+        { time: "12:30", name: "신주쿠역 주변 짐 보관소", sub: "짐 맡기기 (약 1,275엔)", lat: 35.6905, lng: 139.7006, isMemo: false },
+        { time: "14:00", name: "신주쿠 GU & 아식스", sub: "쇼핑 및 점심 식사", lat: 35.6915, lng: 139.7020, isMemo: false }
+      ],
+      2: [
+        { time: "09:30", name: "아사쿠사 센소지", sub: "전통 거리 산책", lat: 35.7148, lng: 139.7967, isMemo: false },
+        { time: "12:00", name: "긴자 팡메종", sub: "원조 소금빵 테이크아웃", lat: 35.6713, lng: 139.7695, isMemo: false }
+      ],
+      3: [
+        { time: "06:45", name: "바스타 신주쿠", sub: "고속버스 탑승", lat: 35.6887, lng: 139.7005, isMemo: false },
+        { time: "09:00", name: "후지큐 하이랜드", sub: "어트랙션 즐기기", lat: 35.4872, lng: 138.7806, isMemo: false }
+      ],
+      4: [
+        { time: "08:30", name: "도쿄 디즈니씨", sub: "종일 관람", lat: 35.6267, lng: 139.8881, isMemo: false }
+      ],
+      5: [
+        { time: "07:18", name: "신주쿠역 N'EX 승강장", sub: "공항철도 탑승", lat: 35.6905, lng: 139.7006, isMemo: false },
+        { time: "11:50", name: "나리타 공항 T3", sub: "귀국", lat: 35.7647, lng: 140.3863, isMemo: false }
+      ]
+    };
+
+    let currentDay = 1;
+    let tripData = {};
+    let map = null;
+    let markers = [];
+    let flightPath = null;
+
+    window.onload = () => {
+      loadTripData();
+    };
+
+    window.initMap = function() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: { lat: 35.6812, lng: 139.7671 },
+        disableDefaultUI: true,
+        zoomControl: false
+      });
+      renderDay(currentDay);
+    };
+
+    setTimeout(() => {
+      if (!map && typeof google !== 'undefined' && google.maps) {
+        initMap();
+      }
+    }, 1000);
+
+    function loadTripData() {
+      const saved = localStorage.getItem('tokyo_planner_v13');
+      if (saved) {
+        tripData = JSON.parse(saved);
+      } else {
+        tripData = JSON.parse(JSON.stringify(INITIAL_DATA));
+        saveTripData();
+      }
+    }
+
+    function saveTripData() {
+      localStorage.setItem('tokyo_planner_v13', JSON.stringify(tripData));
+    }
+
+    function selectDay(day) {
+      currentDay = day;
+      const chips = document.querySelectorAll('.day-chip');
+      chips.forEach((chip, index) => {
+        if (index + 1 === day) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+      });
+      renderDay(day);
+    }
+
+    function renderDay(day) {
+      const places = tripData[day] || [];
+      const listEl = document.getElementById('timelineList');
+      listEl.innerHTML = '';
+
+      markers.forEach(m => m.setMap(null));
+      markers = [];
+      if (flightPath) flightPath.setMap(null);
+
+      const bounds = new google.maps.LatLngBounds();
+      const pathCoords = [];
+
+      places.forEach((place, index) => {
+        const placeNum = index + 1;
+        const pos = { lat: place.lat, lng: place.lng };
+        pathCoords.push(pos);
+        bounds.extend(pos);
+
+        let marker = null;
+        if (!place.isMemo) {
+          marker = new google.maps.Marker({
+            position: pos,
+            map: map,
+            label: {
+              text: String(placeNum),
+              color: "white",
+              fontWeight: "bold"
+            },
+            title: place.name
+          });
+
+          const infowindow = new google.maps.InfoWindow({
+            content: `<div style="padding:4px;"><b>${placeNum}. ${place.name}</b><br><span style="font-size:12px; color:#64748b;">${place.time} - ${place.sub}</span></div>`
+          });
+
+          marker.addListener('click', () => {
+            infowindow.open(map, marker);
+          });
+
+          markers.push(marker);
+        }
+
+        const itemEl = document.createElement('div');
+        itemEl.className = 'timeline-item';
+        
+        if (!place.isMemo) {
+          itemEl.onclick = () => {
+            map.setCenter(pos);
+            map.setZoom(14);
+          };
+        }
+
+        const isLast = index === places.length - 1;
+
+        itemEl.innerHTML = `
+          <div class="timeline-left">
+            <div class="number-badge" style="${place.isMemo ? 'background:#94a3b8;' : ''}">${place.isMemo ? '📌' : placeNum}</div>
+            ${!isLast ? '<div class="timeline-line"></div>' : ''}
+          </div>
+          <div class="place-card" style="${place.isMemo ? 'background:#fef9c3; border-faded:true;' : ''}">
+            <button class="delete-btn" onclick="event.stopPropagation(); deletePlace(${index})">✕</button>
+            <div class="place-time">${place.time || ''}</div>
+            <div class="place-title">${place.name}</div>
+            <div class="place-sub">${place.sub}</div>
+          </div>
+        `;
+
+        listEl.appendChild(itemEl);
+
+        if (!isLast && !place.isMemo) {
+          const nextPlace = places[index + 1];
+          if (nextPlace && !nextPlace.isMemo) {
+            const dist = calculateDistance(place.lat, place.lng, nextPlace.lat, nextPlace.lng);
+            const distEl = document.createElement('div');
+            distEl.className = 'distance-wrapper';
+            distEl.innerHTML = `<div class="distance-badge">${dist}km</div>`;
+            listEl.appendChild(distEl);
+          }
+        }
+      });
+
+      if (pathCoords.length > 0 && map) {
+        flightPath = new google.maps.Polyline({
+          path: pathCoords,
+          geodesic: true,
+          strokeColor: '#2563eb',
+          strokeOpacity: 0.85,
+          strokeWeight: 3
+        });
+        flightPath.setMap(map);
+        map.fitBounds(bounds);
+      }
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const d = R * c;
+      return d < 10 ? d.toFixed(1) : Math.round(d);
+    }
+
+    function openAddModal() {
+      document.getElementById('addModal').classList.add('active');
+    }
+
+    function openMemoModal() {
+      document.getElementById('memoModal').classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+      if (id === 'addModal') {
+        document.getElementById('placeTimeInput').value = '';
+        document.getElementById('placeNameInput').value = '';
+        document.getElementById('placeSubInput').value = '';
+      } else {
+        document.getElementById('memoTimeInput').value = '';
+        document.getElementById('memoTextInput').value = '';
+      }
+    }
+
+    function addPlace() {
+      const time = document.getElementById('placeTimeInput').value.trim();
+      const name = document.getElementById('placeNameInput').value.trim();
+      const sub = document.getElementById('placeSubInput').value.trim();
+
+      if (!name) {
+        alert('장소명을 입력해 주세요.');
+        return;
+      }
+
+      // 도쿄 중심부 기준 무작위 오프셋으로 안정적으로 마커 표시
+      const lat = 35.6812 + (Math.random() - 0.5) * 0.03;
+      const lng = 139.7671 + (Math.random() - 0.5) * 0.03;
+
+      tripData[currentDay].push({ 
+        time: time || "시간 미정", 
+        name, 
+        sub: sub || "일정", 
+        lat, 
+        lng, 
+        isMemo: false 
+      });
+      
+      saveTripData();
+      closeModal('addModal');
+      renderDay(currentDay);
+    }
+
+    function addMemo() {
+      const time = document.getElementById('memoTimeInput').value.trim();
+      const text = document.getElementById('memoTextInput').value.trim();
+
+      if (!text) {
+        alert('메모 내용을 입력해 주세요.');
+        return;
+      }
+
+      // 메모는 지도 마커 좌표가 필요 없으므로 기본 도쿄 중심 좌표 대입
+      tripData[currentDay].push({ 
+        time: time || "참고", 
+        name: text, 
+        sub: "메모", 
+        lat: 35.6812, 
+        lng: 139.7671, 
+        isMemo: true 
+      });
+
+      saveTripData();
+      closeModal('memoModal');
+      renderDay(currentDay);
+    }
+
+    function deletePlace(index) {
+      if (confirm('이 항목을 삭제하시겠습니까?')) {
         tripData[currentDay].splice(index, 1);
         saveTripData();
         renderDay(currentDay);
