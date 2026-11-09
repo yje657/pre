@@ -44,7 +44,7 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.15);
     }
 
-    /* Map Area (상단 지도) */
+    /* Map Area */
     #map {
       width: 100%;
       height: 46vh;
@@ -54,7 +54,7 @@
       z-index: 1;
     }
 
-    /* Floating Bottom Sheet (하단 독바 패널) */
+    /* Floating Bottom Sheet */
     .bottom-sheet {
       position: absolute;
       bottom: 0;
@@ -85,7 +85,7 @@
       border-radius: 2px;
     }
 
-    /* Day Chips Rail (일차 선택 칩) */
+    /* Day Chips Rail */
     .day-chips-container {
       padding: 0 16px 12px 16px;
       overflow-x: auto;
@@ -231,7 +231,7 @@
       cursor: pointer;
     }
 
-    /* Action Buttons (하단 독바 버튼 그룹) */
+    /* Action Buttons */
     .sheet-footer {
       display: flex;
       gap: 8px;
@@ -297,7 +297,7 @@
       color: var(--text-main);
     }
 
-    .modal input {
+    .modal input, .modal select {
       width: 100%;
       padding: 11px 14px;
       border: 1px solid var(--border-color);
@@ -307,9 +307,44 @@
       background: #f8fafc;
     }
 
-    .modal input:focus {
+    .modal input:focus, .modal select:focus {
       border-color: var(--primary);
       background: #fff;
+    }
+
+    /* 커스텀 드롭다운 자동완성 리스트 박스 */
+    .autocomplete-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      margin-top: 4px;
+      max-height: 150px;
+      overflow-y: auto;
+      z-index: 3000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .autocomplete-item {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .autocomplete-item:hover {
+      background: #f8fafc;
+      color: var(--primary);
     }
 
     .modal-btns {
@@ -339,7 +374,7 @@
     }
   </style>
 
-  <!-- Google Maps API (places 라이브러리를 제외하여 레거시 오류를 완전히 차단) -->
+  <!-- Google Maps API -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&language=ko&region=KR" async defer></script>
 </head>
 <body>
@@ -390,13 +425,42 @@
     </div>
   </div>
 
-  <!-- 장소 추가 모달 (시간 입력 포함) -->
+  <!-- 장소 추가 모달 (시간 피커 드롭다운 + 장소 자동완성 포함) -->
   <div class="modal-overlay" id="addModal">
     <div class="modal">
       <h3>새 장소 추가</h3>
-      <input type="text" id="placeTimeInput" placeholder="시간 (예: 10:00)">
-      <input type="text" id="placeNameInput" placeholder="장소명 (예: 아사쿠사 센소지)">
+      
+      <!-- 시간 선택 피커 (드롭다운 형태) -->
+      <select id="placeTimeInput">
+        <option value="">⏰ 시간 선택</option>
+        <option value="07:00">07:00</option>
+        <option value="08:00">08:00</option>
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="12:00">12:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+        <option value="16:00">16:00</option>
+        <option value="17:00">17:00</option>
+        <option value="18:00">18:00</option>
+        <option value="19:00">19:00</option>
+        <option value="20:00">20:00</option>
+        <option value="21:00">21:00</option>
+        <option value="22:00">22:00</option>
+      </select>
+
+      <!-- 자동완성 리스트가 뜨는 장소 검색 입력창 -->
+      <div class="autocomplete-wrapper">
+        <input type="text" id="placeSearchInput" placeholder="🔍 장소 검색 (예: 센소지, 도쿄타워)" oninput="filterPlaces(this.value)" autocomplete="off">
+        <div id="autocompleteList" class="autocomplete-list"></div>
+      </div>
+
       <input type="text" id="placeSubInput" placeholder="설명 (예: 전통 거리 산책)">
+      
+      <input type="hidden" id="placeLat">
+      <input type="hidden" id="placeLng">
 
       <div class="modal-btns">
         <button class="modal-btn cancel" onclick="closeModal('addModal')">취소</button>
@@ -409,7 +473,25 @@
   <div class="modal-overlay" id="memoModal">
     <div class="modal">
       <h3>메모 추가</h3>
-      <input type="text" id="memoTimeInput" placeholder="시간 (예: 12:30)">
+      <select id="memoTimeInput">
+        <option value="">⏰ 시간 선택</option>
+        <option value="07:00">07:00</option>
+        <option value="08:00">08:00</option>
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="12:00">12:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+        <option value="16:00">16:00</option>
+        <option value="17:00">17:00</option>
+        <option value="18:00">18:00</option>
+        <option value="19:00">19:00</option>
+        <option value="20:00">20:00</option>
+        <option value="21:00">21:00</option>
+        <option value="22:00">22:00</option>
+      </select>
       <input type="text" id="memoTextInput" placeholder="메모 내용 (예: 점심 식사 예약 장소)">
 
       <div class="modal-btns">
@@ -420,32 +502,48 @@
   </div>
 
   <script>
+    // 도쿄 주요 추천 장소 데이터베이스 (검색 시 드롭다운으로 즉시 표시)
+    const TOKYO_PLACES = [
+      { name: "나리타 공항 T3", lat: 35.7647, lng: 140.3863 },
+      { name: "신주쿠역", lat: 35.6905, lng: 139.7006 },
+      { name: "시부야 스크램블 교차로", lat: 35.6595, lng: 139.7004 },
+      { name: "아사쿠사 센소지", lat: 35.7148, lng: 139.7967 },
+      { name: "아키하바라 전기상가", lat: 35.6983, lng: 139.7731 },
+      { name: "긴자 팡메종", lat: 35.6713, lng: 139.7695 },
+      { name: "도쿄타워", lat: 35.6586, lng: 139.7454 },
+      { name: "도쿄 스카이트리", lat: 35.7100, lng: 139.8107 },
+      { name: "롯폰기 힐즈", lat: 35.6604, lng: 139.7292 },
+      { name: "메이지 신궁", lat: 35.6764, lng: 139.6993 },
+      { name: "시부야 마크시티", lat: 35.6581, lng: 139.6995 },
+      { name: "바스타 신주쿠", lat: 35.6887, lng: 139.7005 },
+      { name: "후지큐 하이랜드", lat: 35.4872, lng: 138.7806 },
+      { name: "도쿄 디즈니씨", lat: 35.6267, lng: 139.8881 },
+      { name: "우노 온사이드 공원", lat: 35.7150, lng: 139.7711 },
+      { name: "시바 공원", lat: 35.6555, lng: 139.7480 },
+      { name: "돈키호테 신주쿠가부키초점", lat: 35.6954, lng: 139.7020 }
+    ];
+
     const INITIAL_DATA = {
       1: [
         { time: "10:55", name: "나리타 공항 T3", sub: "도착 & N'EX 이동", lat: 35.7647, lng: 140.3863, isMemo: false },
-        { time: "12:30", name: "신주쿠역 주변 짐 보관소", sub: "짐 맡기기 (약 1,275엔)", lat: 35.6905, lng: 139.7006, isMemo: false },
-        { time: "14:00", name: "신주쿠 GU & 아식스", sub: "쇼핑 및 점심 식사", lat: 35.6915, lng: 139.7020, isMemo: false },
-        { time: "16:00", name: "PATIO서신주쿠", sub: "에어비앤비 체크인", lat: 35.6975, lng: 139.6952, isMemo: false },
-        { time: "18:00", name: "시부야 마크시티", sub: "스탠다드 프로덕츠 & 쇼핑", lat: 35.6581, lng: 139.6995, isMemo: false }
+        { time: "12:30", name: "신주쿠역", sub: "짐 맡기기 및 주변 탐방", lat: 35.6905, lng: 139.7006, isMemo: false },
+        { time: "14:00", name: "시부야 마크시티", sub: "쇼핑 및 점심 식사", lat: 35.6581, lng: 139.6995, isMemo: false }
       ],
       2: [
         { time: "09:30", name: "아사쿠사 센소지", sub: "전통 거리 산책", lat: 35.7148, lng: 139.7967, isMemo: false },
-        { time: "12:00", name: "아키하바라", sub: "거리 구경 & 점심", lat: 35.6983, lng: 139.7731, isMemo: false },
+        { time: "12:00", name: "아키하바라 전기상가", sub: "거리 구경 & 점심", lat: 35.6983, lng: 139.7731, isMemo: false },
         { time: "14:30", name: "긴자 팡메종", sub: "원조 소금빵 테이크아웃", lat: 35.6713, lng: 139.7695, isMemo: false },
-        { time: "16:00", name: "도쿄타워 (시바 공원)", sub: "입장 & 일몰/야경 감상", lat: 35.6586, lng: 139.7454, isMemo: false },
-        { time: "20:00", name: "돈키호테 신주쿠가부키초점", sub: "심야 쇼핑", lat: 35.6954, lng: 139.7020, isMemo: false }
+        { time: "16:00", name: "도쿄타워", sub: "일몰 및 야경 감상", lat: 35.6586, lng: 139.7454, isMemo: false }
       ],
       3: [
         { time: "06:45", name: "바스타 신주쿠", sub: "고속버스 탑승", lat: 35.6887, lng: 139.7005, isMemo: false },
-        { time: "09:00", name: "후지큐 하이랜드", sub: "오픈런 & 어트랙션", lat: 35.4872, lng: 138.7806, isMemo: false }
+        { time: "09:00", name: "후지큐 하이랜드", sub: "어트랙션 즐기기", lat: 35.4872, lng: 138.7806, isMemo: false }
       ],
       4: [
-        { time: "07:00", name: "신주쿠역", sub: "출발", lat: 35.6905, lng: 139.7006, isMemo: false },
         { time: "08:30", name: "도쿄 디즈니씨", sub: "종일 관람", lat: 35.6267, lng: 139.8881, isMemo: false }
       ],
       5: [
-        { time: "06:30", name: "PATIO서신주쿠", sub: "체크아웃", lat: 35.6975, lng: 139.6952, isMemo: false },
-        { time: "07:18", name: "신주쿠역 N'EX 승강장", sub: "공항철도 탑승", lat: 35.6905, lng: 139.7006, isMemo: false },
+        { time: "07:18", name: "신주쿠역", sub: "공항철도 탑승", lat: 35.6905, lng: 139.7006, isMemo: false },
         { time: "11:50", name: "나리타 공항 T3", sub: "귀국", lat: 35.7647, lng: 140.3863, isMemo: false }
       ]
     };
@@ -476,8 +574,41 @@
       }
     }, 1000);
 
+    // 실시간 검색어 드롭다운 필터링 함수
+    function filterPlaces(query) {
+      const listEl = document.getElementById('autocompleteList');
+      listEl.innerHTML = '';
+      
+      if (!query.trim()) {
+        listEl.style.display = 'none';
+        return;
+      }
+
+      const filtered = TOKYO_PLACES.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+      
+      if (filtered.length === 0) {
+        listEl.style.display = 'none';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'autocomplete-item';
+        div.textContent = item.name;
+        div.onclick = () => {
+          document.getElementById('placeSearchInput').value = item.name;
+          document.getElementById('placeLat').value = item.lat;
+          document.getElementById('placeLng').value = item.lng;
+          listEl.style.display = 'none';
+        };
+        listEl.appendChild(div);
+      });
+
+      listEl.style.display = 'block';
+    }
+
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v14_clean');
+      const saved = localStorage.getItem('tokyo_planner_v17_picker');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -487,7 +618,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v14_clean', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v17_picker', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -622,8 +753,11 @@
       document.getElementById(id).classList.remove('active');
       if (id === 'addModal') {
         document.getElementById('placeTimeInput').value = '';
-        document.getElementById('placeNameInput').value = '';
+        document.getElementById('placeSearchInput').value = '';
         document.getElementById('placeSubInput').value = '';
+        document.getElementById('placeLat').value = '';
+        document.getElementById('placeLng').value = '';
+        document.getElementById('autocompleteList').style.display = 'none';
       } else {
         document.getElementById('memoTimeInput').value = '';
         document.getElementById('memoTextInput').value = '';
@@ -631,20 +765,29 @@
     }
 
     function addPlace() {
-      const time = document.getElementById('placeTimeInput').value.trim();
-      const name = document.getElementById('placeNameInput').value.trim();
+      const time = document.getElementById('placeTimeInput').value;
+      const name = document.getElementById('placeSearchInput').value.trim();
       const sub = document.getElementById('placeSubInput').value.trim();
+      let lat = parseFloat(document.getElementById('placeLat').value);
+      let lng = parseFloat(document.getElementById('placeLng').value);
 
-      if (!name) {
-        alert('장소명을 입력해 주세요.');
+      if (!time) {
+        alert('시간을 선택해 주세요.');
         return;
       }
 
-      const lat = 35.6812 + (Math.random() - 0.5) * 0.03;
-      const lng = 139.7671 + (Math.random() - 0.5) * 0.03;
+      if (!name) {
+        alert('장소명을 입력하거나 드롭다운에서 선택해 주세요.');
+        return;
+      }
+
+      if (isNaN(lat) || isNaN(lng)) {
+        lat = 35.6812 + (Math.random() - 0.5) * 0.03;
+        lng = 139.7671 + (Math.random() - 0.5) * 0.03;
+      }
 
       tripData[currentDay].push({ 
-        time: time || "시간 미정", 
+        time, 
         name, 
         sub: sub || "일정", 
         lat, 
@@ -658,8 +801,13 @@
     }
 
     function addMemo() {
-      const time = document.getElementById('memoTimeInput').value.trim();
+      const time = document.getElementById('memoTimeInput').value;
       const text = document.getElementById('memoTextInput').value.trim();
+
+      if (!time) {
+        alert('시간을 선택해 주세요.');
+        return;
+      }
 
       if (!text) {
         alert('메모 내용을 입력해 주세요.');
@@ -667,7 +815,7 @@
       }
 
       tripData[currentDay].push({ 
-        time: time || "참고", 
+        time, 
         name: text, 
         sub: "메모", 
         lat: 35.6812, 
