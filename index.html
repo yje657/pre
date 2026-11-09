@@ -312,7 +312,6 @@
       background: #fff;
     }
 
-    /* 커스텀 드롭다운 자동완성 리스트 박스 */
     .autocomplete-wrapper {
       position: relative;
       width: 100%;
@@ -425,12 +424,11 @@
     </div>
   </div>
 
-  <!-- 장소 추가 모달 (시간 피커 드롭다운 + 장소 자동완성 포함) -->
+  <!-- 장소 추가 모달 -->
   <div class="modal-overlay" id="addModal">
     <div class="modal">
       <h3>새 장소 추가</h3>
       
-      <!-- 시간 선택 피커 (드롭다운 형태) -->
       <select id="placeTimeInput">
         <option value="">⏰ 시간 선택</option>
         <option value="07:00">07:00</option>
@@ -451,7 +449,6 @@
         <option value="22:00">22:00</option>
       </select>
 
-      <!-- 자동완성 리스트가 뜨는 장소 검색 입력창 -->
       <div class="autocomplete-wrapper">
         <input type="text" id="placeSearchInput" placeholder="🔍 장소 검색 (예: 센소지, 도쿄타워)" oninput="filterPlaces(this.value)" autocomplete="off">
         <div id="autocompleteList" class="autocomplete-list"></div>
@@ -502,7 +499,6 @@
   </div>
 
   <script>
-    // 도쿄 주요 추천 장소 데이터베이스 (검색 시 드롭다운으로 즉시 표시)
     const TOKYO_PLACES = [
       { name: "나리타 공항 T3", lat: 35.7647, lng: 140.3863 },
       { name: "신주쿠역", lat: 35.6905, lng: 139.7006 },
@@ -518,8 +514,6 @@
       { name: "바스타 신주쿠", lat: 35.6887, lng: 139.7005 },
       { name: "후지큐 하이랜드", lat: 35.4872, lng: 138.7806 },
       { name: "도쿄 디즈니씨", lat: 35.6267, lng: 139.8881 },
-      { name: "우노 온사이드 공원", lat: 35.7150, lng: 139.7711 },
-      { name: "시바 공원", lat: 35.6555, lng: 139.7480 },
       { name: "돈키호테 신주쿠가부키초점", lat: 35.6954, lng: 139.7020 }
     ];
 
@@ -552,6 +546,7 @@
     let tripData = {};
     let map = null;
     let markers = [];
+    let activeInfoWindow = null;
     let flightPath = null;
 
     window.onload = () => {
@@ -574,7 +569,6 @@
       }
     }, 1000);
 
-    // 실시간 검색어 드롭다운 필터링 함수
     function filterPlaces(query) {
       const listEl = document.getElementById('autocompleteList');
       listEl.innerHTML = '';
@@ -608,7 +602,7 @@
     }
 
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v17_picker');
+      const saved = localStorage.getItem('tokyo_planner_v18_infowindow');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -618,7 +612,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v17_picker', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v18_infowindow', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -639,6 +633,7 @@
       const listEl = document.getElementById('timelineList');
       listEl.innerHTML = '';
 
+      if (activeInfoWindow) activeInfoWindow.close();
       markers.forEach(m => m.setMap(null));
       markers = [];
       if (flightPath) flightPath.setMap(null);
@@ -665,12 +660,21 @@
             title: place.name
           });
 
+          // 핀 탭/클릭 시 상단에 깔끔한 정보 창(InfoWindow) 생성
           const infowindow = new google.maps.InfoWindow({
-            content: `<div style="padding:4px;"><b>${placeNum}. ${place.name}</b><br><span style="font-size:12px; color:#64748b;">${place.time || ''} ${place.sub}</span></div>`
+            content: `
+              <div style="padding: 6px 8px; font-family: sans-serif;">
+                <div style="font-size: 11px; font-weight: 700; color: #2563eb;">${place.time || ''}</div>
+                <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 2px;">${placeNum}. ${place.name}</div>
+                <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${place.sub}</div>
+              </div>
+            `
           });
 
           marker.addListener('click', () => {
+            if (activeInfoWindow) activeInfoWindow.close();
             infowindow.open(map, marker);
+            activeInfoWindow = infowindow;
           });
 
           markers.push(marker);
@@ -683,6 +687,10 @@
           itemEl.onclick = () => {
             map.setCenter(pos);
             map.setZoom(14);
+            const targetMarker = markers.find(m => m.getTitle() === place.name);
+            if (targetMarker) {
+              google.maps.event.trigger(targetMarker, 'click');
+            }
           };
         }
 
