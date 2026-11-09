@@ -7,26 +7,28 @@
   
   <style>
     :root {
-      --primary: #1a73e8; /* 구글 블루 */
-      --primary-dark: #1557b0;
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --text-main: #1e293b;
+      --text-main: #0f172a;
       --text-muted: #64748b;
-      --border-color: #f1f5f9;
-      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 14px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: #e2e8f0;
+      background-color: #cbd5e1;
       display: flex;
       justify-content: center;
       min-height: 100vh;
@@ -40,17 +42,17 @@
       display: flex;
       flex-direction: column;
       position: relative;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      box-shadow: 0 0 24px rgba(0,0,0,0.15);
     }
 
     /* Top Bar */
     .top-bar {
-      height: 52px;
-      background: white;
+      height: 56px;
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 20px;
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
@@ -58,74 +60,102 @@
     }
 
     .top-bar-title {
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.15rem;
+      font-weight: 800;
       color: var(--text-main);
+      letter-spacing: -0.3px;
     }
 
     .top-bar-sub {
       font-size: 0.75rem;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 1px;
+      font-weight: 500;
     }
 
-    .top-bar-icons {
-      display: flex;
-      gap: 16px;
-      color: var(--text-main);
-      font-size: 1.2rem;
+    .reset-btn {
+      background: #f1f5f9;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
       cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .reset-btn:active {
+      background: #e2e8f0;
     }
 
     /* Map Container */
     #map {
       width: 100%;
-      height: 260px;
+      height: 250px;
       z-index: 1;
     }
 
-    /* Day Header */
-    .day-header {
-      background: white;
+    /* Day Chips Bar (날짜 선택 칩 레일) */
+    .day-chips-container {
+      background: #ffffff;
       padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       border-bottom: 1px solid var(--border-color);
-    }
-
-    .day-selector-btn {
+      overflow-x: auto;
+      white-space: nowrap;
       display: flex;
-      align-items: center;
-      gap: 6px;
-      background: none;
-      border: none;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-main);
-      cursor: pointer;
+      gap: 8px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
 
-    .edit-btn {
-      background: none;
-      border: none;
+    .day-chips-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .day-chip {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border-radius: 12px;
+      background: #f1f5f9;
       color: var(--text-muted);
-      font-size: 0.85rem;
+      border: 1px solid transparent;
       cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .day-chip .chip-day {
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .day-chip .chip-date {
+      font-size: 0.7rem;
+      margin-top: 2px;
+      opacity: 0.8;
+    }
+
+    .day-chip.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
     }
 
     /* Timeline Container */
     .timeline-container {
       flex: 1;
-      padding: 16px;
-      padding-bottom: 120px;
+      padding: 20px 16px 120px 16px;
     }
 
     .timeline-item {
       position: relative;
       display: flex;
       gap: 14px;
-      margin-bottom: 8px;
     }
 
     .timeline-left {
@@ -133,20 +163,22 @@
       flex-direction: column;
       align-items: center;
       width: 24px;
+      flex-shrink: 0;
     }
 
     .number-badge {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: var(--primary);
       color: white;
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 2;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
     }
 
     .timeline-line {
@@ -157,39 +189,52 @@
       margin-bottom: -4px;
     }
 
+    .distance-wrapper {
+      display: flex;
+      align-items: center;
+      padding: 6px 0 6px 38px;
+    }
+
     .distance-badge {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 2px 8px;
-      font-size: 0.7rem;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 0.72rem;
       color: var(--text-muted);
-      margin: 8px 0 8px 38px;
-      display: inline-block;
-      font-weight: 500;
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
     }
 
     .place-card {
       flex: 1;
-      background: white;
-      border-radius: 12px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
       padding: 14px 16px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-sm);
       border: 1px solid var(--border-color);
       cursor: pointer;
       position: relative;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .place-card:active {
+      transform: scale(0.99);
+      box-shadow: var(--shadow-md);
     }
 
     .place-title {
-      font-size: 0.95rem;
+      font-size: 0.98rem;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 4px;
+      padding-right: 20px;
     }
 
     .place-sub {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
+      line-height: 1.35;
     }
 
     .delete-btn {
@@ -199,28 +244,42 @@
       background: none;
       border: none;
       color: #94a3b8;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
+      padding: 4px;
       cursor: pointer;
     }
 
-    /* Bottom Buttons */
+    .delete-btn:hover {
+      color: #ef4444;
+    }
+
+    /* Action Buttons */
     .action-btn-group {
       display: flex;
       gap: 10px;
-      margin-top: 16px;
+      margin-top: 20px;
     }
 
     .action-btn {
       flex: 1;
-      height: 42px;
+      height: 44px;
       background: white;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
       color: var(--text-main);
       cursor: pointer;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .action-btn:active {
+      background: #f8fafc;
     }
 
     /* Bottom Navigation */
@@ -229,7 +288,7 @@
       bottom: 0;
       width: 100%;
       max-width: 430px;
-      height: 60px;
+      height: 64px;
       background: white;
       border-top: 1px solid var(--border-color);
       display: flex;
@@ -242,31 +301,32 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
       color: #94a3b8;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
+      font-weight: 600;
       cursor: pointer;
     }
 
     .nav-item.active {
       color: var(--primary);
-      font-weight: 700;
     }
 
     .nav-icon {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
     }
 
     /* Modal */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(2px);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 2000;
-      padding: 16px;
+      padding: 20px;
     }
 
     .modal-overlay.active {
@@ -276,38 +336,48 @@
     .modal {
       background: white;
       width: 100%;
-      max-width: 360px;
-      border-radius: 16px;
-      padding: 20px;
+      max-width: 350px;
+      border-radius: 20px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
 
     .modal h3 {
-      font-size: 1rem;
+      font-size: 1.05rem;
+      font-weight: 800;
       color: var(--text-main);
     }
 
-    .modal input, .modal select {
+    .modal input {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      outline: none;
+      background: #f8fafc;
+    }
+
+    .modal input:focus {
+      border-color: var(--primary);
+      background: #fff;
     }
 
     .modal-btns {
       display: flex;
       gap: 8px;
       justify-content: flex-end;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     .modal-btn {
-      padding: 8px 16px;
-      border-radius: 6px;
+      padding: 10px 18px;
+      border-radius: 10px;
       font-size: 0.85rem;
+      font-weight: 700;
       border: none;
       cursor: pointer;
     }
@@ -318,12 +388,12 @@
     }
 
     .modal-btn.cancel {
-      background: #e2e8f0;
-      color: var(--text-main);
+      background: #f1f5f9;
+      color: var(--text-muted);
     }
   </style>
 
-  <!-- Google Maps API 로드 (YOUR_API_KEY 부분을 본인의 API 키로 교체하세요) -->
+  <!-- Google Maps API (YOUR_API_KEY 부분에 본인 키 대입) -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&language=ko&region=KR" async defer></script>
 </head>
 <body>
@@ -335,36 +405,47 @@
         <div class="top-bar-title">도쿄 여행 ✈️</div>
         <div class="top-bar-sub">2026.11.28 - 12.02</div>
       </div>
-      <div class="top-bar-icons">
-        <span>✏️</span>
-        <span>🗺️</span>
-        <span>☰</span>
+      <button class="reset-btn" onclick="resetData()">초기화</button>
+    </div>
+
+    <!-- Google Map -->
+    <div id="map"></div>
+
+    <!-- Day Selector Chips (칩 형태의 일차 선택 바) -->
+    <div class="day-chips-container" id="dayChips">
+      <div class="day-chip active" onclick="selectDay(1)">
+        <span class="chip-day">Day 1</span>
+        <span class="chip-date">11.28 토</span>
+      </div>
+      <div class="day-chip" onclick="selectDay(2)">
+        <span class="chip-day">Day 2</span>
+        <span class="chip-date">11.29 일</span>
+      </div>
+      <div class="day-chip" onclick="selectDay(3)">
+        <span class="chip-day">Day 3</span>
+        <span class="chip-date">11.30 월</span>
+      </div>
+      <div class="day-chip" onclick="selectDay(4)">
+        <span class="chip-day">Day 4</span>
+        <span class="chip-date">12.01 화</span>
+      </div>
+      <div class="day-chip" onclick="selectDay(5)">
+        <span class="chip-day">Day 5</span>
+        <span class="chip-date">12.02 수</span>
       </div>
     </div>
 
-    <!-- Google Map 영역 -->
-    <div id="map"></div>
-
-    <!-- Day Header -->
-    <div class="day-header">
-      <button class="day-selector-btn" onclick="openDaySelectModal()">
-        <span id="currentDayText">day 1 11.28/토</span>
-        <span>∨</span>
-      </button>
-      <button class="edit-btn" onclick="resetData()">초기화</button>
-    </div>
-
-    <!-- Timeline -->
+    <!-- Timeline Container -->
     <div class="timeline-container">
       <div id="timelineList"></div>
 
       <div class="action-btn-group">
-        <button class="action-btn" onclick="openAddModal()">장소 추가</button>
-        <button class="action-btn" onclick="alert('메모 기능 준비 중입니다.')">메모 추가</button>
+        <button class="action-btn" onclick="openAddModal()">➕ 장소 추가</button>
+        <button class="action-btn" onclick="alert('메모 기능 준비 중입니다.')">📝 메모 추가</button>
       </div>
     </div>
 
-    <!-- Bottom Nav -->
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
       <div class="nav-item">
         <span class="nav-icon">📍</span>
@@ -400,24 +481,6 @@
     </div>
   </div>
 
-  <!-- Day 선택 모달 -->
-  <div class="modal-overlay" id="dayModal">
-    <div class="modal">
-      <h3>일차 선택</h3>
-      <select id="daySelect">
-        <option value="1">Day 1 (11.28 토) - 신주쿠 & 시부야</option>
-        <option value="2">Day 2 (11.29 일) - 아사쿠사 & 도쿄타워</option>
-        <option value="3">Day 3 (11.30 월) - 후지큐 하이랜드</option>
-        <option value="4">Day 4 (12.01 화) - 도쿄 디즈니씨</option>
-        <option value="5">Day 5 (12.02 수) - 귀국</option>
-      </select>
-      <div class="modal-btns">
-        <button class="modal-btn cancel" onclick="closeModal('dayModal')">취소</button>
-        <button class="modal-btn primary" onclick="changeDay()">이동</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     const INITIAL_DATA = {
       1: [
@@ -449,14 +512,6 @@
       ]
     };
 
-    const dayTitles = {
-      1: "day 1 11.28/토",
-      2: "day 2 11.29/일",
-      3: "day 3 11.30/월",
-      4: "day 4 12.01/화",
-      5: "day 5 12.02/수"
-    };
-
     let currentDay = 1;
     let tripData = {};
     let map = null;
@@ -484,7 +539,7 @@
     }, 1000);
 
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_google_map_data_v2');
+      const saved = localStorage.getItem('tokyo_google_ui_v3');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -494,7 +549,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_google_map_data_v2', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_google_ui_v3', JSON.stringify(tripData));
     }
 
     function resetData() {
@@ -505,10 +560,20 @@
       }
     }
 
-    function renderDay(day) {
+    function selectDay(day) {
       currentDay = day;
-      document.getElementById('currentDayText').innerText = dayTitles[day];
+      const chips = document.querySelectorAll('.day-chip');
+      chips.forEach((chip, index) => {
+        if (index + 1 === day) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+      });
+      renderDay(day);
+    }
 
+    function renderDay(day) {
       const places = tripData[day] || [];
       const listEl = document.getElementById('timelineList');
       listEl.innerHTML = '';
@@ -538,7 +603,7 @@
         });
 
         const infowindow = new google.maps.InfoWindow({
-          content: `<div style="padding:4px;"><b>${placeNum}. ${place.name}</b><br>${place.sub}</div>`
+          content: `<div style="padding:6px; font-family:sans-serif;"><b>${placeNum}. ${place.name}</b><br><span style="font-size:12px; color:#64748b;">${place.sub}</span></div>`
         });
 
         marker.addListener('click', () => {
@@ -576,8 +641,8 @@
           const dist = calculateDistance(place.lat, place.lng, nextPlace.lat, nextPlace.lng);
           
           const distEl = document.createElement('div');
-          distEl.className = 'distance-badge';
-          distEl.innerText = `${dist}km`;
+          distEl.className = 'distance-wrapper';
+          distEl.innerHTML = `<div class="distance-badge">🚘 ${dist}km</div>`;
           listEl.appendChild(distEl);
         }
       });
@@ -586,9 +651,9 @@
         flightPath = new google.maps.Polyline({
           path: pathCoords,
           geodesic: true,
-          strokeColor: '#1a73e8',
-          strokeOpacity: 0.8,
-          strokeWeight: 3
+          strokeColor: '#2563eb',
+          strokeOpacity: 0.85,
+          strokeWeight: 3.5
         });
         flightPath.setMap(map);
         map.fitBounds(bounds);
@@ -612,19 +677,8 @@
       document.getElementById('addModal').classList.add('active');
     }
 
-    function openDaySelectModal() {
-      document.getElementById('daySelect').value = currentDay;
-      document.getElementById('dayModal').classList.add('active');
-    }
-
     function closeModal(id) {
       document.getElementById(id).classList.remove('active');
-    }
-
-    function changeDay() {
-      const day = parseInt(document.getElementById('daySelect').value, 10);
-      closeModal('dayModal');
-      renderDay(day);
     }
 
     function addPlace() {
