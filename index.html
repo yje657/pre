@@ -54,7 +54,7 @@
       z-index: 1;
     }
 
-    /* Floating Bottom Sheet (드래그 제스처 적용) */
+    /* Floating Bottom Sheet */
     .bottom-sheet {
       position: absolute;
       bottom: 0;
@@ -83,6 +83,7 @@
       align-items: center;
       padding: 14px 0 10px 0;
       cursor: grab;
+      flex-shrink: 0;
     }
 
     .sheet-handle {
@@ -102,6 +103,7 @@
       border-bottom: 1px solid var(--border-color);
       -ms-overflow-style: none;
       scrollbar-width: none;
+      flex-shrink: 0;
     }
 
     .day-chips-container::-webkit-scrollbar {
@@ -142,7 +144,7 @@
       flex: 1;
       overflow-y: auto;
       padding: 16px;
-      padding-bottom: 40px;
+      padding-bottom: 90px; /* 하단 fixed 버튼 공간 확보 */
       touch-action: pan-y;
     }
 
@@ -239,20 +241,28 @@
       cursor: pointer;
     }
 
-    /* Action Buttons */
-    .sheet-footer {
+    /* 하단 고정(Fixed) 독바 액션 버튼 그룹 */
+    .sheet-footer-fixed {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 12px 16px 24px 16px;
+      background: linear-gradient(to top, rgba(255,255,255,0.98) 70%, rgba(255,255,255,0));
       display: flex;
       gap: 8px;
-      margin-top: 16px;
+      z-index: 20;
+      border-bottom-left-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
     }
 
     .action-btn {
       flex: 1;
-      height: 44px;
+      height: 46px;
       background: var(--primary);
       border: none;
       border-radius: 14px;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: white;
       cursor: pointer;
@@ -267,7 +277,7 @@
       background: #ffffff;
       color: var(--primary);
       border: 1px solid var(--border-color);
-      box-shadow: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
     /* 전체 화면 입력 페이지 (Sub-page View) */
@@ -398,7 +408,7 @@
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
-    /* 구글 InfoWindow 여백 제거 스타일 */
+    /* 구글 InfoWindow 상단 여백 완벽 제거 및 컴팩트 정렬 */
     .gm-style-iw-c {
       padding: 0 !important;
       border-radius: 12px !important;
@@ -407,6 +417,7 @@
     .gm-style-iw-d {
       overflow: hidden !important;
       padding: 0 !important;
+      max-height: none !important;
     }
     .gm-ui-hover-effect {
       display: none !important;
@@ -455,11 +466,12 @@
       <!-- Sheet Content -->
       <div class="sheet-content">
         <div id="timelineList"></div>
+      </div>
 
-        <div class="sheet-footer">
-          <button class="action-btn" onclick="openPage('addPage')">+ 장소 추가</button>
-          <button class="action-btn secondary" onclick="openPage('memoPage')">📝 메모 추가</button>
-        </div>
+      <!-- 하단 고정(Fixed) 액션 버튼 -->
+      <div class="sheet-footer-fixed">
+        <button class="action-btn" onclick="openPage('addPage')">+ 장소 추가</button>
+        <button class="action-btn secondary" onclick="openPage('memoPage')">📝 메모 추가</button>
       </div>
     </div>
 
@@ -630,7 +642,6 @@
       }
     }, 1000);
 
-    /* 하단 독바(BottomSheet) 드래그 제스처 구현 */
     function initBottomSheetGesture() {
       const sheet = document.getElementById('bottomSheet');
       const handleBar = document.getElementById('sheetHandleBar');
@@ -711,7 +722,7 @@
     }
 
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v23_gesture');
+      const saved = localStorage.getItem('tokyo_planner_v24_fixed');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -721,7 +732,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v23_gesture', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v24_fixed', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -769,16 +780,17 @@
             title: place.name
           });
 
+          // 상단 불필요한 패딩을 완전 제거하고 타이틀과 시간을 밀착시킨 인포윈도우
           const infowindow = new google.maps.InfoWindow({
             content: `
-              <div style="position: relative; padding: 6px 24px 6px 8px; font-family: sans-serif; min-width: 170px;">
-                <button onclick="if(window.activeInfoWindow) window.activeInfoWindow.close();" style="position: absolute; top: 4px; right: 6px; background: none; border: none; font-size: 13px; font-weight: bold; color: #94a3b8; cursor: pointer;">✕</button>
+              <div style="position: relative; margin: -4px -2px -4px -2px; padding: 2px 20px 2px 2px; font-family: sans-serif; min-width: 160px;">
+                <button onclick="if(window.activeInfoWindow) window.activeInfoWindow.close();" style="position: absolute; top: 0px; right: 0px; background: none; border: none; font-size: 13px; font-weight: bold; color: #94a3b8; cursor: pointer;">✕</button>
                 <div style="font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.2;">${placeNum}. ${place.name}</div>
                 <div style="font-size: 11px; color: #64748b; margin-top: 1px; line-height: 1.2;">${place.sub}</div>
-                <div style="font-size: 11px; font-weight: 700; color: #2563eb; margin-top: 3px;">⏰ ${place.time || ''}</div>
+                <div style="font-size: 11px; font-weight: 700; color: #2563eb; margin-top: 2px;">⏰ ${place.time || ''}</div>
               </div>
             `,
-            pixelOffset: new google.maps.Size(0, -5)
+            pixelOffset: new google.maps.Size(0, -2)
           });
 
           marker.addListener('click', () => {
