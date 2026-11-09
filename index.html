@@ -337,9 +337,19 @@
       background: #f1f5f9;
       color: var(--text-muted);
     }
+
+    /* 구글 자동완성 드롭다운 디자인 최적화 및 우선순위 설정 */
+    .pac-container {
+      z-index: 99999 !important;
+      border-radius: 12px;
+      margin-top: 6px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--border-color);
+      font-family: inherit;
+    }
   </style>
 
-  <!-- Google Maps API -->
+  <!-- Google Maps API (places 라이브러리 포함) -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&libraries=places&language=ko&region=KR" async defer></script>
 </head>
 <body>
@@ -390,16 +400,19 @@
     </div>
   </div>
 
-  <!-- 장소 추가 모달 (Geocoder 검색 적용) -->
+  <!-- 장소 추가 모달 -->
   <div class="modal-overlay" id="addModal">
     <div class="modal">
       <h3>새 장소 추가</h3>
-      <input type="text" id="placeNameInput" placeholder="장소명 입력 (예: 아사쿠사 센소지)">
+      <input type="text" id="placeSearchInput" placeholder="🔍 장소 검색 (예: 센소지)">
       <input type="text" id="placeSubInput" placeholder="설명 (예: 산책 및 테이크아웃)">
+      
+      <input type="hidden" id="placeLat">
+      <input type="hidden" id="placeLng">
 
       <div class="modal-btns">
         <button class="modal-btn cancel" onclick="closeModal()">취소</button>
-        <button class="modal-btn primary" onclick="searchAndAddPlace()">추가</button>
+        <button class="modal-btn primary" onclick="addPlace()">추가</button>
       </div>
     </div>
   </div>
@@ -440,7 +453,7 @@
     let map = null;
     let markers = [];
     let flightPath = null;
-    let geocoder = null;
+    let autocomplete = null;
 
     window.onload = () => {
       loadTripData();
@@ -454,7 +467,7 @@
         zoomControl: false
       });
       
-      geocoder = new google.maps.Geocoder();
+      initAutocomplete();
       renderDay(currentDay);
     };
 
@@ -464,8 +477,33 @@
       }
     }, 1000);
 
+    // 구글 장소 자동완성(Autocomplete) 연동
+    function initAutocomplete() {
+      const input = document.getElementById('placeSearchInput');
+      if (!input) return;
+
+      autocomplete = new google.maps.places.Autocomplete(input, {
+        fields: ["name", "geometry", "formatted_address"]
+      });
+
+      // 도쿄 주변 지역으로 검색 바운드 지정
+      const tokyoBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(35.5, 139.3),
+        new google.maps.LatLng(35.8, 140.0)
+      );
+      autocomplete.setBounds(tokyoBounds);
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place && place.geometry && place.geometry.location) {
+          document.getElementById('placeLat').value = place.geometry.location.lat();
+          document.getElementById('placeLng').value = place.geometry.location.lng();
+        }
+      });
+    }
+
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v10');
+      const saved = localStorage.getItem('tokyo_planner_v12');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -475,7 +513,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v10', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v12', JSON.stringify(tripData));
     }
 
     function resetData() {
@@ -605,42 +643,33 @@
 
     function closeModal() {
       document.getElementById('addModal').classList.remove('active');
-      document.getElementById('placeNameInput').value = '';
+      document.getElementById('placeSearchInput').value = '';
       document.getElementById('placeSubInput').value = '';
+      document.getElementById('placeLat').value = '';
+      document.getElementById('placeLng').value = '';
     }
 
-    // Geocoder를 이용해 장소 이름을 넣으면 구글 지도가 직접 위치를 찾아 등록해주는 안전한 방식
-    function searchAndAddPlace() {
-      const name = document.getElementById('placeNameInput').value.trim();
+    function addPlace() {
+      const name = document.getElementById('placeSearchInput').value.trim();
       const sub = document.getElementById('placeSubInput').value.trim();
+      let lat = parseFloat(document.getElementById('placeLat').value);
+      let lng = parseFloat(document.getElementById('placeLng').value);
 
       if (!name) {
         alert('장소명을 입력해 주세요.');
         return;
       }
 
-      if (!geocoder) {
-        alert('지도가 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.');
-        return;
+      // 드롭다운 목록에서 선택하지 않고 엔터를 치거나 그냥 추가했을 때의 대비책
+      if (isNaN(lat) || isNaN(lng)) {
+        lat = 35.6812 + (Math.random() - 0.5) * 0.03;
+        lng = 139.7671 + (Math.random() - 0.5) * 0.03;
       }
 
-      // 도쿄 지역 중심 검색어 보정
-      const query = name.includes('도쿄') || name.includes('일본') ? name : `도쿄 ${name}`;
-
-      geocoder.geocode({ address: query }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-          const location = results[0].geometry.location;
-          const lat = location.lat();
-          const lng = location.lng();
-
-          tripData[currentDay].push({ name, sub: sub || "새 일정", lat, lng });
-          saveTripData();
-          closeModal();
-          renderDay(currentDay);
-        } else {
-          alert('해당 장소를 찾을 수 없습니다. 정확한 명칭을 입력해 주세요.');
-        }
-      });
+      tripData[currentDay].push({ name, sub: sub || "새 일정", lat, lng });
+      saveTripData();
+      closeModal();
+      renderDay(currentDay);
     }
 
     function deletePlace(index) {
