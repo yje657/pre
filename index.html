@@ -8,15 +8,13 @@
   <style>
     :root {
       --primary: #2563eb;
-      --primary-light: #eff6ff;
       --bg-color: #f8fafc;
       --card-bg: #ffffff;
       --text-main: #0f172a;
       --text-muted: #64748b;
       --border-color: #e2e8f0;
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-      --radius: 14px;
+      --radius: 12px;
     }
 
     * {
@@ -28,7 +26,7 @@
     }
 
     body {
-      background-color: #cbd5e1;
+      background-color: #e2e8f0;
       display: flex;
       justify-content: center;
       min-height: 100vh;
@@ -42,17 +40,17 @@
       display: flex;
       flex-direction: column;
       position: relative;
-      box-shadow: 0 0 24px rgba(0,0,0,0.15);
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
 
-    /* Top Bar */
+    /* Header Bar */
     .top-bar {
-      height: 56px;
+      height: 52px;
       background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
+      padding: 0 16px;
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
@@ -60,46 +58,33 @@
     }
 
     .top-bar-title {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 800;
       color: var(--text-main);
-      letter-spacing: -0.3px;
-    }
-
-    .top-bar-sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 1px;
-      font-weight: 500;
     }
 
     .reset-btn {
       background: #f1f5f9;
       border: none;
       color: var(--text-muted);
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 20px;
+      padding: 5px 10px;
+      border-radius: 16px;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
-    .reset-btn:active {
-      background: #e2e8f0;
-    }
-
-    /* Map Container */
+    /* Map Area */
     #map {
       width: 100%;
       height: 250px;
       z-index: 1;
     }
 
-    /* Day Chips Bar (날짜 선택 칩 레일) */
+    /* Day Chips Bar */
     .day-chips-container {
       background: #ffffff;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border-color);
       overflow-x: auto;
       white-space: nowrap;
@@ -117,58 +102,54 @@
       display: inline-flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 8px 16px;
-      border-radius: 12px;
+      padding: 6px 14px;
+      border-radius: 10px;
       background: #f1f5f9;
       color: var(--text-muted);
-      border: 1px solid transparent;
       cursor: pointer;
-      transition: all 0.2s ease;
       flex-shrink: 0;
+      transition: all 0.2s;
     }
 
     .day-chip .chip-day {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
-      line-height: 1.1;
     }
 
     .day-chip .chip-date {
-      font-size: 0.7rem;
-      margin-top: 2px;
-      opacity: 0.8;
+      font-size: 0.68rem;
+      margin-top: 1px;
     }
 
     .day-chip.active {
       background: var(--primary);
       color: #ffffff;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
     }
 
-    /* Timeline Container */
+    /* Timeline Section */
     .timeline-container {
       flex: 1;
-      padding: 20px 16px 120px 16px;
+      padding: 16px;
+      padding-bottom: 40px;
     }
 
     .timeline-item {
       position: relative;
       display: flex;
-      gap: 14px;
+      gap: 12px;
     }
 
     .timeline-left {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 24px;
+      width: 22px;
       flex-shrink: 0;
     }
 
     .number-badge {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       background: var(--primary);
       color: white;
@@ -178,7 +159,6 @@
       align-items: center;
       justify-content: center;
       z-index: 2;
-      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
     }
 
     .timeline-line {
@@ -192,141 +172,82 @@
     .distance-wrapper {
       display: flex;
       align-items: center;
-      padding: 6px 0 6px 38px;
+      padding: 6px 0 6px 34px;
     }
 
     .distance-badge {
       background: #ffffff;
       border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 3px 10px;
-      font-size: 0.72rem;
+      border-radius: 16px;
+      padding: 2px 8px;
+      font-size: 0.7rem;
       color: var(--text-muted);
       font-weight: 600;
-      box-shadow: var(--shadow-sm);
     }
 
     .place-card {
       flex: 1;
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 14px 16px;
+      padding: 12px 14px;
       box-shadow: var(--shadow-sm);
       border: 1px solid var(--border-color);
       cursor: pointer;
       position: relative;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-
-    .place-card:active {
-      transform: scale(0.99);
-      box-shadow: var(--shadow-md);
     }
 
     .place-title {
-      font-size: 0.98rem;
+      font-size: 0.92rem;
       font-weight: 700;
       color: var(--text-main);
-      margin-bottom: 4px;
-      padding-right: 20px;
+      margin-bottom: 3px;
+      padding-right: 18px;
     }
 
     .place-sub {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
-      line-height: 1.35;
     }
 
     .delete-btn {
       position: absolute;
-      top: 12px;
-      right: 12px;
+      top: 10px;
+      right: 10px;
       background: none;
       border: none;
       color: #94a3b8;
-      font-size: 0.9rem;
-      padding: 4px;
+      font-size: 0.85rem;
       cursor: pointer;
     }
 
-    .delete-btn:hover {
-      color: #ef4444;
-    }
-
-    /* Action Buttons */
-    .action-btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .action-btn {
-      flex: 1;
+    /* Add Button */
+    .add-btn {
+      width: 100%;
       height: 44px;
-      background: white;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
+      margin-top: 16px;
+      background: #ffffff;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius);
       font-size: 0.88rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: var(--primary);
       cursor: pointer;
-      box-shadow: var(--shadow-sm);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: background 0.2s;
     }
 
-    .action-btn:active {
-      background: #f8fafc;
-    }
-
-    /* Bottom Navigation */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      max-width: 430px;
-      height: 64px;
-      background: white;
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: #94a3b8;
-      font-size: 0.72rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .nav-item.active {
-      color: var(--primary);
-    }
-
-    .nav-icon {
-      font-size: 1.25rem;
-    }
-
-    /* Modal */
+    /* Modal & Search */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(15, 23, 42, 0.4);
-      backdrop-filter: blur(2px);
       display: none;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       z-index: 2000;
-      padding: 20px;
+      padding: 40px 16px 16px 16px;
     }
 
     .modal-overlay.active {
@@ -336,34 +257,31 @@
     .modal {
       background: white;
       width: 100%;
-      max-width: 350px;
-      border-radius: 20px;
-      padding: 22px;
+      max-width: 360px;
+      border-radius: 16px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      gap: 12px;
     }
 
     .modal h3 {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 800;
       color: var(--text-main);
     }
 
     .modal input {
       width: 100%;
-      padding: 12px;
+      padding: 10px 12px;
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      font-size: 0.88rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
       outline: none;
-      background: #f8fafc;
     }
 
     .modal input:focus {
       border-color: var(--primary);
-      background: #fff;
     }
 
     .modal-btns {
@@ -374,9 +292,9 @@
     }
 
     .modal-btn {
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-size: 0.85rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
       font-weight: 700;
       border: none;
       cursor: pointer;
@@ -391,28 +309,33 @@
       background: #f1f5f9;
       color: var(--text-muted);
     }
+
+    /* Google Autocomplete 드롭다운 레이어 조절 */
+    .pac-container {
+      z-index: 3000 !important;
+      border-radius: 8px;
+      margin-top: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
   </style>
 
-  <!-- Google Maps API (YOUR_API_KEY 부분에 본인 키 대입) -->
+  <!-- Google Maps API (places 라이브러리 추가) -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&language=ko&region=KR" async defer></script>
 </head>
 <body>
 
   <div class="app-container">
-    <!-- Top Bar -->
+    <!-- Header -->
     <div class="top-bar">
-      <div>
-        <div class="top-bar-title">도쿄 여행 ✈️</div>
-        <div class="top-bar-sub">2026.11.28 - 12.02</div>
-      </div>
+      <div class="top-bar-title">도쿄 여행 ✈️</div>
       <button class="reset-btn" onclick="resetData()">초기화</button>
     </div>
 
-    <!-- Google Map -->
+    <!-- Map -->
     <div id="map"></div>
 
-    <!-- Day Selector Chips (칩 형태의 일차 선택 바) -->
-    <div class="day-chips-container" id="dayChips">
+    <!-- Day Chips -->
+    <div class="day-chips-container">
       <div class="day-chip active" onclick="selectDay(1)">
         <span class="chip-day">Day 1</span>
         <span class="chip-date">11.28 토</span>
@@ -438,31 +361,7 @@
     <!-- Timeline Container -->
     <div class="timeline-container">
       <div id="timelineList"></div>
-
-      <div class="action-btn-group">
-        <button class="action-btn" onclick="openAddModal()">➕ 장소 추가</button>
-        <button class="action-btn" onclick="alert('메모 기능 준비 중입니다.')">📝 메모 추가</button>
-      </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-      <div class="nav-item">
-        <span class="nav-icon">📍</span>
-        <span>여행 홈</span>
-      </div>
-      <div class="nav-item active">
-        <span class="nav-icon">📅</span>
-        <span>일정</span>
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">🧰</span>
-        <span>여행 도구</span>
-      </div>
-      <div class="nav-item">
-        <span class="nav-icon">♡</span>
-        <span>저장</span>
-      </div>
+      <button class="add-btn" onclick="openAddModal()">+ 새 장소 추가</button>
     </div>
   </div>
 
@@ -470,12 +369,16 @@
   <div class="modal-overlay" id="addModal">
     <div class="modal">
       <h3>새 장소 추가</h3>
-      <input type="text" id="placeName" placeholder="장소명 (예: 신주쿠역)">
-      <input type="text" id="placeSub" placeholder="설명 (예: 브랜드 쇼핑)">
-      <input type="number" step="any" id="placeLat" placeholder="위도 (예: 35.6905)">
-      <input type="number" step="any" id="placeLng" placeholder="경도 (예: 139.7006)">
+      <!-- 구글 장소 검색창 -->
+      <input type="text" id="placeSearchInput" placeholder="🔍 장소명을 검색하세요 (예: 센소지)">
+      <input type="text" id="placeSub" placeholder="설명 (예: 오후 쇼핑 및 관람)">
+      
+      <!-- 검색으로 자동 채워질 숨겨진 좌표 값 -->
+      <input type="hidden" id="placeLat">
+      <input type="hidden" id="placeLng">
+
       <div class="modal-btns">
-        <button class="modal-btn cancel" onclick="closeModal('addModal')">취소</button>
+        <button class="modal-btn cancel" onclick="closeModal()">취소</button>
         <button class="modal-btn primary" onclick="addPlace()">추가</button>
       </div>
     </div>
@@ -517,6 +420,7 @@
     let map = null;
     let markers = [];
     let flightPath = null;
+    let autocomplete = null;
 
     window.onload = () => {
       loadTripData();
@@ -529,6 +433,8 @@
         disableDefaultUI: true,
         zoomControl: false
       });
+      
+      initAutocomplete();
       renderDay(currentDay);
     };
 
@@ -538,8 +444,24 @@
       }
     }, 1000);
 
+    // 구글 장소 검색 자동완성 초기화
+    function initAutocomplete() {
+      const input = document.getElementById('placeSearchInput');
+      autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.bindTo('bounds', map);
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry || !place.geometry.location) {
+          return;
+        }
+        document.getElementById('placeLat').value = place.geometry.location.lat();
+        document.getElementById('placeLng').value = place.geometry.location.lng();
+      });
+    }
+
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_google_ui_v3');
+      const saved = localStorage.getItem('tokyo_simple_planner_v4');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -549,7 +471,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_google_ui_v3', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_simple_planner_v4', JSON.stringify(tripData));
     }
 
     function resetData() {
@@ -603,7 +525,7 @@
         });
 
         const infowindow = new google.maps.InfoWindow({
-          content: `<div style="padding:6px; font-family:sans-serif;"><b>${placeNum}. ${place.name}</b><br><span style="font-size:12px; color:#64748b;">${place.sub}</span></div>`
+          content: `<div style="padding:4px;"><b>${placeNum}. ${place.name}</b><br><span style="font-size:12px; color:#64748b;">${place.sub}</span></div>`
         });
 
         marker.addListener('click', () => {
@@ -642,7 +564,7 @@
           
           const distEl = document.createElement('div');
           distEl.className = 'distance-wrapper';
-          distEl.innerHTML = `<div class="distance-badge">🚘 ${dist}km</div>`;
+          distEl.innerHTML = `<div class="distance-badge">${dist}km</div>`;
           listEl.appendChild(distEl);
         }
       });
@@ -653,7 +575,7 @@
           geodesic: true,
           strokeColor: '#2563eb',
           strokeOpacity: 0.85,
-          strokeWeight: 3.5
+          strokeWeight: 3
         });
         flightPath.setMap(map);
         map.fitBounds(bounds);
@@ -677,30 +599,29 @@
       document.getElementById('addModal').classList.add('active');
     }
 
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
+    function closeModal() {
+      document.getElementById('addModal').classList.remove('active');
+      document.getElementById('placeSearchInput').value = '';
+      document.getElementById('placeSub').value = '';
+      document.getElementById('placeLat').value = '';
+      document.getElementById('placeLng').value = '';
     }
 
     function addPlace() {
-      const name = document.getElementById('placeName').value;
+      const name = document.getElementById('placeSearchInput').value;
       const sub = document.getElementById('placeSub').value;
       const lat = parseFloat(document.getElementById('placeLat').value);
       const lng = parseFloat(document.getElementById('placeLng').value);
 
       if (!name || isNaN(lat) || isNaN(lng)) {
-        alert('장소명과 올바른 위도/경도를 입력해주세요.');
+        alert('검색 목록에서 올바른 장소를 선택해 주세요.');
         return;
       }
 
       tripData[currentDay].push({ name, sub, lat, lng });
       saveTripData();
-      closeModal('addModal');
+      closeModal();
       renderDay(currentDay);
-
-      document.getElementById('placeName').value = '';
-      document.getElementById('placeSub').value = '';
-      document.getElementById('placeLat').value = '';
-      document.getElementById('placeLng').value = '';
     }
 
     function deletePlace(index) {
