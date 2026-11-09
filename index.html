@@ -371,6 +371,19 @@
       background: #f1f5f9;
       color: var(--text-muted);
     }
+
+    /* 구글 기본 InfoWindow 닫기 버튼 숨기기 및 여백 제거 최적화 스타일 */
+    .gm-style-iw-c {
+      padding: 0 !important;
+      border-radius: 14px !important;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    }
+    .gm-style-iw-d {
+      overflow: hidden !important;
+    }
+    .gm-ui-hover-effect {
+      display: none !important; /* 구글 기본 엑스 버튼 제거 */
+    }
   </style>
 
   <!-- Google Maps API -->
@@ -602,7 +615,7 @@
     }
 
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v19_tight');
+      const saved = localStorage.getItem('tokyo_planner_v20_perfect');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -612,7 +625,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v19_tight', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v20_perfect', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -660,13 +673,14 @@
             title: place.name
           });
 
-          // 여백을 최소화하여 컴팩트하게 다듬은 InfoWindow 내용
+          // 여백을 완전히 없애고 우측 상단 커스텀 닫기 버튼을 포함한 컴팩트 레이아웃
           const infowindow = new google.maps.InfoWindow({
             content: `
-              <div style="padding: 2px 4px; font-family: sans-serif; line-height: 1.3;">
+              <div style="position: relative; padding: 10px 24px 10px 12px; font-family: sans-serif; min-width: 180px;">
+                <button onclick="if(window.activeInfoWindow) window.activeInfoWindow.close();" style="position: absolute; top: 8px; right: 8px; background: none; border: none; font-size: 14px; font-weight: bold; color: #94a3b8; cursor: pointer;">✕</button>
                 <div style="font-size: 11px; font-weight: 700; color: #2563eb;">${place.time || ''}</div>
-                <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 1px;">${placeNum}. ${place.name}</div>
-                <div style="font-size: 11px; color: #64748b; margin-top: 1px;">${place.sub}</div>
+                <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 2px;">${placeNum}. ${place.name}</div>
+                <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${place.sub}</div>
               </div>
             `,
             pixelOffset: new google.maps.Size(0, -5)
@@ -676,6 +690,7 @@
             if (activeInfoWindow) activeInfoWindow.close();
             infowindow.open(map, marker);
             activeInfoWindow = infowindow;
+            window.activeInfoWindow = infowindow;
           });
 
           markers.push(marker);
