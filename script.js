@@ -73,67 +73,37 @@ window.initMap = function() {
     zoom: 12,
     center: { lat: 35.6812, lng: 139.7671 },
     disableDefaultUI: true,
-    zoomControl: false
+    zoomControl: false,
+    clickableIcons: false // 👈 이 줄을 반드시 추가해 주세요! (구글 기본 장소 툴팁 차단)
   });
   renderDay(currentDay);
 
-  // 👇 여기에 지도 클릭 리스너 추가
+  // 지도 클릭 리스너
   map.addListener('click', (event) => {
     const clickedLat = event.latLng.lat();
     const clickedLng = event.latLng.lng();
     
-    if (event.placeId) {
-      event.stop();
-      
-      const service = new google.maps.places.PlacesService(map);
-      service.getDetails({ placeId: event.placeId }, (place, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
-          const placeName = place.name;
-          const placeAddress = place.formatted_address || '';
+    // 일반 클릭 및 장소 클릭 시 우리가 만든 커스텀 툴팁과 일정 추가 버튼 표시
+    const contentString = `
+      <div style="padding: 8px 12px; font-family: sans-serif; min-width: 170px;">
+        <div style="font-size: 13px; font-weight: 800; color: #0f172a;">선택한 위치</div>
+        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}</div>
+        <button onclick="addCustomPlaceFromMap('선택한 위치', ${clickedLat}, ${clickedLng})" 
+          style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 6px 0; font-size: 11px; font-weight: 700; cursor: pointer;">
+          + Day ${currentDay} 일정에 추가
+        </button>
+      </div>
+    `;
 
-          const contentString = `
-            <div style="padding: 8px 12px; font-family: sans-serif; min-width: 180px;">
-              <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${placeName}</div>
-              <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${placeAddress}</div>
-              <button onclick="addCustomPlaceFromMap('${placeName.replace(/'/g, "\\'")}', ${clickedLat}, ${clickedLng})" 
-                style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 6px 0; font-size: 11px; font-weight: 700; cursor: pointer;">
-                + Day ${currentDay} 일정에 추가
-              </button>
-            </div>
-          `;
-
-          if (activeInfoWindow) activeInfoWindow.close();
-          const infoWindow = new google.maps.InfoWindow({
-            position: { lat: clickedLat, lng: clickedLng },
-            content: contentString
-          });
-          infoWindow.open(map);
-          activeInfoWindow = infoWindow;
-        }
-      });
-    } else {
-      const contentString = `
-        <div style="padding: 8px 12px; font-family: sans-serif; min-width: 160px;">
-          <div style="font-size: 13px; font-weight: 800; color: #0f172a;">선택한 위치</div>
-          <div style="font-size: 11px; color: #64748b; margin-top: 2px;">위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}</div>
-          <button onclick="addCustomPlaceFromMap('임의 장소', ${clickedLat}, ${clickedLng})" 
-            style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 6px 0; font-size: 11px; font-weight: 700; cursor: pointer;">
-            + Day ${currentDay} 일정에 추가
-          </button>
-        </div>
-      `;
-
-      if (activeInfoWindow) activeInfoWindow.close();
-      const infoWindow = new google.maps.InfoWindow({
-        position: { lat: clickedLat, lng: clickedLng },
-        content: contentString
-      });
-      infoWindow.open(map);
-      activeInfoWindow = infoWindow;
-    }
+    if (activeInfoWindow) activeInfoWindow.close();
+    const infoWindow = new google.maps.InfoWindow({
+      position: { lat: clickedLat, lng: clickedLng },
+      content: contentString
+    });
+    infoWindow.open(map);
+    activeInfoWindow = infoWindow;
   });
 };
-
 setTimeout(() => {
   if (!map && typeof google !== 'undefined' && google.maps) {
     initMap();
