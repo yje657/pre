@@ -74,16 +74,14 @@ window.initMap = function() {
     center: { lat: 35.6812, lng: 139.7671 },
     disableDefaultUI: true,
     zoomControl: false,
-    clickableIcons: false // 👈 이 줄을 반드시 추가해 주세요! (구글 기본 장소 툴팁 차단)
+    clickableIcons: false
   });
   renderDay(currentDay);
 
-  // 지도 클릭 리스너
   map.addListener('click', (event) => {
     const clickedLat = event.latLng.lat();
     const clickedLng = event.latLng.lng();
     
-    // 일반 클릭 및 장소 클릭 시 우리가 만든 커스텀 툴팁과 일정 추가 버튼 표시
     const contentString = `
       <div style="padding: 8px 12px; font-family: sans-serif; min-width: 170px;">
         <div style="font-size: 13px; font-weight: 800; color: #0f172a;">선택한 위치</div>
@@ -104,6 +102,7 @@ window.initMap = function() {
     activeInfoWindow = infoWindow;
   });
 };
+
 setTimeout(() => {
   if (!map && typeof google !== 'undefined' && google.maps) {
     initMap();
@@ -385,18 +384,8 @@ function deletePlace(index) {
     renderDay(currentDay);
   }
 }
-// 파일 상단 ~ 중간: 변수들, initMap, renderDay 등 기존 코드들...
-// ...
 
-function deletePlace(index) {
-  if (confirm('이 항목을 삭제하시겠습니까?')) {
-    tripData[currentDay].splice(index, 1);
-    saveTripData();
-    renderDay(currentDay);
-  }
-}
-
-// 👇 바로 이 위치 (script.js 파일의 맨 마지막 줄)에 붙여넣어 주세요!
+// 지도 툴팁에서 일정 추가 버튼을 눌렀을 때 실행되는 전역 함수
 window.addCustomPlaceFromMap = function(name, lat, lng) {
   const dayPlaces = tripData[currentDay] || [];
   let defaultTime = "12:00";
