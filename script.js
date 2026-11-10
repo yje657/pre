@@ -188,12 +188,12 @@ function selectDay(day) {
   renderDay(day);
 }
 
-/* 지도 클릭 위치의 장소명/주소를 찾아 일정에 저장 */
+/* 지도 위에 추천 장소 핀 표시 (크기 축소 및 리스트 연동) */
 function initExplorationMarkers() {
   TOKYO_PLACES.forEach((place, index) => {
     const placeNum = index + 1;
 
-    // 구글 지도 벡터 심볼을 활용해 프라이머리 블루 컬러 원형 마커 + 번호 생성
+    // 핀 크기를 아담하게 축소 (scale: 10)
     const marker = new google.maps.Marker({
       position: { lat: place.lat, lng: place.lng },
       map: map,
@@ -202,14 +202,14 @@ function initExplorationMarkers() {
         text: String(placeNum),
         color: "white",
         fontWeight: "bold",
-        fontSize: "12px"
+        fontSize: "11px"
       },
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
-        scale: 14, // 핀 크기
-        fillColor: "#2563eb", // 앱 프라이머리 블루 컬러
+        scale: 10, // 핀 크기를 더 작게 조정
+        fillColor: "#2563eb",
         fillOpacity: 1,
-        strokeColor: "#ffffff", // 테두리 흰색
+        strokeColor: "#ffffff",
         strokeWeight: 2
       }
     });
@@ -229,7 +229,22 @@ function initExplorationMarkers() {
       infowindow.open(map, marker);
       activeInfoWindow = infowindow;
     });
+
+    // 마커 객체를 전역 배열에 저장하여 리스트 클릭 시 찾아올 수 있도록 함
+    markers.push({ name: place.name, marker: marker, infowindow: infowindow });
   });
+}
+
+/* 리스트 항목 클릭 시 지도 이동 및 해당 핀의 인포윈도우 열기 */
+function focusMarker(placeName) {
+  const found = markers.find(m => m.name === placeName);
+  if (found) {
+    map.setCenter(found.marker.getPosition());
+    map.setZoom(14);
+    if (activeInfoWindow) activeInfoWindow.close();
+    found.infowindow.open(map, found.marker);
+    activeInfoWindow = found.infowindow;
+  }
 }
 
 function locationToLiteral(location) {
