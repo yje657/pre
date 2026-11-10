@@ -78,36 +78,35 @@ window.initMap = function() {
   });
   renderDay(currentDay);
 
-  // 지도 클릭 시 실제 장소 정보 및 일정 추가 툴팁 연동
+  // 지도 클릭 시 Geocoder를 이용해 정확한 주소 및 장소명 가져오기
   map.addListener('click', (event) => {
     const clickedLat = event.latLng.lat();
     const clickedLng = event.latLng.lng();
     
-    let placeName = "선택한 위치";
+    let placeName = `도쿄 포인트 (${clickedLat.toFixed(2)}, ${clickedLng.toFixed(2)})`;
     let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
 
-    if (event.placeId) {
-      event.stop();
-      const service = new google.maps.places.PlacesService(map);
-      service.getDetails({ placeId: event.placeId }, (place, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
-          placeName = place.name || "선택한 장소";
-          placeSub = place.formatted_address || "지도에서 직접 선택";
-          openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
-        } else {
-          openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ location: { lat: clickedLat, lng: clickedLng } }, (results, status) => {
+      if (status === "OK" && results[0]) {
+        // 주소 결과에서 의미 있는 이름 추출
+        const addressComponents = results[0].address_components;
+        let shortName = "";
+        for (let comp of addressComponents) {
+          if (comp.types.includes("sublocality") || comp.types.includes("locality") || comp.types.includes("premise") || comp.types.includes("point_of_interest")) {
+            shortName = comp.long_name;
+            break;
+          }
         }
-      });
-    } else {
-      const geocoder = new google.maps.Geocoder();
-      geocoder.geocode({ location: { lat: clickedLat, lng: clickedLng } }, (results, status) => {
-        if (status === "OK" && results[0]) {
-          placeName = results[0].address_components[0] ? results[0].address_components[0].long_name + " 부근" : "선택한 위치";
-          placeSub = results[0].formatted_address;
+        if (shortName) {
+          placeName = shortName;
+        } else if (results[0].formatted_address) {
+          placeName = results[0].formatted_address.split(',')[0];
         }
-        openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
-      });
-    }
+        placeSub = results[0].formatted_address;
+      }
+      openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
+    });
   });
 };
 
