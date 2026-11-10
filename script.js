@@ -188,12 +188,11 @@ function selectDay(day) {
   renderDay(day);
 }
 
-/* 지도 위에 추천 장소 표시 (기본 핀 완벽 제거 + 프라이머리 원형 번호 뱃지 + 리스트 연동) */
+/* 지도 위에 추천 장소 표시 (기본 핀 완벽 숨김 + 파란색 원형 번호 뱃지만 표시) */
 function initExplorationMarkers() {
   TOKYO_PLACES.forEach((place, index) => {
     const placeNum = index + 1;
 
-    // 기본 핀 아이콘을 제거하고 SVG 원형 뱃지만 생성
     const marker = new google.maps.Marker({
       position: { lat: place.lat, lng: place.lng },
       map: map,
@@ -202,16 +201,18 @@ function initExplorationMarkers() {
         text: String(placeNum),
         color: "#ffffff",
         fontWeight: "bold",
-        fontSize: "11px"
+        fontSize: "12px"
       },
+      // 1x1 투명 이미지로 기본 핀을 완전히 투명하게 숨김
       icon: {
-        path: "M 0,0 m -12,0 a 12,12 0 1,0 24,0 a 12,12 0 1,0 -24,0", // 원형 SVG 경로 (scale 조정 가능)
-        fillColor: "#2563eb", // 프라이머리 블루
-        fillOpacity: 1,
-        strokeColor: "#ffffff", // 흰색 테두리
-        strokeWeight: 2,
-        scale: 1,
-        labelOrigin: new google.maps.Point(0, 0) // 라벨을 원 중앙에 정렬
+        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+            <circle cx="14" cy="14" r="12" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+          </svg>
+        `),
+        scaledSize: new google.maps.Size(28, 28),
+        anchor: new google.maps.Point(14, 14),
+        labelOrigin: new google.maps.Point(14, 14)
       }
     });
 
@@ -231,7 +232,6 @@ function initExplorationMarkers() {
       activeInfoWindow = infowindow;
     });
 
-    // 리스트 클릭 시 해당 마커 인포윈도우를 열기 위해 전역 배열에 저장
     markers.push({ name: place.name, marker: marker, infowindow: infowindow });
   });
 }
