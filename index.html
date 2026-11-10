@@ -280,7 +280,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
-    /* Sub-page View */
+    /* Sub-page View (메모 추가 전용) */
     .sub-page {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -355,69 +355,6 @@
       background: #fff;
     }
 
-    /* Autocomplete Dropdown Style */
-    .autocomplete-wrapper {
-      position: relative;
-      width: 100%;
-    }
-
-    .autocomplete-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: white;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      margin-top: 4px;
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 3000;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      display: none;
-    }
-
-    .autocomplete-item {
-      padding: 12px 16px;
-      cursor: pointer;
-      border-bottom: 1px solid #f1f5f9;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .autocomplete-item:last-child {
-      border-bottom: none;
-    }
-
-    .autocomplete-item:hover {
-      background: #f8fafc;
-    }
-
-    .place-icon {
-      font-size: 1.1rem;
-      color: #64748b;
-      flex-shrink: 0;
-    }
-
-    .place-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      overflow: hidden;
-    }
-
-    .place-name {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .place-address {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
     .page-footer {
       padding: 16px 20px;
       border-top: 1px solid var(--border-color);
@@ -454,7 +391,7 @@
   </style>
 
   <!-- Google Maps API -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&language=ko&region=KR" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5olanguage=ko&region=KR" async defer></script>
 </head>
 <body>
 
@@ -497,62 +434,9 @@
         <div id="timelineList"></div>
       </div>
 
-      <!-- Fixed Actions -->
+      <!-- Fixed Actions (메모 추가만 하단 독바에 유지) -->
       <div class="sheet-footer-fixed">
-        <button class="action-btn" onclick="openPage('addPage')">+ 장소 추가</button>
-        <button class="action-btn secondary" onclick="openPage('memoPage')">📝 메모 추가</button>
-      </div>
-    </div>
-
-    <!-- Sub Page: Add Place -->
-    <div class="sub-page" id="addPage">
-      <div class="page-header">
-        <button class="back-btn" onclick="closePage('addPage')">← 취소</button>
-        <h3>새 장소 추가</h3>
-        <div style="width: 36px;"></div>
-      </div>
-      <div class="page-body">
-        <div class="form-group">
-          <label>방문 시간</label>
-          <select id="placeTimeInput">
-            <option value="">⏰ 시간 선택</option>
-            <option value="07:00">07:00</option>
-            <option value="08:00">08:00</option>
-            <option value="09:00">09:00</option>
-            <option value="10:00">10:00</option>
-            <option value="11:00">11:00</option>
-            <option value="12:00">12:00</option>
-            <option value="13:00">13:00</option>
-            <option value="14:00">14:00</option>
-            <option value="15:00">15:00</option>
-            <option value="16:00">16:00</option>
-            <option value="17:00">17:00</option>
-            <option value="18:00">18:00</option>
-            <option value="19:00">19:00</option>
-            <option value="20:00">20:00</option>
-            <option value="21:00">21:00</option>
-            <option value="22:00">22:00</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>장소 검색 (추천 장소 또는 직접 입력)</label>
-          <div class="autocomplete-wrapper">
-            <input type="text" id="placeSearchInput" placeholder="🔍 장소 검색 (예: 센소지, 도쿄타워 또는 직접 입력)" oninput="filterPlaces(this.value)" autocomplete="off">
-            <div id="autocompleteList" class="autocomplete-list"></div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>상세 설명</label>
-          <input type="text" id="placeSubInput" placeholder="예: 전통 거리 산책 및 구경">
-        </div>
-
-        <input type="hidden" id="placeLat" value="35.6812">
-        <input type="hidden" id="placeLng" value="139.7671">
-      </div>
-      <div class="page-footer">
-        <button class="submit-btn" onclick="addPlace()">장소 추가하기</button>
+        <button class="action-btn secondary" onclick="openPage('memoPage')" style="width: 100%;">📝 메모 추가</button>
       </div>
     </div>
 
@@ -600,7 +484,7 @@
   </div>
 
   <script>
-    /* 주요 도쿄 추천 장소 리스트 (필요 시 원하는 장소 검색 및 자동완성 선택 가능) */
+    /* 도쿄 주요 추천 장소 데이터베이스 */
     const TOKYO_PLACES = [
       { name: "나리타 공항 T3", address: "Chiba, Narita, Furugome", lat: 35.7647, lng: 140.3863 },
       { name: "신주쿠역", address: "Shinjuku City, Tokyo", lat: 35.6905, lng: 139.7006 },
@@ -664,6 +548,7 @@
         zoomControl: false
       });
       renderDay(currentDay);
+      initExplorationMarkers();
     };
 
     setTimeout(() => {
@@ -719,47 +604,8 @@
       window.addEventListener('mouseup', onEnd);
     }
 
-    /* 실시간 검색 필터링 (결과 없으면 목록 자동 숨김, 타이핑한 내용 자유 등록 가능) */
-    function filterPlaces(query) {
-      const listEl = document.getElementById('autocompleteList');
-      listEl.innerHTML = '';
-      
-      if (!query.trim()) {
-        listEl.style.display = 'none';
-        return;
-      }
-
-      const filtered = TOKYO_PLACES.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
-      
-      if (filtered.length === 0) {
-        listEl.style.display = 'none'; // 결과가 없으면 깔끔하게 숨김
-        return;
-      }
-
-      filtered.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'autocomplete-item';
-        div.innerHTML = `
-          <div class="place-icon">📍</div>
-          <div class="place-info">
-            <span class="place-name">${item.name}</span>
-            <span class="place-address">${item.address}</span>
-          </div>
-        `;
-        div.onclick = () => {
-          document.getElementById('placeSearchInput').value = item.name;
-          document.getElementById('placeLat').value = item.lat;
-          document.getElementById('placeLng').value = item.lng;
-          listEl.style.display = 'none';
-        };
-        listEl.appendChild(div);
-      });
-
-      listEl.style.display = 'block';
-    }
-
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v28_stable');
+      const saved = localStorage.getItem('tokyo_planner_v29_map_add');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -769,7 +615,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v28_stable', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v29_map_add', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -785,14 +631,70 @@
       renderDay(day);
     }
 
+    /* 지도상에 추천 장소 전체 핀(파란색 일반 핀) 표시 및 클릭 시 [+ 일정에 추가] 버튼 팝업 */
+    function initExplorationMarkers() {
+      TOKYO_PLACES.forEach(place => {
+        const marker = new google.maps.Marker({
+          position: { lat: place.lat, lng: place.lng },
+          map: map,
+          title: place.name,
+          icon: {
+            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+          }
+        });
+
+        const infowindow = new google.maps.InfoWindow({
+          content: `
+            <div style="padding: 10px 14px; font-family: sans-serif; min-width: 170px;">
+              <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${place.name}</div>
+              <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${place.address}</div>
+              <button onclick="addPlaceFromMap('${place.name.replace(/'/g, "\\'")}', ${place.lat}, ${place.lng})" style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 6px 0; font-size: 12px; font-weight: 700; cursor: pointer;">+ Day ${currentDay} 일정에 추가</button>
+            </div>
+          `
+        });
+
+        marker.addListener('click', () => {
+          if (activeInfoWindow) activeInfoWindow.close();
+          infowindow.open(map, marker);
+          activeInfoWindow = infowindow;
+        });
+      });
+    }
+
+    /* 지도 팝업에서 직접 일정에 추가하는 함수 */
+    window.addPlaceFromMap = function(name, lat, lng) {
+      // 기본 방문 시간 자동 부여 (예: 가장 마지막 일정 시간 뒤 혹은 기본 12:00)
+      const dayPlaces = tripData[currentDay] || [];
+      let defaultTime = "12:00";
+      if (dayPlaces.length > 0) {
+        const lastTime = dayPlaces[dayPlaces.length - 1].time;
+        if (lastTime) {
+          let [hour, min] = lastTime.split(':').map(Number);
+          hour = (hour + 2) % 24;
+          defaultTime = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+        }
+      }
+
+      tripData[currentDay].push({
+        time: defaultTime,
+        name: name,
+        sub: "지도에서 추가된 장소",
+        lat: lat,
+        lng: lng,
+        isMemo: false
+      });
+
+      saveTripData();
+      renderDay(currentDay);
+      if (activeInfoWindow) activeInfoWindow.close();
+      alert(`Day ${currentDay} 일정에 '${name}'이(가) 추가되었습니다!`);
+    };
+
     function renderDay(day) {
       const places = tripData[day] || [];
       const listEl = document.getElementById('timelineList');
       listEl.innerHTML = '';
 
-      if (activeInfoWindow) activeInfoWindow.close();
-      markers.forEach(m => m.setMap(null));
-      markers = [];
       if (flightPath) flightPath.setMap(null);
 
       const bounds = new google.maps.LatLngBounds();
@@ -805,38 +707,6 @@
         if (!place.isMemo) {
           pathCoords.push(pos);
           bounds.extend(pos);
-
-          const marker = new google.maps.Marker({
-            position: pos,
-            map: map,
-            label: {
-              text: String(placeNum),
-              color: "white",
-              fontWeight: "bold"
-            },
-            title: place.name
-          });
-
-          const infowindow = new google.maps.InfoWindow({
-            content: `
-              <div style="position: relative; padding: 10px 24px 10px 12px; font-family: sans-serif; min-width: 160px;">
-                <button onclick="if(window.activeInfoWindow) window.activeInfoWindow.close();" style="position: absolute; top: 8px; right: 8px; background: none; border: none; font-size: 13px; font-weight: bold; color: #94a3b8; cursor: pointer;">✕</button>
-                <div style="font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.2;">${placeNum}. ${place.name}</div>
-                <div style="font-size: 11px; color: #64748b; margin-top: 2px; line-height: 1.2;">${place.sub}</div>
-                <div style="font-size: 11px; font-weight: 700; color: #2563eb; margin-top: 4px;">${place.time || ''}</div>
-              </div>
-            `,
-            pixelOffset: new google.maps.Size(0, -5)
-          });
-
-          marker.addListener('click', () => {
-            if (activeInfoWindow) activeInfoWindow.close();
-            infowindow.open(map, marker);
-            activeInfoWindow = infowindow;
-            window.activeInfoWindow = infowindow;
-          });
-
-          markers.push(marker);
         }
 
         const itemEl = document.createElement('div');
@@ -846,10 +716,6 @@
           itemEl.onclick = () => {
             map.setCenter(pos);
             map.setZoom(14);
-            const targetMarker = markers.find(m => m.getTitle() === place.name);
-            if (targetMarker) {
-              google.maps.event.trigger(targetMarker, 'click');
-            }
           };
         }
 
@@ -914,54 +780,8 @@
 
     function closePage(pageId) {
       document.getElementById(pageId).classList.remove('active');
-      if (pageId === 'addPage') {
-        document.getElementById('placeTimeInput').value = '';
-        document.getElementById('placeSearchInput').value = '';
-        document.getElementById('placeSubInput').value = '';
-        document.getElementById('placeLat').value = '35.6812';
-        document.getElementById('placeLng').value = '139.7671';
-        document.getElementById('autocompleteList').style.display = 'none';
-      } else {
-        document.getElementById('memoTimeInput').value = '';
-        document.getElementById('memoTextInput').value = '';
-      }
-    }
-
-    function addPlace() {
-      const time = document.getElementById('placeTimeInput').value;
-      const name = document.getElementById('placeSearchInput').value.trim();
-      const sub = document.getElementById('placeSubInput').value.trim();
-      let lat = parseFloat(document.getElementById('placeLat').value);
-      let lng = parseFloat(document.getElementById('placeLng').value);
-
-      if (!time) {
-        alert('시간을 선택해 주세요.');
-        return;
-      }
-
-      if (!name) {
-        alert('장소명을 입력해 주세요.');
-        return;
-      }
-
-      // 만약 목록에서 선택하지 않고 직접 텍스트로 입력한 경우 도쿄 중심 좌표 기준으로 랜덤 분산 배치
-      if (isNaN(lat) || isNaN(lng)) {
-        lat = 35.6812 + (Math.random() - 0.5) * 0.03;
-        lng = 139.7671 + (Math.random() - 0.5) * 0.03;
-      }
-
-      tripData[currentDay].push({ 
-        time, 
-        name, 
-        sub: sub || "일정", 
-        lat, 
-        lng, 
-        isMemo: false 
-      });
-      
-      saveTripData();
-      closePage('addPage');
-      renderDay(currentDay);
+      document.getElementById('memoTimeInput').value = '';
+      document.getElementById('memoTextInput').value = '';
     }
 
     function addMemo() {
