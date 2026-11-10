@@ -50,7 +50,6 @@ let markers = [];
 let activeInfoWindow = null;
 let flightPath = null;
 
-// 커스텀 SVG 원형 번호 마커 생성 함수 (기본 핀 완전 제거)
 function createCircleMarkerIcon(number) {
   return {
     url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
@@ -159,7 +158,6 @@ function selectDay(day) {
   renderDay(day);
 }
 
-/* 일정 랜더링 (일정 마커에서도 기본 핀 완벽 삭제 및 팝업 버튼 삭제 적용) */
 function renderDay(day) {
   const places = tripData[day] || [];
   const listEl = document.getElementById('timelineList');
@@ -181,7 +179,6 @@ function renderDay(day) {
       pathCoords.push(pos);
       bounds.extend(pos);
 
-      // 기본 파란색 핀을 지우고, 순수 원형 뱃지만 생성
       const marker = new google.maps.Marker({
         position: pos,
         map: map,
@@ -195,7 +192,6 @@ function renderDay(day) {
         icon: createCircleMarkerIcon(placeNum)
       });
 
-      // 지도 팝업에서 버튼 제거 (장소명과 상세/시간만 깔끔하게 표시)
       const infowindow = new google.maps.InfoWindow({
         content: `
           <div style="padding: 8px 12px; font-family: sans-serif; min-width: 150px;">
@@ -218,7 +214,6 @@ function renderDay(day) {
     const itemEl = document.createElement('div');
     itemEl.className = 'timeline-item';
     
-    // 리스트 클릭 시 지도 핀 위 팝업 오픈 연동
     if (!place.isMemo) {
       itemEl.onclick = () => {
         focusMarker(place.name);
