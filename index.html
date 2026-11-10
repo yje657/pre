@@ -355,7 +355,7 @@
       background: #fff;
     }
 
-    /* Google Places Dropdown Style */
+    /* Autocomplete Dropdown Style */
     .autocomplete-wrapper {
       position: relative;
       width: 100%;
@@ -370,7 +370,7 @@
       border: 1px solid var(--border-color);
       border-radius: 12px;
       margin-top: 4px;
-      max-height: 240px;
+      max-height: 220px;
       overflow-y: auto;
       z-index: 3000;
       box-shadow: 0 8px 24px rgba(0,0,0,0.12);
@@ -411,17 +411,11 @@
       font-size: 0.9rem;
       font-weight: 700;
       color: var(--text-main);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .place-address {
       font-size: 0.75rem;
       color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .page-footer {
@@ -459,8 +453,8 @@
     }
   </style>
 
-  <!-- Google Maps API (libraries=places 추가) -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&libraries=places&language=ko&region=KR" async defer></script>
+  <!-- Google Maps API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&language=ko&region=KR" async defer></script>
 </head>
 <body>
 
@@ -521,7 +515,7 @@
         <div class="form-group">
           <label>방문 시간</label>
           <select id="placeTimeInput">
-            <option value=""> 시간 선택</option>
+            <option value="">⏰ 시간 선택</option>
             <option value="07:00">07:00</option>
             <option value="08:00">08:00</option>
             <option value="09:00">09:00</option>
@@ -542,9 +536,9 @@
         </div>
 
         <div class="form-group">
-          <label>장소 검색 (Google Maps 실시간 검색)</label>
+          <label>장소 검색 (추천 장소 또는 직접 입력)</label>
           <div class="autocomplete-wrapper">
-            <input type="text" id="placeSearchInput" placeholder="🔍 구글 지도 장소 검색 (예: 센소지, 도쿄타워)" oninput="searchGooglePlaces(this.value)" autocomplete="off">
+            <input type="text" id="placeSearchInput" placeholder="🔍 장소 검색 (예: 센소지, 도쿄타워 또는 직접 입력)" oninput="filterPlaces(this.value)" autocomplete="off">
             <div id="autocompleteList" class="autocomplete-list"></div>
           </div>
         </div>
@@ -554,8 +548,8 @@
           <input type="text" id="placeSubInput" placeholder="예: 전통 거리 산책 및 구경">
         </div>
 
-        <input type="hidden" id="placeLat">
-        <input type="hidden" id="placeLng">
+        <input type="hidden" id="placeLat" value="35.6812">
+        <input type="hidden" id="placeLng" value="139.7671">
       </div>
       <div class="page-footer">
         <button class="submit-btn" onclick="addPlace()">장소 추가하기</button>
@@ -573,7 +567,7 @@
         <div class="form-group">
           <label>관련 시간</label>
           <select id="memoTimeInput">
-            <option value="">시간 선택</option>
+            <option value="">⏰ 시간 선택</option>
             <option value="07:00">07:00</option>
             <option value="08:00">08:00</option>
             <option value="09:00">09:00</option>
@@ -606,6 +600,25 @@
   </div>
 
   <script>
+    /* 주요 도쿄 추천 장소 리스트 (필요 시 원하는 장소 검색 및 자동완성 선택 가능) */
+    const TOKYO_PLACES = [
+      { name: "나리타 공항 T3", address: "Chiba, Narita, Furugome", lat: 35.7647, lng: 140.3863 },
+      { name: "신주쿠역", address: "Shinjuku City, Tokyo", lat: 35.6905, lng: 139.7006 },
+      { name: "시부야 스크램블 교차로", address: "Shibuya City, Tokyo", lat: 35.6595, lng: 139.7004 },
+      { name: "아사쿠사 센소지", address: "2 Chome-3-1 Asakusa, Taito City, Tokyo", lat: 35.7148, lng: 139.7967 },
+      { name: "아키하바라 전기상가", address: "Sotokanda, Chiyoda City, Tokyo", lat: 35.6983, lng: 139.7731 },
+      { name: "긴자 팡메종", address: "3 Chome-5-2 Ginza, Chuo City, Tokyo", lat: 35.6713, lng: 139.7695 },
+      { name: "도쿄타워", address: "4 Chome-2-8 Shibakoen, Minato City, Tokyo", lat: 35.6586, lng: 139.7454 },
+      { name: "도쿄 스카이트리", address: "1 Chome-1-2 Oshiage, Sumida City, Tokyo", lat: 35.7100, lng: 139.8107 },
+      { name: "롯폰기 힐즈", address: "6 Chome-10-1 Roppongi, Minato City, Tokyo", lat: 35.6604, lng: 139.7292 },
+      { name: "메이지 신궁", address: "1-1 Yoyogikamizonocho, Shibuya City, Tokyo", lat: 35.6764, lng: 139.6993 },
+      { name: "시부야 마크시티", address: "1 Chome-12-1 Dogenzaka, Shibuya City, Tokyo", lat: 35.6581, lng: 139.6995 },
+      { name: "바스타 신주쿠", address: "5 Chome-24 Sendagaya, Shibuya City, Tokyo", lat: 35.6887, lng: 139.7005 },
+      { name: "후지큐 하이랜드", address: "5 Chome-6-1 Shinishihara, Fujiyoshida, Yamanashi", lat: 35.4872, lng: 138.7806 },
+      { name: "도쿄 디즈니씨", address: "1-1 Maihama, Urayasu, Chiba", lat: 35.6267, lng: 139.8881 },
+      { name: "돈키호테 신주쿠가부키초점", address: "1 Chome-16-5 Kabukicho, Shinjuku City, Tokyo", lat: 35.6954, lng: 139.7020 }
+    ];
+
     const INITIAL_DATA = {
       1: [
         { time: "10:55", name: "나리타 공항 T3", sub: "도착 & N'EX 이동", lat: 35.7647, lng: 140.3863, isMemo: false },
@@ -637,8 +650,6 @@
     let markers = [];
     let activeInfoWindow = null;
     let flightPath = null;
-    let autocompleteService = null;
-    let placesService = null;
 
     window.onload = () => {
       loadTripData();
@@ -652,12 +663,6 @@
         disableDefaultUI: true,
         zoomControl: false
       });
-
-      if (google.maps.places) {
-        autocompleteService = new google.maps.places.AutocompleteService();
-        placesService = new google.maps.places.PlacesService(map);
-      }
-
       renderDay(currentDay);
     };
 
@@ -714,66 +719,47 @@
       window.addEventListener('mouseup', onEnd);
     }
 
-    /* 구글 Places API 연동 실시간 자동완성 검색 기능 */
-    function searchGooglePlaces(query) {
+    /* 실시간 검색 필터링 (결과 없으면 목록 자동 숨김, 타이핑한 내용 자유 등록 가능) */
+    function filterPlaces(query) {
       const listEl = document.getElementById('autocompleteList');
       listEl.innerHTML = '';
-
+      
       if (!query.trim()) {
         listEl.style.display = 'none';
         return;
       }
 
-      // Google Places AutocompleteService 호출
-      if (autocompleteService) {
-        autocompleteService.getPlacePredictions({
-          input: query,
-          componentRestrictions: { country: 'jp' } // 일본 지역으로 검색 제한
-        }, (predictions, status) => {
-          if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions || predictions.length === 0) {
-            listEl.style.display = 'none';
-            return;
-          }
-
-          listEl.innerHTML = '';
-          predictions.forEach(prediction => {
-            const div = document.createElement('div');
-            div.className = 'autocomplete-item';
-            div.innerHTML = `
-              <div class="place-icon">📍</div>
-              <div class="place-info">
-                <span class="place-name">${prediction.structured_formatting.main_text}</span>
-                <span class="place-address">${prediction.structured_formatting.secondary_text || ''}</span>
-              </div>
-            `;
-
-            // 목록 항목 클릭 시 상세 위치(위도/경도) 조회
-            div.onclick = () => {
-              document.getElementById('placeSearchInput').value = prediction.structured_formatting.main_text;
-              
-              if (placesService) {
-                placesService.getDetails({ placeId: prediction.place_id }, (place, detailStatus) => {
-                  if (detailStatus === google.maps.places.PlacesServiceStatus.OK && place.geometry) {
-                    document.getElementById('placeLat').value = place.geometry.location.lat();
-                    document.getElementById('placeLng').value = place.geometry.location.lng();
-                    if (!document.getElementById('placeSubInput').value) {
-                      document.getElementById('placeSubInput').value = place.formatted_address || '';
-                    }
-                  }
-                });
-              }
-              listEl.style.display = 'none';
-            };
-            listEl.appendChild(div);
-          });
-
-          listEl.style.display = 'block';
-        });
+      const filtered = TOKYO_PLACES.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+      
+      if (filtered.length === 0) {
+        listEl.style.display = 'none'; // 결과가 없으면 깔끔하게 숨김
+        return;
       }
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'autocomplete-item';
+        div.innerHTML = `
+          <div class="place-icon">📍</div>
+          <div class="place-info">
+            <span class="place-name">${item.name}</span>
+            <span class="place-address">${item.address}</span>
+          </div>
+        `;
+        div.onclick = () => {
+          document.getElementById('placeSearchInput').value = item.name;
+          document.getElementById('placeLat').value = item.lat;
+          document.getElementById('placeLng').value = item.lng;
+          listEl.style.display = 'none';
+        };
+        listEl.appendChild(div);
+      });
+
+      listEl.style.display = 'block';
     }
 
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v27_places_api');
+      const saved = localStorage.getItem('tokyo_planner_v28_stable');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -783,7 +769,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v27_places_api', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v28_stable', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -932,8 +918,8 @@
         document.getElementById('placeTimeInput').value = '';
         document.getElementById('placeSearchInput').value = '';
         document.getElementById('placeSubInput').value = '';
-        document.getElementById('placeLat').value = '';
-        document.getElementById('placeLng').value = '';
+        document.getElementById('placeLat').value = '35.6812';
+        document.getElementById('placeLng').value = '139.7671';
         document.getElementById('autocompleteList').style.display = 'none';
       } else {
         document.getElementById('memoTimeInput').value = '';
@@ -954,10 +940,11 @@
       }
 
       if (!name) {
-        alert('장소명을 입력하거나 검색 결과에서 선택해 주세요.');
+        alert('장소명을 입력해 주세요.');
         return;
       }
 
+      // 만약 목록에서 선택하지 않고 직접 텍스트로 입력한 경우 도쿄 중심 좌표 기준으로 랜덤 분산 배치
       if (isNaN(lat) || isNaN(lng)) {
         lat = 35.6812 + (Math.random() - 0.5) * 0.03;
         lng = 139.7671 + (Math.random() - 0.5) * 0.03;
