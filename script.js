@@ -78,30 +78,59 @@ window.initMap = function() {
   });
   renderDay(currentDay);
 
+  // 지도 클릭 시 실제 장소 정보 및 일정 추가 툴팁 연동
   map.addListener('click', (event) => {
     const clickedLat = event.latLng.lat();
     const clickedLng = event.latLng.lng();
     
-    const contentString = `
-      <div style="padding: 8px 12px; font-family: sans-serif; min-width: 170px;">
-        <div style="font-size: 13px; font-weight: 800; color: #0f172a;">선택한 위치</div>
-        <div style="font-size: 11px; color: #64748b; margin-top: 2px;">위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}</div>
-        <button onclick="addCustomPlaceFromMap('선택한 위치', ${clickedLat}, ${clickedLng})" 
-          style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 6px 0; font-size: 11px; font-weight: 700; cursor: pointer;">
-          + Day ${currentDay} 일정에 추가
-        </button>
-      </div>
-    `;
+    let placeName = "선택한 위치";
+    let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
 
-    if (activeInfoWindow) activeInfoWindow.close();
-    const infoWindow = new google.maps.InfoWindow({
-      position: { lat: clickedLat, lng: clickedLng },
-      content: contentString
-    });
-    infoWindow.open(map);
-    activeInfoWindow = infoWindow;
+    if (event.placeId) {
+      event.stop();
+      const service = new google.maps.places.PlacesService(map);
+      service.getDetails({ placeId: event.placeId }, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+          placeName = place.name || "선택한 장소";
+          placeSub = place.formatted_address || "지도에서 직접 선택";
+          openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
+        } else {
+          openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
+        }
+      });
+    } else {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ location: { lat: clickedLat, lng: clickedLng } }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          placeName = results[0].address_components[0] ? results[0].address_components[0].long_name + " 부근" : "선택한 위치";
+          placeSub = results[0].formatted_address;
+        }
+        openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
+      });
+    }
   });
 };
+
+function openInfoWindow(lat, lng, name, sub) {
+  const contentString = `
+    <div style="padding: 8px 12px; font-family: sans-serif; min-width: 180px;">
+      <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${name}</div>
+      <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${sub}</div>
+      <button onclick="addCustomPlaceFromMap('${name.replace(/'/g, "\\'")}', '${sub.replace(/'/g, "\\'")}', ${lat}, ${lng})" 
+        style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 6px 0; font-size: 11px; font-weight: 700; cursor: pointer;">
+        + Day ${currentDay} 일정에 추가
+      </button>
+    </div>
+  `;
+
+  if (activeInfoWindow) activeInfoWindow.close();
+  const infoWindow = new google.maps.InfoWindow({
+    position: { lat: lat, lng: lng },
+    content: contentString
+  });
+  infoWindow.open(map);
+  activeInfoWindow = infoWindow;
+}
 
 setTimeout(() => {
   if (!map && typeof google !== 'undefined' && google.maps) {
@@ -385,8 +414,7 @@ function deletePlace(index) {
   }
 }
 
-// 지도 툴팁에서 일정 추가 버튼을 눌렀을 때 실행되는 전역 함수
-window.addCustomPlaceFromMap = function(name, lat, lng) {
+window.addCustomPlaceFromMap = function(name, sub, lat, lng) {
   const dayPlaces = tripData[currentDay] || [];
   let defaultTime = "12:00";
   
@@ -402,7 +430,7 @@ window.addCustomPlaceFromMap = function(name, lat, lng) {
   tripData[currentDay].push({
     time: defaultTime,
     name: name,
-    sub: "지도에서 직접 선택",
+    sub: sub || "지도에서 직접 선택",
     lat: lat,
     lng: lng,
     isMemo: false
