@@ -73,20 +73,19 @@ window.initMap = function() {
     zoom: 12,
     center: { lat: 35.6812, lng: 139.7671 },
     disableDefaultUI: true,
-    zoomControl: false,
-    clickableIcons: false
+    zoomControl: false
   });
   renderDay(currentDay);
 
-  // 지도 클릭 시 Geocoder를 이용해 정확한 주소 및 장소명 가져오기
-  // 지도 클릭 시 실제 상호명(건물명, 편의점 이름 등) 정확히 가져오기
+  // 지도 클릭 시 건물명/상호명 및 주소 정확히 가져오기
   map.addListener('click', (event) => {
-    // 만약 사용자가 지도 상의 POI(상호명/가게/랜드마크)를 직접 클릭한 경우
     if (event.placeId) {
-      event.stop(); // 구글 기본 인포윈도우가 뜨는 건 막음
-      
+      event.stop();
       const service = new google.maps.places.PlacesService(map);
-      service.getDetails({ placeId: event.placeId }, (place, status) => {
+      service.getDetails({ 
+        placeId: event.placeId,
+        fields: ['name', 'formatted_address', 'geometry'] 
+      }, (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && place) {
           const placeName = place.name || "선택한 장소";
           const placeSub = place.formatted_address || "지도에서 직접 선택";
@@ -96,11 +95,27 @@ window.initMap = function() {
         }
       });
     } else {
-      // 상호명이 없는 일반 빈 땅을 클릭한 경우 주소(Geocoder) 이용
       fallbackGeocode(event.latLng);
     }
   });
 };
+
+function fallbackGeocode(latLng) {
+  const clickedLat = latLng.lat();
+  const clickedLng = latLng.lng();
+  const geocoder = new google.maps.Geocoder();
+  
+  geocoder.geocode({ location: { lat: clickedLat, lng: clickedLng } }, (results, status) => {
+    let placeName = "선택한 위치";
+    let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
+
+    if (status === "OK" && results[0]) {
+      placeName = results[0].address_components[0] ? results[0].address_components[0].long_name + " 부근" : "선택한 위치";
+      placeSub = results[0].formatted_address;
+    }
+    openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
+  });
+}
 
 function openInfoWindow(lat, lng, name, sub) {
   const contentString = `
@@ -434,21 +449,3 @@ window.addCustomPlaceFromMap = function(name, sub, lat, lng) {
     activeInfoWindow.close();
   }
 };
-
-function fallbackGeocode(latLng) {
-  const clickedLat = latLng.lat();
-  const clickedLng = latLng.lng();
-  const geocoder = new google.maps.Geocoder();
-  
-  geocoder.geocode({ location: { lat: clickedLat, lng: clickedLng } }, (results, status) => {
-    let placeName = "선택한 위치";
-    let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
-
-    if (status === "OK" && results[0]) {
-      // 주소에서 상세 지역명이나 도로명 추출
-      placeName = results[0].address_components[0] ? results[0].address_components[0].long_name + " 부근" : "선택한 위치";
-      placeSub = results[0].formatted_address;
-    }
-    openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
-  });
-}
