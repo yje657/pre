@@ -385,3 +385,44 @@ function deletePlace(index) {
     renderDay(currentDay);
   }
 }
+// 파일 상단 ~ 중간: 변수들, initMap, renderDay 등 기존 코드들...
+// ...
+
+function deletePlace(index) {
+  if (confirm('이 항목을 삭제하시겠습니까?')) {
+    tripData[currentDay].splice(index, 1);
+    saveTripData();
+    renderDay(currentDay);
+  }
+}
+
+// 👇 바로 이 위치 (script.js 파일의 맨 마지막 줄)에 붙여넣어 주세요!
+window.addCustomPlaceFromMap = function(name, lat, lng) {
+  const dayPlaces = tripData[currentDay] || [];
+  let defaultTime = "12:00";
+  
+  if (dayPlaces.length > 0) {
+    const lastTime = dayPlaces[dayPlaces.length - 1].time;
+    if (lastTime) {
+      let [hour, min] = lastTime.split(':').map(Number);
+      hour = (hour + 1) % 24;
+      defaultTime = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+    }
+  }
+
+  tripData[currentDay].push({
+    time: defaultTime,
+    name: name,
+    sub: "지도에서 직접 선택",
+    lat: lat,
+    lng: lng,
+    isMemo: false
+  });
+
+  saveTripData();
+  renderDay(currentDay);
+  
+  if (activeInfoWindow) {
+    activeInfoWindow.close();
+  }
+};
