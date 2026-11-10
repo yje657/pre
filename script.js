@@ -190,16 +190,45 @@ function selectDay(day) {
 
 /* 지도 클릭 위치의 장소명/주소를 찾아 일정에 저장 */
 function initExplorationMarkers() {
-  map.addListener('click', (event) => {
-    // 지도 위 실제 장소 아이콘(POI)을 누르면 해당 장소 ID로 정확한 이름을 조회합니다.
-    if (event.placeId) {
-      event.stop();
-      if (event.latLng) showSelectedLocation(event.latLng, event.placeId);
-      return;
-    }
+  TOKYO_PLACES.forEach((place, index) => {
+    const placeNum = index + 1;
 
-    // 장소 아이콘이 아닌 빈 지도/도로를 누르면 좌표와 가장 가까운 장소를 검색합니다.
-    if (event.latLng) showSelectedLocation(event.latLng);
+    // 구글 지도 벡터 심볼을 활용해 프라이머리 블루 컬러 원형 마커 + 번호 생성
+    const marker = new google.maps.Marker({
+      position: { lat: place.lat, lng: place.lng },
+      map: map,
+      title: place.name,
+      label: {
+        text: String(placeNum),
+        color: "white",
+        fontWeight: "bold",
+        fontSize: "12px"
+      },
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 14, // 핀 크기
+        fillColor: "#2563eb", // 앱 프라이머리 블루 컬러
+        fillOpacity: 1,
+        strokeColor: "#ffffff", // 테두리 흰색
+        strokeWeight: 2
+      }
+    });
+
+    const infowindow = new google.maps.InfoWindow({
+      content: `
+        <div style="padding: 8px 12px; font-family: sans-serif; min-width: 160px;">
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${placeNum}. ${place.name}</div>
+          <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${place.address}</div>
+          <button onclick="addPlaceFromMap('${place.name.replace(/'/g, "\\'")}', ${place.lat}, ${place.lng})" style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 6px 0; font-size: 11px; font-weight: 700; cursor: pointer;">+ Day ${currentDay} 일정에 추가</button>
+        </div>
+      `
+    });
+
+    marker.addListener('click', () => {
+      if (activeInfoWindow) activeInfoWindow.close();
+      infowindow.open(map, marker);
+      activeInfoWindow = infowindow;
+    });
   });
 }
 
