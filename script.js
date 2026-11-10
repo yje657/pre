@@ -55,4 +55,312 @@ function createCircleMarkerIcon(number) {
   return {
     url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28">
-        <circle cx="14" cy="14" r="12" fill="#2563eb" stroke="#ffffff" stroke-width="
+        <circle cx="14" cy="14" r="12" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+      </svg>
+    `),
+    scaledSize: new google.maps.Size(28, 28),
+    anchor: new google.maps.Point(14, 14),
+    labelOrigin: new google.maps.Point(14, 14)
+  };
+}
+
+window.onload = () => {
+  loadTripData();
+  initBottomSheetGesture();
+};
+
+window.initMap = function() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 12,
+    center: { lat: 35.6812, lng: 139.7671 },
+    disableDefaultUI: true,
+    zoomControl: false
+  });
+  renderDay(currentDay);
+};
+
+setTimeout(() => {
+  if (!map && typeof google !== 'undefined' && google.maps) {
+    initMap();
+  }
+}, 1000);
+
+function initBottomSheetGesture() {
+  const sheet = document.getElementById('bottomSheet');
+  const handleBar = document.getElementById('sheetHandleBar');
+  const container = document.getElementById('appContainer');
+
+  let startY = 0;
+  let startHeight = 0;
+  let isDragging = false;
+
+  function onStart(e) {
+    isDragging = true;
+    sheet.classList.add('dragging');
+    startY = e.touches ? e.touches[0].clientY : e.clientY;
+    startHeight = sheet.getBoundingClientRect().height;
+  }
+
+  function onMove(e) {
+    if (!isDragging) return;
+    const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+    const deltaY = startY - currentY;
+    const containerHeight = container.getBoundingClientRect().height;
+    let newHeight = startHeight + deltaY;
+
+    const minHeight = containerHeight * 0.3;
+    const maxHeight = containerHeight * 0.88;
+
+    if (newHeight < minHeight) newHeight = minHeight;
+    if (newHeight > maxHeight) newHeight = maxHeight;
+
+    sheet.style.height = `${newHeight}px`;
+  }
+
+  function onEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    sheet.classList.remove('dragging');
+  }
+
+  handleBar.addEventListener('touchstart', onStart, { passive: true });
+  window.addEventListener('touchmove', onMove, { passive: true });
+  window.addEventListener('touchend', onEnd);
+
+  handleBar.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onEnd);
+}
+
+function loadTripData() {
+  const saved = localStorage.getItem('tokyo_planner_final_v1');
+  if (saved) {
+    tripData = JSON.parse(saved);
+  } else {
+    tripData = JSON.parse(JSON.stringify(INITIAL_DATA));
+    saveTripData();
+  }
+}
+
+function saveTripData() {
+  localStorage.setItem('tokyo_planner_final_v1', JSON.stringify(tripData));
+}
+
+function selectDay(day) {
+  currentDay = day;
+  const chips = document.querySelectorAll('.day-chip');
+  chips.forEach((chip, index) => {
+    if (index + 1 === day) {
+      chip.classList.add('active');
+    } else {
+      chip.classList.remove('active');
+    }
+  });
+  renderDay(day);
+}
+
+/* 일정 랜더링 (일정 마커에서도 기본 핀 완벽 삭제 및 팝업 버튼 삭제 적용) */
+function renderDay(day) {
+  const places = tripData[day] || [];
+  const listEl = document.getElementById('timelineList');
+  listEl.innerHTML = '';
+
+  if (activeInfoWindow) activeInfoWindow.close();
+  markers.forEach(m => m.marker.setMap(null));
+  markers = [];
+  if (flightPath) flightPath.setMap(null);
+
+  const bounds = new google.maps.LatLngBounds();
+  const pathCoords = [];
+
+  places.forEach((place, index) => {
+    const placeNum = index + 1;
+    const pos = { lat: place.lat, lng: place.lng };
+
+    if (!place.isMemo) {
+      pathCoords.push(pos);
+      bounds.extend(pos);
+
+      // 기본 파란색 핀을 지우고, 순수 원형 뱃지만 생성
+      const marker = new google.maps.Marker({
+        position: pos,
+        map: map,
+        title: place.name,
+        label: {
+          text: String(placeNum),
+          color: "#ffffff",
+          fontWeight: "bold",
+          fontSize: "12px"
+        },
+        icon: createCircleMarkerIcon(placeNum)
+      });
+
+      // 지도 팝업에서 버튼 제거 (장소명과 상세/시간만 깔끔하게 표시)
+      const infowindow = new google.maps.InfoWindow({
+        content: `
+          <div style="padding: 8px 12px; font-family: sans-serif; min-width: 150px;">
+            <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${placeNum}. ${place.name}</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${place.sub}</div>
+            <div style="font-size: 11px; font-weight: 700; color: #2563eb; margin-top: 4px;">${place.time || ''}</div>
+          </div>
+        `
+      });
+
+      marker.addListener('click', () => {
+        if (activeInfoWindow) activeInfoWindow.close();
+        infowindow.open(map, marker);
+        activeInfoWindow = infowindow;
+      });
+
+      markers.push({ name: place.name, marker: marker, infowindow: infowindow });
+    }
+
+    const itemEl = document.createElement('div');
+    itemEl.className = 'timeline-item';
+    
+    // 리스트 클릭 시 지도 핀 위 팝업 오픈 연동
+    if (!place.isMemo) {
+      itemEl.onclick = () => {
+        focusMarker(place.name);
+      };
+    }
+
+    const isLast = index === places.length - 1;
+
+    itemEl.innerHTML = `
+      <div class="timeline-left">
+        <div class="number-badge" style="${place.isMemo ? 'background:#94a3b8;' : ''}">${place.isMemo ? '📌' : placeNum}</div>
+        ${!isLast ? '<div class="timeline-line"></div>' : ''}
+      </div>
+      <div class="place-card" style="${place.isMemo ? 'background:#fef9c3; border-color:#fef08a;' : ''}">
+        <button class="delete-btn" onclick="event.stopPropagation(); deletePlace(${index})">✕</button>
+        <div class="place-time">${place.time || ''}</div>
+        <div class="place-title">${place.name}</div>
+        <div class="place-sub">${place.sub}</div>
+      </div>
+    `;
+
+    listEl.appendChild(itemEl);
+
+    if (!isLast && !place.isMemo) {
+      const nextPlace = places[index + 1];
+      if (nextPlace && !nextPlace.isMemo) {
+        const dist = calculateDistance(place.lat, place.lng, nextPlace.lat, nextPlace.lng);
+        const distEl = document.createElement('div');
+        distEl.className = 'distance-wrapper';
+        distEl.innerHTML = `<div class="distance-badge">${dist}km</div>`;
+        listEl.appendChild(distEl);
+      }
+    }
+  });
+
+  if (pathCoords.length > 0 && map) {
+    flightPath = new google.maps.Polyline({
+      path: pathCoords,
+      geodesic: true,
+      strokeColor: '#2563eb',
+      strokeOpacity: 0.85,
+      strokeWeight: 3
+    });
+    flightPath.setMap(map);
+    map.fitBounds(bounds);
+  }
+}
+
+function focusMarker(placeName) {
+  const found = markers.find(m => m.name === placeName);
+  if (found) {
+    map.setCenter(found.marker.getPosition());
+    map.setZoom(14);
+    if (activeInfoWindow) activeInfoWindow.close();
+    found.infowindow.open(map, found.marker);
+    activeInfoWindow = found.infowindow;
+  }
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const d = R * c;
+  return d < 10 ? d.toFixed(1) : Math.round(d);
+}
+
+function openPage(pageId) {
+  document.getElementById(pageId).classList.add('active');
+}
+
+function closePage(pageId) {
+  document.getElementById(pageId).classList.remove('active');
+  if (pageId === 'addPage') {
+    document.getElementById('placeTimeInput').value = '';
+    document.getElementById('placeSearchInput').value = '';
+    document.getElementById('placeSubInput').value = '';
+  } else {
+    document.getElementById('memoTimeInput').value = '';
+    document.getElementById('memoTextInput').value = '';
+  }
+}
+
+function addPlace() {
+  const time = document.getElementById('placeTimeInput').value;
+  const name = document.getElementById('placeSearchInput').value.trim();
+  const sub = document.getElementById('placeSubInput').value.trim();
+
+  if (!time || !name) {
+    alert('시간과 장소명을 입력해 주세요.');
+    return;
+  }
+
+  const lat = 35.6812 + (Math.random() - 0.5) * 0.03;
+  const lng = 139.7671 + (Math.random() - 0.5) * 0.03;
+
+  tripData[currentDay].push({ 
+    time, 
+    name, 
+    sub: sub || "일정", 
+    lat, 
+    lng, 
+    isMemo: false 
+  });
+  
+  saveTripData();
+  closePage('addPage');
+  renderDay(currentDay);
+}
+
+function addMemo() {
+  const time = document.getElementById('memoTimeInput').value;
+  const text = document.getElementById('memoTextInput').value.trim();
+
+  if (!time || !text) {
+    alert('시간과 메모 내용을 입력해 주세요.');
+    return;
+  }
+
+  tripData[currentDay].push({ 
+    time, 
+    name: text, 
+    sub: "메모", 
+    lat: 35.6812, 
+    lng: 139.7671, 
+    isMemo: true 
+  });
+
+  saveTripData();
+  closePage('memoPage');
+  renderDay(currentDay);
+}
+
+function deletePlace(index) {
+  if (confirm('이 항목을 삭제하시겠습니까?')) {
+    tripData[currentDay].splice(index, 1);
+    saveTripData();
+    renderDay(currentDay);
+  }
+}
