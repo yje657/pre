@@ -188,30 +188,30 @@ function selectDay(day) {
   renderDay(day);
 }
 
-/* 지도 위에 추천 장소 표시 (기본 핀 제거, 프라이머리 원형 번호만 표시) */
+/* 지도 위에 추천 장소 표시 (기본 핀 완벽 제거 + 프라이머리 원형 번호 뱃지 + 리스트 연동) */
 function initExplorationMarkers() {
   TOKYO_PLACES.forEach((place, index) => {
     const placeNum = index + 1;
 
+    // 기본 핀 아이콘을 제거하고 SVG 원형 뱃지만 생성
     const marker = new google.maps.Marker({
       position: { lat: place.lat, lng: place.lng },
       map: map,
       title: place.name,
       label: {
         text: String(placeNum),
-        color: "white",
+        color: "#ffffff",
         fontWeight: "bold",
         fontSize: "11px"
       },
-      // 기본 구글 핀을 제거하고 깔끔한 원형 뱃지만 남김
       icon: {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 12, // 원형 크기
+        path: "M 0,0 m -12,0 a 12,12 0 1,0 24,0 a 12,12 0 1,0 -24,0", // 원형 SVG 경로 (scale 조정 가능)
         fillColor: "#2563eb", // 프라이머리 블루
         fillOpacity: 1,
         strokeColor: "#ffffff", // 흰색 테두리
         strokeWeight: 2,
-        anchor: new google.maps.Point(0, 0) // 라벨과 원의 중심 정렬
+        scale: 1,
+        labelOrigin: new google.maps.Point(0, 0) // 라벨을 원 중앙에 정렬
       }
     });
 
@@ -231,6 +231,7 @@ function initExplorationMarkers() {
       activeInfoWindow = infowindow;
     });
 
+    // 리스트 클릭 시 해당 마커 인포윈도우를 열기 위해 전역 배열에 저장
     markers.push({ name: place.name, marker: marker, infowindow: infowindow });
   });
 }
