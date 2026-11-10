@@ -355,6 +355,7 @@
       background: #fff;
     }
 
+    /* 구글 지도 스타일 검색 자동완성 드롭다운 */
     .autocomplete-wrapper {
       position: relative;
       width: 100%;
@@ -367,26 +368,53 @@
       right: 0;
       background: white;
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 12px;
       margin-top: 4px;
-      max-height: 180px;
+      max-height: 220px;
       overflow-y: auto;
       z-index: 3000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      display: none; /* 평소에는 숨김 */
     }
 
     .autocomplete-item {
-      padding: 12px 14px;
-      font-size: 0.88rem;
-      color: var(--text-main);
+      padding: 12px 16px;
       cursor: pointer;
       border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
     }
 
     .autocomplete-item:hover {
       background: #f8fafc;
-      color: var(--primary);
+    }
+
+    .place-icon {
+      font-size: 1.1rem;
+      color: #64748b;
+      flex-shrink: 0;
+    }
+
+    .place-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .place-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .place-address {
+      font-size: 0.75rem;
+      color: var(--text-muted);
     }
 
     .page-footer {
@@ -408,7 +436,7 @@
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
-    /* 구글 InfoWindow 패딩 및 상단 여백 완벽 수정 */
+    /* 구글 InfoWindow 디자인 정렬 */
     .gm-style-iw-c {
       padding: 0 !important;
       border-radius: 14px !important;
@@ -572,21 +600,21 @@
 
   <script>
     const TOKYO_PLACES = [
-      { name: "나리타 공항 T3", lat: 35.7647, lng: 140.3863 },
-      { name: "신주쿠역", lat: 35.6905, lng: 139.7006 },
-      { name: "시부야 스크램블 교차로", lat: 35.6595, lng: 139.7004 },
-      { name: "아사쿠사 센소지", lat: 35.7148, lng: 139.7967 },
-      { name: "아키하바라 전기상가", lat: 35.6983, lng: 139.7731 },
-      { name: "긴자 팡메종", lat: 35.6713, lng: 139.7695 },
-      { name: "도쿄타워", lat: 35.6586, lng: 139.7454 },
-      { name: "도쿄 스카이트리", lat: 35.7100, lng: 139.8107 },
-      { name: "롯폰기 힐즈", lat: 35.6604, lng: 139.7292 },
-      { name: "메이지 신궁", lat: 35.6764, lng: 139.6993 },
-      { name: "시부야 마크시티", lat: 35.6581, lng: 139.6995 },
-      { name: "바스타 신주쿠", lat: 35.6887, lng: 139.7005 },
-      { name: "후지큐 하이랜드", lat: 35.4872, lng: 138.7806 },
-      { name: "도쿄 디즈니씨", lat: 35.6267, lng: 139.8881 },
-      { name: "돈키호테 신주쿠가부키초점", lat: 35.6954, lng: 139.7020 }
+      { name: "나리타 공항 T3", address: "Chiba, Narita, Furugome", lat: 35.7647, lng: 140.3863 },
+      { name: "신주쿠역", address: "Shinjuku City, Tokyo", lat: 35.6905, lng: 139.7006 },
+      { name: "시부야 스크램블 교차로", address: "Shinjuku City, Tokyo", lat: 35.6595, lng: 139.7004 },
+      { name: "아사쿠사 센소지", address: "2 Chome-3-1 Asakusa, Taito City, Tokyo", lat: 35.7148, lng: 139.7967 },
+      { name: "아키하바라 전기상가", address: "Sotokanda, Chiyoda City, Tokyo", lat: 35.6983, lng: 139.7731 },
+      { name: "긴자 팡메종", address: "3 Chome-5-2 Ginza, Chuo City, Tokyo", lat: 35.6713, lng: 139.7695 },
+      { name: "도쿄타워", address: "4 Chome-2-8 Shibakoen, Minato City, Tokyo", lat: 35.6586, lng: 139.7454 },
+      { name: "도쿄 스카이트리", address: "1 Chome-1-2 Oshiage, Sumida City, Tokyo", lat: 35.7100, lng: 139.8107 },
+      { name: "롯폰기 힐즈", address: "6 Chome-10-1 Roppongi, Minato City, Tokyo", lat: 35.6604, lng: 139.7292 },
+      { name: "메이지 신궁", address: "1-1 Yoyogikamizonocho, Shibuya City, Tokyo", lat: 35.6764, lng: 139.6993 },
+      { name: "시부야 마크시티", address: "1 Chome-12-1 Dogenzaka, Shibuya City, Tokyo", lat: 35.6581, lng: 139.6995 },
+      { name: "바스타 신주쿠", address: "5 Chome-24 Sendagaya, Shibuya City, Tokyo", lat: 35.6887, lng: 139.7005 },
+      { name: "후지큐 하이랜드", address: "5 Chome-6-1 신니시하라 후지요시다 야마나시", lat: 35.4872, lng: 138.7806 },
+      { name: "도쿄 디즈니씨", address: "1-1 Maihama, Urayasu, Chiba", lat: 35.6267, lng: 139.8881 },
+      { name: "돈키호테 신주쿠가부키초점", address: "1 Chome-16-5 Kabukicho, Shinjuku City, Tokyo", lat: 35.6954, lng: 139.7020 }
     ];
 
     const INITIAL_DATA = {
@@ -689,6 +717,7 @@
       window.addEventListener('mouseup', onEnd);
     }
 
+    /* 구글 지도 스타일 검색 필터링 (결과 없을 때 목록 숨김 처리) */
     function filterPlaces(query) {
       const listEl = document.getElementById('autocompleteList');
       listEl.innerHTML = '';
@@ -701,14 +730,20 @@
       const filtered = TOKYO_PLACES.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
       
       if (filtered.length === 0) {
-        listEl.style.display = 'none';
+        listEl.style.display = 'none'; // 결과가 없으면 드롭다운 박스 숨김
         return;
       }
 
       filtered.forEach(item => {
         const div = document.createElement('div');
         div.className = 'autocomplete-item';
-        div.textContent = item.name;
+        div.innerHTML = `
+          <div class="place-icon">📍</div>
+          <div class="place-info">
+            <span class="place-name">${item.name}</span>
+            <span class="place-address">${item.address}</span>
+          </div>
+        `;
         div.onclick = () => {
           document.getElementById('placeSearchInput').value = item.name;
           document.getElementById('placeLat').value = item.lat;
@@ -722,7 +757,7 @@
     }
 
     function loadTripData() {
-      const saved = localStorage.getItem('tokyo_planner_v25_top_padding');
+      const saved = localStorage.getItem('tokyo_planner_v26_gmaps_style');
       if (saved) {
         tripData = JSON.parse(saved);
       } else {
@@ -732,7 +767,7 @@
     }
 
     function saveTripData() {
-      localStorage.setItem('tokyo_planner_v25_top_padding', JSON.stringify(tripData));
+      localStorage.setItem('tokyo_planner_v26_gmaps_style', JSON.stringify(tripData));
     }
 
     function selectDay(day) {
@@ -780,7 +815,6 @@
             title: place.name
           });
 
-          // 상단 잘림 현상 해결 및 시계 이모지 제거된 깔끔한 인포윈도우
           const infowindow = new google.maps.InfoWindow({
             content: `
               <div style="position: relative; padding: 10px 24px 10px 12px; font-family: sans-serif; min-width: 160px;">
