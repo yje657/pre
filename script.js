@@ -50,6 +50,7 @@ let markers = [];
 let activeInfoWindow = null;
 let flightPath = null;
 let selectedMapLocation = null; // 지도 클릭 위치 임시 저장
+let modalTargetDay = 1; // 모달에서 선택한 Day
 
 function createCircleMarkerIcon(number) {
   return {
@@ -92,7 +93,6 @@ window.initMap = function() {
       let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
 
       if (status === "OK" && results && results.length > 0) {
-        // 한국어(한글) 포함된 장소명 검색
         const koreanResult = results.find(r => /[가-힣]/.test(r.formatted_address));
         const targetResult = koreanResult || results[0];
 
@@ -154,7 +154,8 @@ window.openAddModalFromMap = function() {
   if (nameInput) nameInput.value = selectedMapLocation.name;
   if (subInput) subInput.value = selectedMapLocation.sub;
 
-  // 다음 기본 시간 계산 (마지막 시간 + 1시간)
+  setModalDay(currentDay);
+
   const dayPlaces = tripData[currentDay] || [];
   let defaultTime = "12:00";
   if (dayPlaces.length > 0) {
@@ -166,6 +167,23 @@ window.openAddModalFromMap = function() {
     }
   }
   if (timeInput) timeInput.value = defaultTime;
+};
+
+// 모달 내부 Day 선택 함수
+window.setModalDay = function(day) {
+  modalTargetDay = day;
+  const chips = document.querySelectorAll('.modal-day-chip');
+  chips.forEach((chip, index) => {
+    if (index + 1 === day) {
+      chip.style.background = '#2563eb';
+      chip.style.color = '#ffffff';
+      chip.style.borderColor = '#2563eb';
+    } else {
+      chip.style.background = '#f8fafc';
+      chip.style.color = '#0f172a';
+      chip.style.borderColor = '#cbd5e1';
+    }
+  });
 };
 
 setTimeout(() => {
@@ -403,7 +421,6 @@ function addPlace() {
     return;
   }
 
-  // 지도에서 클릭하여 모달을 연 경우 정확한 좌표 사용
   let lat, lng;
   if (selectedMapLocation) {
     lat = selectedMapLocation.lat;
@@ -413,7 +430,11 @@ function addPlace() {
     lng = 139.7671 + (Math.random() - 0.5) * 0.03;
   }
 
-  tripData[currentDay].push({ 
+  if (!tripData[modalTargetDay]) {
+    tripData[modalTargetDay] = [];
+  }
+
+  tripData[modalTargetDay].push({ 
     time, 
     name, 
     sub: sub || "일정", 
@@ -424,7 +445,12 @@ function addPlace() {
   
   saveTripData();
   closePage('addPage');
-  renderDay(currentDay);
+  
+  if (currentDay === modalTargetDay) {
+    renderDay(currentDay);
+  } else {
+    alert(`Day ${modalTargetDay} 일정에 성공적으로 추가되었습니다!`);
+  }
 }
 
 function addMemo() {
