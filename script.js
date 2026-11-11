@@ -77,14 +77,15 @@ window.initMap = function() {
   });
   renderDay(currentDay);
 
-  // 지도 클릭 시 건물명/상호명 및 주소 정확히 가져오기
+  // 지도 클릭 시 한국어(language: 'ko')로 장소명 및 주소 요청
   map.addListener('click', (event) => {
     if (event.placeId) {
       event.stop();
       const service = new google.maps.places.PlacesService(map);
       service.getDetails({ 
         placeId: event.placeId,
-        fields: ['name', 'formatted_address', 'geometry'] 
+        fields: ['name', 'formatted_address', 'geometry'],
+        language: 'ko' // 👈 핵심: 한국어로 장소 정보 요청
       }, (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && place) {
           const placeName = place.name || "선택한 장소";
@@ -105,7 +106,11 @@ function fallbackGeocode(latLng) {
   const clickedLng = latLng.lng();
   const geocoder = new google.maps.Geocoder();
   
-  geocoder.geocode({ location: { lat: clickedLat, lng: clickedLng } }, (results, status) => {
+  // 주소 검색 시에도 한국어 설정 적용
+  geocoder.geocode({ 
+    location: { lat: clickedLat, lng: clickedLng },
+    language: 'ko' // 👈 한국어 주소 요청
+  }, (results, status) => {
     let placeName = "선택한 위치";
     let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
 
