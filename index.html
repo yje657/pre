@@ -1,154 +1,106 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <link rel="stylesheet" href="style.css">
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&libraries=places"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>도쿄 여행 플래너</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- 구글 지도 API (Places 라이브러리 포함) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o_KEY&libraries=places&language=ko&region=KR"></script>
 </head>
-
 <body>
 
-  <div class="app-container" id="appContainer">
-    <!-- Map -->
-    <div id="map"></div>
+  <div id="appContainer" class="app-container">
+    
+    <!-- 1. 상단 지도 영역 -->
+    <div id="mapContainer" class="map-container">
+      <div id="map"></div>
+    </div>
 
-    <!-- Floating Bottom Sheet -->
-    <div class="bottom-sheet" id="bottomSheet">
-      <div class="sheet-handle-bar" id="sheetHandleBar">
-        <div class="sheet-handle"></div>
+    <!-- 2. 하단 시트 (타임라인 및 일정 관리) -->
+    <div id="bottomSheet" class="bottom-sheet">
+      <div id="sheetHandleBar" class="sheet-handle-bar">
+        <div class="handle-bar-knob"></div>
       </div>
 
-      <!-- Day Chips -->
-      <div class="day-chips-container">
-        <div class="day-chip active" onclick="selectDay(1)">
-          <span class="chip-day">Day 1</span>
-          <span class="chip-date">11.28 토</span>
-        </div>
-        <div class="day-chip" onclick="selectDay(2)">
-          <span class="chip-day">Day 2</span>
-          <span class="chip-date">11.29 일</span>
-        </div>
-        <div class="day-chip" onclick="selectDay(3)">
-          <span class="chip-day">Day 3</span>
-          <span class="chip-date">11.30 월</span>
-        </div>
-        <div class="day-chip" onclick="selectDay(4)">
-          <span class="chip-day">Day 4</span>
-          <span class="chip-date">12.01 화</span>
-        </div>
-        <div class="day-chip" onclick="selectDay(5)">
-          <span class="chip-day">Day 5</span>
-          <span class="chip-date">12.02 수</span>
-        </div>
+      <!-- Day 선택 탭 -->
+      <div class="day-selector">
+        <button class="day-chip active" onclick="selectDay(1)">Day 1<span class="day-date">11.28 토</span></button>
+        <button class="day-chip" onclick="selectDay(2)">Day 2<span class="day-date">11.29 일</span></button>
+        <button class="day-chip" onclick="selectDay(3)">Day 3<span class="day-date">11.30 월</span></button>
+        <button class="day-chip" onclick="selectDay(4)">Day 4<span class="day-date">12.01 화</span></button>
+        <button class="day-chip" onclick="selectDay(5)">Day 5<span class="day-date">12.02 수</span></button>
       </div>
 
-      <!-- Sheet Content -->
-      <div class="sheet-content">
-        <div id="timelineList"></div>
+      <!-- 타임라인 리스트 -->
+      <div id="timelineList" class="timeline-list">
+        <!-- 동적 렌더링 -->
       </div>
 
-      <!-- Fixed Actions (장소 추가 및 메모 추가 버튼) -->
-      <div class="sheet-footer-fixed">
-        <button class="action-btn" onclick="openPage('addPage')">+ 장소 추가</button>
+      <!-- 하단 고정 버튼 영역 -->
+      <div class="bottom-actions">
+        <button class="action-btn primary" onclick="openPage('addPage')">+ 장소 추가</button>
         <button class="action-btn secondary" onclick="openPage('memoPage')">📝 메모 추가</button>
       </div>
     </div>
 
-    <!-- Sub Page: Add Place -->
-    <div class="sub-page" id="addPage">
-      <div class="page-header">
-        <button class="back-btn" onclick="closePage('addPage')">← 취소</button>
-        <h3>새 장소 추가</h3>
-        <div style="width: 36px;"></div>
+    <!-- 3. 장소 추가 모달 페이지 -->
+    <div id="addPage" class="sub-page">
+      <div class="sub-page-header">
+        <h2>장소 일정 추가</h2>
+        <button class="close-btn" onclick="closePage('addPage')">✕</button>
       </div>
-      <div class="page-body">
-        <div class="form-group">
-          <label>방문 시간</label>
-          <select id="placeTimeInput">
-            <option value="">시간 선택</option>
-            <option value="07:00">07:00</option>
-            <option value="08:00">08:00</option>
-            <option value="09:00">09:00</option>
-            <option value="10:00">10:00</option>
-            <option value="11:00">11:00</option>
-            <option value="12:00">12:00</option>
-            <option value="13:00">13:00</option>
-            <option value="14:00">14:00</option>
-            <option value="15:00">15:00</option>
-            <option value="16:00">16:00</option>
-            <option value="17:00">17:00</option>
-            <option value="18:00">18:00</option>
-            <option value="19:00">19:00</option>
-            <option value="20:00">20:00</option>
-            <option value="21:00">21:00</option>
-            <option value="22:00">22:00</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>장소 검색</label>
-          <div class="autocomplete-wrapper">
-            <input type="text" id="placeSearchInput" placeholder="🔍 장소 검색 (예: 센소지, 도쿄타워)" oninput="filterPlaces(this.value)" autocomplete="off">
-            <div id="autocompleteList" class="autocomplete-list"></div>
+      <div class="sub-page-content">
+        
+        <!-- Day 선택 칩 영역 -->
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">추가할 날짜 (Day)</label>
+          <div id="modalDayChips" style="display: flex; gap: 6px;">
+            <button type="button" class="modal-day-chip active" onclick="setModalDay(1)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #2563eb; color: #ffffff; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 1</button>
+            <button type="button" class="modal-day-chip" onclick="setModalDay(2)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 2</button>
+            <button type="button" class="modal-day-chip" onclick="setModalDay(3)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 3</button>
+            <button type="button" class="modal-day-chip" onclick="setModalDay(4)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 4</button>
+            <button type="button" class="modal-day-chip" onclick="setModalDay(5)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 5</button>
           </div>
         </div>
 
         <div class="form-group">
-          <label>상세 설명</label>
-          <input type="text" id="placeSubInput" placeholder="예: 전통 거리 산책 및 구경">
+          <label>시간</label>
+          <input type="time" id="placeTimeInput" class="form-input">
         </div>
-
-        <input type="hidden" id="placeLat">
-        <input type="hidden" id="placeLng">
-      </div>
-      <div class="page-footer">
-        <button class="submit-btn" onclick="addPlace()">장소 추가하기</button>
+        <div class="form-group">
+          <label>장소명</label>
+          <input type="text" id="placeSearchInput" class="form-input" placeholder="장소 이름을 입력하세요">
+        </div>
+        <div class="form-group">
+          <label>설명 / 메모</label>
+          <input type="text" id="placeSubInput" class="form-input" placeholder="예: 쇼핑 및 점심 식사">
+        </div>
+        <button class="submit-btn" onclick="addPlace()">일정에 추가하기</button>
       </div>
     </div>
 
-    <!-- Sub Page: Add Memo -->
-    <div class="sub-page" id="memoPage">
-      <div class="page-header">
-        <button class="back-btn" onclick="closePage('memoPage')">← 취소</button>
-        <h3>메모 추가</h3>
-        <div style="width: 36px;"></div>
+    <!-- 4. 메모 추가 모달 페이지 -->
+    <div id="memoPage" class="sub-page">
+      <div class="sub-page-header">
+        <h2>메모 추가</h2>
+        <button class="close-btn" onclick="closePage('memoPage')">✕</button>
       </div>
-      <div class="page-body">
+      <div class="sub-page-content">
         <div class="form-group">
-          <label>관련 시간</label>
-          <select id="memoTimeInput">
-            <option value="">시간 선택</option>
-            <option value="07:00">07:00</option>
-            <option value="08:00">08:00</option>
-            <option value="09:00">09:00</option>
-            <option value="10:00">10:00</option>
-            <option value="11:00">11:00</option>
-            <option value="12:00">12:00</option>
-            <option value="13:00">13:00</option>
-            <option value="14:00">14:00</option>
-            <option value="15:00">15:00</option>
-            <option value="16:00">16:00</option>
-            <option value="17:00">17:00</option>
-            <option value="18:00">18:00</option>
-            <option value="19:00">19:00</option>
-            <option value="20:00">20:00</option>
-            <option value="21:00">21:00</option>
-            <option value="22:00">22:00</option>
-          </select>
+          <label>시간</label>
+          <input type="time" id="memoTimeInput" class="form-input">
         </div>
-
         <div class="form-group">
           <label>메모 내용</label>
-          <input type="text" id="memoTextInput" placeholder="예: 점심 식사 예약 장소 / 티켓 수령 등">
+          <textarea id="memoTextInput" class="form-input" placeholder="메모 내용을 입력하세요" rows="4"></textarea>
         </div>
-      </div>
-      <div class="page-footer">
         <button class="submit-btn" onclick="addMemo()">메모 추가하기</button>
       </div>
     </div>
 
   </div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
