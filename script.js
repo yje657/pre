@@ -49,6 +49,7 @@ let map = null;
 let markers = [];
 let activeInfoWindow = null;
 let flightPath = null;
+let selectedMapLocation = null; // 지도 클릭 위치 임시 저장
 
 function createCircleMarkerIcon(number) {
   return {
@@ -77,12 +78,12 @@ window.initMap = function() {
   });
   renderDay(currentDay);
 
-  // 지도 클릭 시 Geocoder를 이용해 한국어 주소 및 건물/지역명 안전하게 추출
+  // 지도 클릭 시 한국어 명칭 최우선 추출
   map.addListener('click', (event) => {
     const clickedLat = event.latLng.lat();
     const clickedLng = event.latLng.lng();
     const geocoder = new google.maps.Geocoder();
-    
+
     geocoder.geocode({ 
       location: { lat: clickedLat, lng: clickedLng },
       language: 'ko'
@@ -90,29 +91,42 @@ window.initMap = function() {
       let placeName = "선택한 장소";
       let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
 
-      if (status === "OK" && results && results[0]) {
-        // 주소 결과에서 첫 번째 컴포넌트(건물명 또는 동/가 이름)를 타이틀로 지정
-        const firstComp = results[0].address_components[0];
-        if (firstComp && firstComp.long_name) {
-          placeName = firstComp.long_name;
-        } else {
-          placeName = results[0].formatted_address.split(',')[0];
+      if (status === "OK" && results && results.length > 0) {
+        // 한국어(한글) 포함된 장소명 검색
+        const koreanResult = results.find(r => /[가-힣]/.test(r.formatted_address));
+        const targetResult = koreanResult || results[0];
+
+        if (targetResult.address_components) {
+          const poiComp = targetResult.address_components.find(c => 
+            c.types.includes("point_of_interest") || 
+            c.types.includes("establishment") || 
+            c.types.includes("sublocality_level_1") ||
+            c.types.includes("locality")
+          );
+          if (poiComp && poiComp.long_name) {
+            placeName = poiComp.long_name;
+          } else {
+            placeName = targetResult.formatted_address.split(',')[0];
+          }
         }
-        placeSub = results[0].formatted_address;
+        placeSub = targetResult.formatted_address;
       }
+
       openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
     });
   });
 };
 
 function openInfoWindow(lat, lng, name, sub) {
+  selectedMapLocation = { lat, lng, name, sub };
+
   const contentString = `
     <div style="padding: 8px 12px; font-family: sans-serif; min-width: 180px;">
       <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${name}</div>
       <div style="font-size: 11px; color: #64748b; margin-top: 2px;">${sub}</div>
-      <button onclick="addCustomPlaceFromMap('${name.replace(/'/g, "\\'")}', '${sub.replace(/'/g, "\\'")}', ${lat}, ${lng})" 
-        style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 6px 0; font-size: 11px; font-weight: 700; cursor: pointer;">
-        + Day ${currentDay} 일정에 추가
+      <button onclick="openAddModalFromMap()" 
+        style="width: 100%; margin-top: 8px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 7px 0; font-size: 11px; font-weight: 700; cursor: pointer;">
+        + 일정에 추가
       </button>
     </div>
   `;
@@ -125,6 +139,34 @@ function openInfoWindow(lat, lng, name, sub) {
   infoWindow.open(map);
   activeInfoWindow = infoWindow;
 }
+
+// 지도 툴팁 버튼 클릭 시 추가하기 모달 열기 및 값 자동 입력
+window.openAddModalFromMap = function() {
+  if (activeInfoWindow) activeInfoWindow.close();
+  if (!selectedMapLocation) return;
+
+  openPage('addPage');
+
+  const nameInput = document.getElementById('placeSearchInput');
+  const subInput = document.getElementById('placeSubInput');
+  const timeInput = document.getElementById('placeTimeInput');
+
+  if (nameInput) nameInput.value = selectedMapLocation.name;
+  if (subInput) subInput.value = selectedMapLocation.sub;
+
+  // 다음 기본 시간 계산 (마지막 시간 + 1시간)
+  const dayPlaces = tripData[currentDay] || [];
+  let defaultTime = "12:00";
+  if (dayPlaces.length > 0) {
+    const lastTime = dayPlaces[dayPlaces.length - 1].time;
+    if (lastTime) {
+      let [hour, min] = lastTime.split(':').map(Number);
+      hour = (hour + 1) % 24;
+      defaultTime = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+    }
+  }
+  if (timeInput) timeInput.value = defaultTime;
+};
 
 setTimeout(() => {
   if (!map && typeof google !== 'undefined' && google.maps) {
@@ -340,6 +382,7 @@ function openPage(pageId) {
 
 function closePage(pageId) {
   document.getElementById(pageId).classList.remove('active');
+  selectedMapLocation = null;
   if (pageId === 'addPage') {
     document.getElementById('placeTimeInput').value = '';
     document.getElementById('placeSearchInput').value = '';
@@ -360,8 +403,15 @@ function addPlace() {
     return;
   }
 
-  const lat = 35.6812 + (Math.random() - 0.5) * 0.03;
-  const lng = 139.7671 + (Math.random() - 0.5) * 0.03;
+  // 지도에서 클릭하여 모달을 연 경우 정확한 좌표 사용
+  let lat, lng;
+  if (selectedMapLocation) {
+    lat = selectedMapLocation.lat;
+    lng = selectedMapLocation.lng;
+  } else {
+    lat = 35.6812 + (Math.random() - 0.5) * 0.03;
+    lng = 139.7671 + (Math.random() - 0.5) * 0.03;
+  }
 
   tripData[currentDay].push({ 
     time, 
@@ -407,33 +457,3 @@ function deletePlace(index) {
     renderDay(currentDay);
   }
 }
-
-window.addCustomPlaceFromMap = function(name, sub, lat, lng) {
-  const dayPlaces = tripData[currentDay] || [];
-  let defaultTime = "12:00";
-  
-  if (dayPlaces.length > 0) {
-    const lastTime = dayPlaces[dayPlaces.length - 1].time;
-    if (lastTime) {
-      let [hour, min] = lastTime.split(':').map(Number);
-      hour = (hour + 1) % 24;
-      defaultTime = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
-    }
-  }
-
-  tripData[currentDay].push({
-    time: defaultTime,
-    name: name,
-    sub: sub || "지도에서 직접 선택",
-    lat: lat,
-    lng: lng,
-    isMemo: false
-  });
-
-  saveTripData();
-  renderDay(currentDay);
-  
-  if (activeInfoWindow) {
-    activeInfoWindow.close();
-  }
-};
