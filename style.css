@@ -14,7 +14,6 @@ body, html {
   background-color: #f1f5f9;
 }
 
-/* 전체 앱 레이아웃 (모바일 프레임 스타일) */
 .app-container {
   position: relative;
   width: 100%;
@@ -27,7 +26,6 @@ body, html {
   flex-direction: column;
 }
 
-/* 상단 지도 영역 */
 .map-container {
   width: 100%;
   flex: 1;
@@ -39,7 +37,6 @@ body, html {
   height: 100%;
 }
 
-/* 하단 시트 (타임라인 및 일정 관리) */
 .bottom-sheet {
   position: absolute;
   bottom: 0;
@@ -77,7 +74,6 @@ body, html {
   border-radius: 2px;
 }
 
-/* Day 선택 탭 (마진 및 간격 정돈) */
 .day-selector {
   display: flex;
   gap: 6px;
@@ -115,7 +111,6 @@ body, html {
   opacity: 0.85;
 }
 
-/* 타임라인 리스트 */
 .timeline-list {
   flex: 1;
   overflow-y: auto;
@@ -201,7 +196,6 @@ body, html {
   padding: 4px;
 }
 
-/* 거리 표시 배지 */
 .distance-wrapper {
   display: flex;
   align-items: center;
@@ -219,7 +213,6 @@ body, html {
   border: 1px solid #e2e8f0;
 }
 
-/* 하단 고정 버튼 */
 .bottom-actions {
   padding: 12px 16px;
   background: #ffffff;
@@ -249,7 +242,6 @@ body, html {
   color: #0f172a;
 }
 
-/* 모달 및 서브 페이지 스타일 */
 .sub-page {
   position: absolute;
   top: 0;
