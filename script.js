@@ -49,8 +49,8 @@ let map = null;
 let markers = [];
 let activeInfoWindow = null;
 let flightPath = null;
-let selectedMapLocation = null; // 지도 클릭 위치 임시 저장
-let modalTargetDay = 1; // 모달에서 선택한 Day
+let selectedMapLocation = null;
+let modalTargetDay = 1;
 
 function createCircleMarkerIcon(number) {
   return {
@@ -68,6 +68,7 @@ function createCircleMarkerIcon(number) {
 window.onload = () => {
   loadTripData();
   initBottomSheetGesture();
+  setTimeout(initPlaceAutocomplete, 500);
 };
 
 window.initMap = function() {
@@ -79,7 +80,6 @@ window.initMap = function() {
   });
   renderDay(currentDay);
 
-  // 지도 클릭 시 한국어 명칭 최우선 추출
   map.addListener('click', (event) => {
     const clickedLat = event.latLng.lat();
     const clickedLng = event.latLng.lng();
@@ -140,7 +140,6 @@ function openInfoWindow(lat, lng, name, sub) {
   activeInfoWindow = infoWindow;
 }
 
-// 지도 툴팁 버튼 클릭 시 추가하기 모달 열기 및 값 자동 입력
 window.openAddModalFromMap = function() {
   if (activeInfoWindow) activeInfoWindow.close();
   if (!selectedMapLocation) return;
@@ -169,7 +168,6 @@ window.openAddModalFromMap = function() {
   if (timeInput) timeInput.value = defaultTime;
 };
 
-// 모달 내부 Day 선택 함수
 window.setModalDay = function(day) {
   modalTargetDay = day;
   const chips = document.querySelectorAll('.modal-day-chip');
@@ -185,6 +183,91 @@ window.setModalDay = function(day) {
     }
   });
 };
+
+function initPlaceAutocomplete() {
+  const input = document.getElementById('placeSearchInput');
+  if (!input) return;
+
+  let dropdown = document.getElementById('customSearchDropdown');
+  if (!dropdown) {
+    dropdown = document.createElement('div');
+    dropdown.id = 'customSearchDropdown';
+    dropdown.style.cssText = `
+      position: absolute;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    `;
+    input.parentNode.style.position = 'relative';
+    input.parentNode.appendChild(dropdown);
+  }
+
+  input.addEventListener('input', (e) => {
+    const keyword = e.target.value.trim().toLowerCase();
+    if (!keyword) {
+      dropdown.style.display = 'none';
+      return;
+    }
+
+    const matches = TOKYO_PLACES.filter(p => 
+      p.name.toLowerCase().includes(keyword) || p.address.toLowerCase().includes(keyword)
+    );
+
+    if (matches.length === 0) {
+      dropdown.style.display = 'none';
+      return;
+    }
+
+    dropdown.innerHTML = '';
+    matches.forEach(place => {
+      const item = document.createElement('div');
+      item.style.cssText = `
+        padding: 10px 14px;
+        font-size: 13px;
+        cursor: pointer;
+        border-bottom: 1px solid #f1f5f9;
+      `;
+      item.innerHTML = `<div style="font-weight: 700; color: #0f172a;">${place.name}</div><div style="font-size: 11px; color: #64748b;">${place.address}</div>`;
+      
+      item.onmouseover = () => item.style.background = '#f8fafc';
+      item.onmouseout = () => item.style.background = '#ffffff';
+
+      item.onclick = () => {
+        input.value = place.name;
+        const subInput = document.getElementById('placeSubInput');
+        if (subInput) subInput.value = place.address;
+
+        selectedMapLocation = {
+          lat: place.lat,
+          lng: place.lng,
+          name: place.name,
+          sub: place.address
+        };
+
+        dropdown.style.display = 'none';
+      };
+
+      dropdown.appendChild(item);
+    });
+
+    const rect = input.getBoundingClientRect();
+    dropdown.style.width = `${rect.width}px`;
+    dropdown.style.top = `${input.offsetTop + input.offsetHeight + 4}px`;
+    dropdown.style.left = `${input.offsetLeft}px`;
+    dropdown.style.display = 'block';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target !== input && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
+}
 
 setTimeout(() => {
   if (!map && typeof google !== 'undefined' && google.maps) {
@@ -396,6 +479,9 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 function openPage(pageId) {
   document.getElementById(pageId).classList.add('active');
+  if (pageId === 'addPage' && !selectedMapLocation) {
+    setModalDay(currentDay);
+  }
 }
 
 function closePage(pageId) {
@@ -403,125 +489,3 @@ function closePage(pageId) {
   selectedMapLocation = null;
   if (pageId === 'addPage') {
     document.getElementById('placeTimeInput').value = '';
-    document.getElementById('placeSearchInput').value = '';
-    document.getElementById('placeSubInput').value = '';
-  } else {
-    document.getElementById('memoTimeInput').value = '';
-    document.getElementById('memoTextInput').value = '';
-  }
-}
-
-function addPlace() {
-  const time = document.getElementById('placeTimeInput').value;
-  const name = document.getElementById('placeSearchInput').value.trim();
-  const sub = document.getElementById('placeSubInput').value.trim();
-
-  if (!time || !name) {
-    alert('시간과 장소명을 입력해 주세요.');
-    return;
-  }
-
-  let lat, lng;
-  if (selectedMapLocation) {
-    lat = selectedMapLocation.lat;
-    lng = selectedMapLocation.lng;
-  } else {
-    lat = 35.6812 + (Math.random() - 0.5) * 0.03;
-    lng = 139.7671 + (Math.random() - 0.5) * 0.03;
-  }
-
-  if (!tripData[modalTargetDay]) {
-    tripData[modalTargetDay] = [];
-  }
-
-  tripData[modalTargetDay].push({ 
-    time, 
-    name, 
-    sub: sub || "일정", 
-    lat, 
-    lng, 
-    isMemo: false 
-  });
-  
-  saveTripData();
-  closePage('addPage');
-  
-  if (currentDay === modalTargetDay) {
-    renderDay(currentDay);
-  } else {
-    alert(`Day ${modalTargetDay} 일정에 성공적으로 추가되었습니다!`);
-  }
-}
-
-function addMemo() {
-  const time = document.getElementById('memoTimeInput').value;
-  const text = document.getElementById('memoTextInput').value.trim();
-
-  if (!time || !text) {
-    alert('시간과 메모 내용을 입력해 주세요.');
-    return;
-  }
-
-  tripData[currentDay].push({ 
-    time, 
-    name: text, 
-    sub: "메모", 
-    lat: 35.6812, 
-    lng: 139.7671, 
-    isMemo: true 
-  });
-
-  saveTripData();
-  closePage('memoPage');
-  renderDay(currentDay);
-}
-
-function deletePlace(index) {
-  if (confirm('이 항목을 삭제하시겠습니까?')) {
-    tripData[currentDay].splice(index, 1);
-    saveTripData();
-    renderDay(currentDay);
-  }
-}
-
-// 장소명 입력창에 구글 맵 자동완성(Autocomplete) 적용
-function initPlaceAutocomplete() {
-  const input = document.getElementById('placeSearchInput');
-  if (!input) return;
-
-  const autocomplete = new google.maps.places.Autocomplete(input, {
-    componentRestrictions: { country: "jp" }, // 일본 지역 제한
-    fields: ["geometry", "name", "formatted_address"]
-  });
-
-  autocomplete.addListener("place_changed", () => {
-    const place = autocomplete.getPlace();
-    if (!place.geometry || !place.geometry.location) {
-      return;
-    }
-
-    // 선택한 장소의 이름, 주소, 좌표를 임시 저장 변수(selectedMapLocation)에 세팅
-    selectedMapLocation = {
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
-      name: place.name,
-      sub: place.formatted_address || "검색된 장소"
-    };
-
-    // 설명/메모란에 주소 자동 채우기 (선택사항)
-    const subInput = document.getElementById('placeSubInput');
-    if (subInput && place.formatted_address) {
-      subInput.value = place.formatted_address;
-    }
-  });
-}
-
-// 기존 window.onload에 자동완성 초기화 연결
-const originalWindowLoad = window.onload;
-window.onload = () => {
-  if (typeof originalWindowLoad === 'function') {
-    originalWindowLoad();
-  }
-  // 지도가 로드된 후 약간의 텀을 두고 자동완성 바인딩
-  setTimeout(initPlaceAutocomplete, 500);
-};
