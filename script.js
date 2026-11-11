@@ -483,3 +483,45 @@ function deletePlace(index) {
     renderDay(currentDay);
   }
 }
+
+// 장소명 입력창에 구글 맵 자동완성(Autocomplete) 적용
+function initPlaceAutocomplete() {
+  const input = document.getElementById('placeSearchInput');
+  if (!input) return;
+
+  const autocomplete = new google.maps.places.Autocomplete(input, {
+    componentRestrictions: { country: "jp" }, // 일본 지역 제한
+    fields: ["geometry", "name", "formatted_address"]
+  });
+
+  autocomplete.addListener("place_changed", () => {
+    const place = autocomplete.getPlace();
+    if (!place.geometry || !place.geometry.location) {
+      return;
+    }
+
+    // 선택한 장소의 이름, 주소, 좌표를 임시 저장 변수(selectedMapLocation)에 세팅
+    selectedMapLocation = {
+      lat: place.geometry.location.lat(),
+      lng: place.geometry.location.lng(),
+      name: place.name,
+      sub: place.formatted_address || "검색된 장소"
+    };
+
+    // 설명/메모란에 주소 자동 채우기 (선택사항)
+    const subInput = document.getElementById('placeSubInput');
+    if (subInput && place.formatted_address) {
+      subInput.value = place.formatted_address;
+    }
+  });
+}
+
+// 기존 window.onload에 자동완성 초기화 연결
+const originalWindowLoad = window.onload;
+window.onload = () => {
+  if (typeof originalWindowLoad === 'function') {
+    originalWindowLoad();
+  }
+  // 지도가 로드된 후 약간의 텀을 두고 자동완성 바인딩
+  setTimeout(initPlaceAutocomplete, 500);
+};
