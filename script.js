@@ -46,7 +46,6 @@ const INITIAL_DATA = {
 let currentDay = 1;
 let tripData = {};
 let map = null;
-let placesService = null; // 👈 PlacesService 전역 선언
 let markers = [];
 let activeInfoWindow = null;
 let flightPath = null;
@@ -76,61 +75,35 @@ window.initMap = function() {
     disableDefaultUI: true,
     zoomControl: false
   });
-
-  // 지도 생성 후 안전하게 PlacesService 초기화
-  if (google.maps.places && google.maps.places.PlacesService) {
-    placesService = new google.maps.places.PlacesService(map);
-  }
-
   renderDay(currentDay);
 
-  // 지도 클릭 이벤트 리스너
+  // 지도 클릭 시 Geocoder를 이용해 한국어 주소 및 건물/지역명 안전하게 추출
   map.addListener('click', (event) => {
-    if (event.placeId) {
-      event.stop();
-      
-      if (!placesService) {
-        placesService = new google.maps.places.PlacesService(map);
-      }
+    const clickedLat = event.latLng.lat();
+    const clickedLng = event.latLng.lng();
+    const geocoder = new google.maps.Geocoder();
+    
+    geocoder.geocode({ 
+      location: { lat: clickedLat, lng: clickedLng },
+      language: 'ko'
+    }, (results, status) => {
+      let placeName = "선택한 장소";
+      let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
 
-      placesService.getDetails({ 
-        placeId: event.placeId,
-        fields: ['name', 'formatted_address', 'geometry'],
-        language: 'ko'
-      }, (place, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
-          const placeName = place.name || "선택한 장소";
-          const placeSub = place.formatted_address || "지도에서 직접 선택";
-          openInfoWindow(event.latLng.lat(), event.latLng.lng(), placeName, placeSub);
+      if (status === "OK" && results && results[0]) {
+        // 주소 결과에서 첫 번째 컴포넌트(건물명 또는 동/가 이름)를 타이틀로 지정
+        const firstComp = results[0].address_components[0];
+        if (firstComp && firstComp.long_name) {
+          placeName = firstComp.long_name;
         } else {
-          fallbackGeocode(event.latLng);
+          placeName = results[0].formatted_address.split(',')[0];
         }
-      });
-    } else {
-      fallbackGeocode(event.latLng);
-    }
+        placeSub = results[0].formatted_address;
+      }
+      openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
+    });
   });
 };
-
-function fallbackGeocode(latLng) {
-  const clickedLat = latLng.lat();
-  const clickedLng = latLng.lng();
-  const geocoder = new google.maps.Geocoder();
-  
-  geocoder.geocode({ 
-    location: { lat: clickedLat, lng: clickedLng },
-    language: 'ko'
-  }, (results, status) => {
-    let placeName = "선택한 위치";
-    let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
-
-    if (status === "OK" && results[0]) {
-      placeName = results[0].address_components[0] ? results[0].address_components[0].long_name + " 부근" : "선택한 위치";
-      placeSub = results[0].formatted_address;
-    }
-    openInfoWindow(clickedLat, clickedLng, placeName, placeSub);
-  });
-}
 
 function openInfoWindow(lat, lng, name, sub) {
   const contentString = `
