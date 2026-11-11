@@ -46,6 +46,7 @@ const INITIAL_DATA = {
 let currentDay = 1;
 let tripData = {};
 let map = null;
+let placesService = null; // 👈 PlacesService 전역 선언
 let markers = [];
 let activeInfoWindow = null;
 let flightPath = null;
@@ -75,17 +76,27 @@ window.initMap = function() {
     disableDefaultUI: true,
     zoomControl: false
   });
+
+  // 지도 생성 후 안전하게 PlacesService 초기화
+  if (google.maps.places && google.maps.places.PlacesService) {
+    placesService = new google.maps.places.PlacesService(map);
+  }
+
   renderDay(currentDay);
 
-  // 지도 클릭 시 한국어(language: 'ko')로 장소명 및 주소 요청
+  // 지도 클릭 이벤트 리스너
   map.addListener('click', (event) => {
     if (event.placeId) {
       event.stop();
-      const service = new google.maps.places.PlacesService(map);
-      service.getDetails({ 
+      
+      if (!placesService) {
+        placesService = new google.maps.places.PlacesService(map);
+      }
+
+      placesService.getDetails({ 
         placeId: event.placeId,
         fields: ['name', 'formatted_address', 'geometry'],
-        language: 'ko' // 👈 핵심: 한국어로 장소 정보 요청
+        language: 'ko'
       }, (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && place) {
           const placeName = place.name || "선택한 장소";
@@ -106,10 +117,9 @@ function fallbackGeocode(latLng) {
   const clickedLng = latLng.lng();
   const geocoder = new google.maps.Geocoder();
   
-  // 주소 검색 시에도 한국어 설정 적용
   geocoder.geocode({ 
     location: { lat: clickedLat, lng: clickedLng },
-    language: 'ko' // 👈 한국어 주소 요청
+    language: 'ko'
   }, (results, status) => {
     let placeName = "선택한 위치";
     let placeSub = `위도: ${clickedLat.toFixed(4)}, 경도: ${clickedLng.toFixed(4)}`;
