@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>도쿄 여행 플래너</title>
   <link rel="stylesheet" href="style.css">
-  <!-- 구글 지도 API (Places 라이브러리 포함) -->
+  <!-- 구글 지도 API -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDv4ueTAj-YS2GfoV6qoZr9Aj7KfG7Yo5o&libraries=places&language=ko&region=KR"></script>
 </head>
 <body>
@@ -53,14 +53,14 @@
       <div class="sub-page-content">
         
         <!-- Day 선택 칩 영역 -->
-        <div class="form-group" style="margin-bottom: 16px;">
+        <div class="form-group" style="margin-bottom: 20px;">
           <label style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">추가할 날짜 (Day)</label>
           <div id="modalDayChips" style="display: flex; gap: 6px;">
-            <button type="button" class="modal-day-chip active" onclick="setModalDay(1)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #2563eb; color: #ffffff; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 1</button>
-            <button type="button" class="modal-day-chip" onclick="setModalDay(2)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 2</button>
-            <button type="button" class="modal-day-chip" onclick="setModalDay(3)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 3</button>
-            <button type="button" class="modal-day-chip" onclick="setModalDay(4)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 4</button>
-            <button type="button" class="modal-day-chip" onclick="setModalDay(5)" style="flex:1; padding: 6px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 5</button>
+            <button type="button" class="modal-day-chip active" onclick="setModalDay(1)" style="flex:1; padding: 8px 0; border: 1px solid #cbd5e1; background: #2563eb; color: #ffffff; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 1</button>
+            <button type="button" class="modal-day-chip" onclick="setModalDay(2)" style="flex:1; padding: 8px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 2</button>
+            <button type="button" class="modal-day-chip" onclick="setModalDay(3)" style="flex:1; padding: 8px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 3</button>
+            <button type="button" class="modal-day-chip" onclick="setModalDay(4)" style="flex:1; padding: 8px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 4</button>
+            <button type="button" class="modal-day-chip" onclick="setModalDay(5)" style="flex:1; padding: 8px 0; border: 1px solid #cbd5e1; background: #f8fafc; color: #0f172a; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">Day 5</button>
           </div>
         </div>
 
@@ -68,9 +68,9 @@
           <label>시간</label>
           <input type="time" id="placeTimeInput" class="form-input">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="position: relative;">
           <label>장소명</label>
-          <input type="text" id="placeSearchInput" class="form-input" placeholder="장소 이름을 입력하세요">
+          <input type="text" id="placeSearchInput" class="form-input" placeholder="장소 이름을 입력하세요" autocomplete="off">
         </div>
         <div class="form-group">
           <label>설명 / 메모</label>
