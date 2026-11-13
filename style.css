@@ -1,4 +1,4 @@
-/* 도쿄 여행 플래너 - style.css */
+/* 도쿄 여행 플래너 - style.css 수정본 */
 
 * {
   box-sizing: border-box;
@@ -24,12 +24,17 @@ body, html {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
+/* 상단 지도 영역 (지도가 전체 공간을 제대로 채우도록 수정) */
 .map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  flex: 1;
-  position: relative;
+  height: 100%;
+  z-index: 1;
 }
 
 #map {
@@ -37,6 +42,7 @@ body, html {
   height: 100%;
 }
 
+/* 하단 시트 (타임라인 및 일정 관리) */
 .bottom-sheet {
   position: absolute;
   bottom: 0;
