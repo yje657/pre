@@ -305,12 +305,20 @@ function initBottomSheetGesture() {
     if (newHeight > maxHeight) newHeight = maxHeight;
 
     sheet.style.height = `${newHeight}px`;
+
+    // 💡 바텀시트가 움직일 때 지도 캔버스를 실시간으로 재렌더링하여 검은 빈 화면 방지
+    if (map) {
+      google.maps.event.trigger(map, 'resize');
+    }
   }
 
   function onEnd() {
     if (!isDragging) return;
     isDragging = false;
     sheet.classList.remove('dragging');
+    if (map) {
+      google.maps.event.trigger(map, 'resize');
+    }
   }
 
   handleBar.addEventListener('touchstart', onStart, { passive: true });
@@ -449,6 +457,9 @@ function renderDay(day) {
     flightPath.setMap(map);
     map.setCenter(pathCoords[0]);
     map.setZoom(13);
+    
+    // 💡 렌더링 직후 지도 크기 갱신 트리거
+    google.maps.event.trigger(map, 'resize');
   }
 }
 
