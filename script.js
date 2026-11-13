@@ -447,8 +447,6 @@ function renderDay(day) {
       strokeWeight: 3
     });
     flightPath.setMap(map);
-    
-    // 지도가 엉뚱한 광역(이바라키 등)으로 튀는 현상 방지: 첫 번째 장소 중심 고정
     map.setCenter(pathCoords[0]);
     map.setZoom(13);
   }
