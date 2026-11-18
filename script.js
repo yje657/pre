@@ -398,4 +398,86 @@ function openPage(pageId) {
 
 function closePage(pageId) {
   document.getElementById(pageId).classList.remove('active');
-  selectedMap
+  selectedMapLocation = null;
+  if (pageId === 'addPage') {
+    document.getElementById('placeTimeInput').value = '';
+    document.getElementById('placeSearchInput').value = '';
+    document.getElementById('placeSubInput').value = '';
+  } else {
+    document.getElementById('memoTimeInput').value = '';
+    document.getElementById('memoTextInput').value = '';
+  }
+}
+
+function addPlace() {
+  const time = document.getElementById('placeTimeInput').value;
+  const name = document.getElementById('placeSearchInput').value.trim();
+  const sub = document.getElementById('placeSubInput').value.trim();
+
+  if (!time || !name) {
+    alert('시간과 장소명을 입력해 주세요.');
+    return;
+  }
+
+  let lat, lng;
+  if (selectedMapLocation && selectedMapLocation.lat && selectedMapLocation.lng) {
+    lat = selectedMapLocation.lat;
+    lng = selectedMapLocation.lng;
+  } else {
+    lat = 35.6812;
+    lng = 139.7671;
+  }
+
+  if (!tripData[modalTargetDay]) {
+    tripData[modalTargetDay] = [];
+  }
+
+  tripData[modalTargetDay].push({ 
+    time, 
+    name, 
+    sub: sub || "일정", 
+    lat, 
+    lng, 
+    isMemo: false 
+  });
+  
+  saveTripData();
+  closePage('addPage');
+  
+  if (currentDay === modalTargetDay) {
+    renderDay(currentDay);
+  } else {
+    alert(`Day ${modalTargetDay} 일정에 성공적으로 추가되었습니다!`);
+  }
+}
+
+function addMemo() {
+  const time = document.getElementById('memoTimeInput').value;
+  const text = document.getElementById('memoTextInput').value.trim();
+
+  if (!time || !text) {
+    alert('시간과 메모 내용을 입력해 주세요.');
+    return;
+  }
+
+  tripData[currentDay].push({ 
+    time, 
+    name: text, 
+    sub: "메모", 
+    lat: 35.6812, 
+    lng: 139.7671, 
+    isMemo: true 
+  });
+
+  saveTripData();
+  closePage('memoPage');
+  renderDay(currentDay);
+}
+
+function deletePlace(index) {
+  if (confirm('이 항목을 삭제하시겠습니까?')) {
+    tripData[currentDay].splice(index, 1);
+    saveTripData();
+    renderDay(currentDay);
+  }
+}
