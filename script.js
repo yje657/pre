@@ -1,7 +1,7 @@
 /* 도쿄 여행 플래너 - script.js */
 
 // 💡 본인의 구글 앱 스크립트 웹 앱 URL을 입력하세요!
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzL3-BfUjIgrAWR9QvynIVB-8zLLMCxHWgr8MkceXxF88dNDjJt-cUTUy3g5XI6hALtUQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw_i_FlPDR6LpAnVCVRrq2aiewmcDUKVKNUByI0L1gxaHXgIBj8iZ-No9b5vPu_nJYGww/exec";
 
 let currentDay = 1;
 let tripData = {};
