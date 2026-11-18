@@ -481,3 +481,41 @@ function deletePlace(index) {
     renderDay(currentDay);
   }
 }
+// 💡 구글 Places API를 활용한 실시간 장소 자동완성 기능
+function initPlaceAutocomplete() {
+  const input = document.getElementById('placeSearchInput');
+  if (!input || typeof google === 'undefined' || !google.maps.places) return;
+
+  // 구글 자동완성 객체 생성 (도쿄 지역으로 편향 검색 설정)
+  const autocomplete = new google.maps.places.Autocomplete(input, {
+    componentRestrictions: { country: "jp" }, // 일본 지역 제한
+    fields: ["geometry", "name", "formatted_address"]
+  });
+
+  // 장소를 선택했을 때의 이벤트
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    
+    if (!place.geometry || !place.geometry.location) {
+      return;
+    }
+
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    const name = place.name || input.value;
+    const sub = place.formatted_address || "도쿄";
+
+    // 선택한 장소 정보를 전역 변수에 저장 (일정 추가할 때 사용)
+    selectedMapLocation = {
+      lat: lat,
+      lng: lng,
+      name: name,
+      sub: sub
+    };
+
+    const subInput = document.getElementById('placeSubInput');
+    if (subInput) {
+      subInput.value = sub;
+    }
+  });
+}
