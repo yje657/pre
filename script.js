@@ -1,47 +1,7 @@
 /* 도쿄 여행 플래너 - script.js */
 
-const TOKYO_PLACES = [
-  { name: "나리타 공항 T3", address: "Chiba, Narita, Furugome", lat: 35.7647, lng: 140.3863 },
-  { name: "신주쿠역", address: "Shinjuku City, Tokyo", lat: 35.6905, lng: 139.7006 },
-  { name: "시부야 스크램블 교차로", address: "Shibuya City, Tokyo", lat: 35.6595, lng: 139.7004 },
-  { name: "아사쿠사 센소지", address: "2 Chome-3-1 Asakusa, Taito City, Tokyo", lat: 35.7148, lng: 139.7967 },
-  { name: "아키하바라 전기상가", address: "Sotokanda, Chiyoda City, Tokyo", lat: 35.6983, lng: 139.7731 },
-  { name: "긴자 팡메종", address: "3 Chome-5-2 Ginza, Chuo City, Tokyo", lat: 35.6713, lng: 139.7695 },
-  { name: "도쿄타워", address: "4 Chome-2-8 Shibakoen, Minato City, Tokyo", lat: 35.6586, lng: 139.7454 },
-  { name: "도쿄 스카이트리", address: "1 Chome-1-2 Oshiage, Sumida City, Tokyo", lat: 35.7100, lng: 139.8107 },
-  { name: "롯폰기 힐즈", address: "6 Chome-10-1 Roppongi, Minato City, Tokyo", lat: 35.6604, lng: 139.7292 },
-  { name: "메이지 신궁", address: "1-1 Yoyogikamizonocho, Shibuya City, Tokyo", lat: 35.6764, lng: 139.6993 },
-  { name: "시부야 마크시티", address: "1 Chome-12-1 Dogenzaka, Shibuya City, Tokyo", lat: 35.6581, lng: 139.6995 },
-  { name: "바스타 신주쿠", address: "5 Chome-24 Sendagaya, Shibuya City, Tokyo", lat: 35.6887, lng: 139.7005 },
-  { name: "후지큐 하이랜드", address: "5 Chome-6-1 Shinishihara, Fujiyoshida, Yamanashi", lat: 35.4872, lng: 138.7806 },
-  { name: "도쿄 디즈니씨", address: "1-1 Maihama, Urayasu, Chiba", lat: 35.6267, lng: 139.8881 },
-  { name: "돈키호테 신주쿠가부키초점", address: "1 Chome-16-5 Kabukicho, Shinjuku City, Tokyo", lat: 35.6954, lng: 139.7020 }
-];
-
-const INITIAL_DATA = {
-  1: [
-    { time: "10:55", name: "나리타 공항 T3", sub: "도착 & N'EX 이동", lat: 35.7647, lng: 140.3863, isMemo: false },
-    { time: "12:30", name: "신주쿠역", sub: "짐 맡기기 및 주변 탐방", lat: 35.6905, lng: 139.7006, isMemo: false },
-    { time: "14:00", name: "시부야 마크시티", sub: "쇼핑 및 점심 식사", lat: 35.6581, lng: 139.6995, isMemo: false }
-  ],
-  2: [
-    { time: "09:30", name: "아사쿠사 센소지", sub: "전통 거리 산책", lat: 35.7148, lng: 139.7967, isMemo: false },
-    { time: "12:00", name: "아키하바라 전기상가", sub: "거리 구경 & 점심", lat: 35.6983, lng: 139.7731, isMemo: false },
-    { time: "14:30", name: "긴자 팡메종", sub: "원조 소금빵 테이크아웃", lat: 35.6713, lng: 139.7695, isMemo: false },
-    { time: "16:00", name: "도쿄타워", sub: "일몰 및 야경 감상", lat: 35.6586, lng: 139.7454, isMemo: false }
-  ],
-  3: [
-    { time: "06:45", name: "바스타 신주쿠", sub: "고속버스 탑승", lat: 35.6887, lng: 139.7005, isMemo: false },
-    { time: "09:00", name: "후지큐 하이랜드", sub: "어트랙션 즐기기", lat: 35.4872, lng: 138.7806, isMemo: false }
-  ],
-  4: [
-    { time: "08:30", name: "도쿄 디즈니씨", sub: "종일 관람", lat: 35.6267, lng: 139.8881, isMemo: false }
-  ],
-  5: [
-    { time: "07:18", name: "신주쿠역", sub: "공항철도 탑승", lat: 35.6905, lng: 139.7006, isMemo: false },
-    { time: "11:50", name: "나리타 공항 T3", sub: "귀국", lat: 35.7647, lng: 140.3863, isMemo: false }
-  ]
-};
+// 💡 본인의 구글 앱 스크립트 웹 앱 URL을 입력하세요!
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzL3-BfUjIgrAWR9QvynIVB-8zLLMCxHWgr8MkceXxF88dNDjJt-cUTUy3g5XI6hALtUQ/exec";
 
 let currentDay = 1;
 let tripData = {};
@@ -68,7 +28,6 @@ function createCircleMarkerIcon(number) {
 window.onload = () => {
   loadTripData();
   initBottomSheetGesture();
-  setTimeout(initPlaceAutocomplete, 500);
 };
 
 window.initMap = function() {
@@ -184,91 +143,6 @@ window.setModalDay = function(day) {
   });
 };
 
-function initPlaceAutocomplete() {
-  const input = document.getElementById('placeSearchInput');
-  if (!input) return;
-
-  let dropdown = document.getElementById('customSearchDropdown');
-  if (!dropdown) {
-    dropdown = document.createElement('div');
-    dropdown.id = 'customSearchDropdown';
-    dropdown.style.cssText = `
-      position: absolute;
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-height: 200px;
-      overflow-y: auto;
-      z-index: 1000;
-      display: none;
-    `;
-    input.parentNode.style.position = 'relative';
-    input.parentNode.appendChild(dropdown);
-  }
-
-  input.addEventListener('input', (e) => {
-    const keyword = e.target.value.trim().toLowerCase();
-    if (!keyword) {
-      dropdown.style.display = 'none';
-      return;
-    }
-
-    const matches = TOKYO_PLACES.filter(p => 
-      p.name.toLowerCase().includes(keyword) || p.address.toLowerCase().includes(keyword)
-    );
-
-    if (matches.length === 0) {
-      dropdown.style.display = 'none';
-      return;
-    }
-
-    dropdown.innerHTML = '';
-    matches.forEach(place => {
-      const item = document.createElement('div');
-      item.style.cssText = `
-        padding: 10px 14px;
-        font-size: 13px;
-        cursor: pointer;
-        border-bottom: 1px solid #f1f5f9;
-      `;
-      item.innerHTML = `<div style="font-weight: 700; color: #0f172a;">${place.name}</div><div style="font-size: 11px; color: #64748b;">${place.address}</div>`;
-      
-      item.onmouseover = () => item.style.background = '#f8fafc';
-      item.onmouseout = () => item.style.background = '#ffffff';
-
-      item.onclick = () => {
-        input.value = place.name;
-        const subInput = document.getElementById('placeSubInput');
-        if (subInput) subInput.value = place.address;
-
-        selectedMapLocation = {
-          lat: place.lat,
-          lng: place.lng,
-          name: place.name,
-          sub: place.address
-        };
-
-        dropdown.style.display = 'none';
-      };
-
-      dropdown.appendChild(item);
-    });
-
-    const rect = input.getBoundingClientRect();
-    dropdown.style.width = `${rect.width}px`;
-    dropdown.style.top = `${input.offsetTop + input.offsetHeight + 4}px`;
-    dropdown.style.left = `${input.offsetLeft}px`;
-    dropdown.style.display = 'block';
-  });
-
-  document.addEventListener('click', (e) => {
-    if (e.target !== input && !dropdown.contains(e.target)) {
-      dropdown.style.display = 'none';
-    }
-  });
-}
-
 setTimeout(() => {
   if (!map && typeof google !== 'undefined' && google.maps) {
     initMap();
@@ -306,7 +180,6 @@ function initBottomSheetGesture() {
 
     sheet.style.height = `${newHeight}px`;
 
-    // 💡 바텀시트가 움직일 때 지도 캔버스를 실시간으로 재렌더링하여 검은 빈 화면 방지
     if (map) {
       google.maps.event.trigger(map, 'resize');
     }
@@ -330,18 +203,49 @@ function initBottomSheetGesture() {
   window.addEventListener('mouseup', onEnd);
 }
 
-function loadTripData() {
-  const saved = localStorage.getItem('tokyo_planner_final_v1');
-  if (saved) {
-    tripData = JSON.parse(saved);
-  } else {
-    tripData = JSON.parse(JSON.stringify(INITIAL_DATA));
-    saveTripData();
+// 구글 시트 서버에서 데이터 불러오기
+async function loadTripData() {
+  tripData = {};
+  
+  for (let day = 1; day <= 5; day++) {
+    try {
+      const response = await fetch(`${SCRIPT_URL}?day=${day}`);
+      const data = await response.json();
+      
+      if (Array.isArray(data)) {
+        tripData[day] = data;
+      } else {
+        tripData[day] = [];
+      }
+    } catch (error) {
+      console.error(`Day ${day} 로드 실패:`, error);
+      tripData[day] = [];
+    }
   }
+  
+  renderDay(currentDay);
 }
 
-function saveTripData() {
-  localStorage.setItem('tokyo_planner_final_v1', JSON.stringify(tripData));
+// 구글 시트 서버에 데이터 저장하기
+async function saveTripData() {
+  const dataToSend = {
+    day: currentDay,
+    data: tripData[currentDay] || []
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dataToSend)
+    });
+    console.log(`Day ${currentDay} 서버 저장 완료`);
+  } catch (error) {
+    console.error("서버 저장 실패:", error);
+  }
 }
 
 function selectDay(day) {
@@ -457,8 +361,6 @@ function renderDay(day) {
     flightPath.setMap(map);
     map.setCenter(pathCoords[0]);
     map.setZoom(13);
-    
-    // 💡 렌더링 직후 지도 크기 갱신 트리거
     google.maps.event.trigger(map, 'resize');
   }
 }
@@ -496,86 +398,4 @@ function openPage(pageId) {
 
 function closePage(pageId) {
   document.getElementById(pageId).classList.remove('active');
-  selectedMapLocation = null;
-  if (pageId === 'addPage') {
-    document.getElementById('placeTimeInput').value = '';
-    document.getElementById('placeSearchInput').value = '';
-    document.getElementById('placeSubInput').value = '';
-  } else {
-    document.getElementById('memoTimeInput').value = '';
-    document.getElementById('memoTextInput').value = '';
-  }
-}
-
-function addPlace() {
-  const time = document.getElementById('placeTimeInput').value;
-  const name = document.getElementById('placeSearchInput').value.trim();
-  const sub = document.getElementById('placeSubInput').value.trim();
-
-  if (!time || !name) {
-    alert('시간과 장소명을 입력해 주세요.');
-    return;
-  }
-
-  let lat, lng;
-  if (selectedMapLocation && selectedMapLocation.lat && selectedMapLocation.lng) {
-    lat = selectedMapLocation.lat;
-    lng = selectedMapLocation.lng;
-  } else {
-    lat = 35.6812;
-    lng = 139.7671;
-  }
-
-  if (!tripData[modalTargetDay]) {
-    tripData[modalTargetDay] = [];
-  }
-
-  tripData[modalTargetDay].push({ 
-    time, 
-    name, 
-    sub: sub || "일정", 
-    lat, 
-    lng, 
-    isMemo: false 
-  });
-  
-  saveTripData();
-  closePage('addPage');
-  
-  if (currentDay === modalTargetDay) {
-    renderDay(currentDay);
-  } else {
-    alert(`Day ${modalTargetDay} 일정에 성공적으로 추가되었습니다!`);
-  }
-}
-
-function addMemo() {
-  const time = document.getElementById('memoTimeInput').value;
-  const text = document.getElementById('memoTextInput').value.trim();
-
-  if (!time || !text) {
-    alert('시간과 메모 내용을 입력해 주세요.');
-    return;
-  }
-
-  tripData[currentDay].push({ 
-    time, 
-    name: text, 
-    sub: "메모", 
-    lat: 35.6812, 
-    lng: 139.7671, 
-    isMemo: true 
-  });
-
-  saveTripData();
-  closePage('memoPage');
-  renderDay(currentDay);
-}
-
-function deletePlace(index) {
-  if (confirm('이 항목을 삭제하시겠습니까?')) {
-    tripData[currentDay].splice(index, 1);
-    saveTripData();
-    renderDay(currentDay);
-  }
-}
+  selectedMap
